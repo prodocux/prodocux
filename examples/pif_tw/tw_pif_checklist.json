@@ -1,0 +1,118 @@
+{
+  "source": {
+    "name": "化粧品產品資訊檔案管理辦法 第3條",
+    "agency": "衛生福利部食品藥物管理署（TFDA）",
+    "regulation": "化粧品產品資訊檔案管理辦法",
+    "article": "第3條（16項必要資料）",
+    "guidance": "化粧品產品資訊檔案製作指引",
+    "url": "https://www.fda.gov.tw/TC/siteContent.aspx?sid=12524",
+    "checked_on": "2026-06-05"
+  },
+  "document_language": ["zh-TW", "zh-CN", "en"],
+  "empty_placeholder_patterns": [
+    "待填", "待補充", "{{", "}}", "(待"
+  ],
+  "review_patterns": [
+    "待補充", "待確認", "REVIEW", "TODO", "TBD", "尚待", "未持有", "不得取代", "確認是否"
+  ],
+  "required_sections": [
+    {
+      "id": "01_basic",
+      "title": "1. 產品基本資料",
+      "keywords": ["產品名稱", "产品识别", "商品名稱", "商品名称", "產品類別", "产品类型", "劑型", "用途", "製造廠", "制造商", "輸入業者", "product identification", "manufacturer"]
+    },
+    {
+      "id": "02_registration",
+      "title": "2. 完成產品登錄之證明文件",
+      "keywords": ["產品登錄", "产品通报", "登錄證明", "CPNP", "notification", "registration", "通報"]
+    },
+    {
+      "id": "03_formula",
+      "title": "3. 全成分名稱及其各別含量",
+      "keywords": ["INCI", "CAS", "含量", "成分", "定性定量", "composition", "formula"],
+      "required_keywords": ["INCI"]
+    },
+    {
+      "id": "04_label",
+      "title": "4. 產品標籤、仿單、外包裝或容器",
+      "keywords": ["標籤", "标签", "外包裝", "外包装", "容器", "label", "packaging", "container"]
+    },
+    {
+      "id": "05_gmp",
+      "title": "5. 製造場所符合化粧品優良製造準則之證明文件或聲明書",
+      "keywords": ["GMP", "ISO 22716", "良好生产规范", "優良製造", "Good Manufacturing Practice"]
+    },
+    {
+      "id": "06_manufacturing",
+      "title": "6. 製造方法、流程",
+      "keywords": ["製造方法", "制造方法", "生產流程", "生产流程", "manufacturing method", "flow"]
+    },
+    {
+      "id": "07_use",
+      "title": "7. 使用方法、部位、用量、頻率及族群",
+      "keywords": ["使用方法", "使用部位", "用量", "頻率", "频率", "族群", "预期用途", "directions", "intended use", "exposure"]
+    },
+    {
+      "id": "08_adverse",
+      "title": "8. 產品使用不良反應資料",
+      "keywords": ["不良反應", "不良反应", "adverse", "undesirable"]
+    },
+    {
+      "id": "09_physical_chemical",
+      "title": "9. 產品及各別成分之物理及化學特性",
+      "keywords": ["物理", "化學", "化学", "physical", "chemical"]
+    },
+    {
+      "id": "10_toxicology",
+      "title": "10. 成分之毒理資料",
+      "keywords": ["毒理", "toxicological", "toxicology", "MoS", "SED", "NOAEL"]
+    },
+    {
+      "id": "11_stability",
+      "title": "11. 產品安定性試驗報告",
+      "keywords": ["安定性", "稳定性", "stability", "PAO"]
+    },
+    {
+      "id": "12_microbiology",
+      "title": "12. 微生物檢測報告",
+      "keywords": ["微生物", "microbiological", "microbiology"]
+    },
+    {
+      "id": "13_preservative",
+      "title": "13. 防腐效能試驗報告",
+      "keywords": ["防腐", "防腐效能", "preservative", "challenge test"]
+    },
+    {
+      "id": "14_claims",
+      "title": "14. 功能評估佐證資料",
+      "keywords": ["功能", "宣稱", "宣称", "功效", "efficacy", "claim"]
+    },
+    {
+      "id": "15_packaging_material",
+      "title": "15. 與產品接觸之包裝材質資料",
+      "keywords": ["包裝材質", "包装材料", "包装材质", "packaging material", "container", "94/62"]
+    },
+    {
+      "id": "16_safety",
+      "title": "16. 產品安全資料",
+      "keywords": ["安全性評估", "安全性评估", "評估人員", "评估人员", "safety assessment", "safety assessor", "安全資料簽署"],
+      "required_keywords": ["安全", "safety"]
+    }
+  ],
+  "section_16_subrequirements": [
+    {
+      "id": "16a_conclusion",
+      "keywords": ["安全性評估", "安全性评估", "評估結論", "评估结论", "safety assessment", "結論", "conclusion"]
+    },
+    {
+      "id": "16b_qualification",
+      "keywords": ["安全資料簽署", "簽署人員", "签署人员", "qualification", "資格", "资格", "證明"]
+    }
+  ],
+  "structure_checks": [
+    "valid_docx",
+    "toc_is_field",
+    "no_blank_pages",
+    "cross_references_valid"
+  ]
+}

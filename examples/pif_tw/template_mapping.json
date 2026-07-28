@@ -1,0 +1,136 @@
+{
+  "template_rules": {
+    "heading_styles": ["PIF標題一", "PIF標題二"],
+    "body_style": "PIF內文4",
+    "table_policy": "reuse_template_table_shape_when_possible",
+    "remove_review_artifacts": ["{{", "}}", "待補充", "TODO", "HIGHLIGHT"],
+    "pagination": {
+      "mode": "mapped_sections_only",
+      "first_no_break": true,
+      "chapter_break_styles": ["PIF標題一"]
+    }
+  },
+  "front_matter": [
+    { "style": "Normal", "occurrence": 1, "field": "product_name_display" },
+    { "style": "PIF封面標題1", "prefix": "文件編號：", "field": "document_id" },
+    { "style": "PIF封面標題1", "prefix": "文件版本：", "field": "document_version" },
+    { "style": "PIF封面標題1", "prefix": "建檔日期：", "field": "document_date" },
+    { "style": "PIF封面標題1", "prefix": "保存單位：", "field": "custodian" }
+  ],
+  "sections": [
+    {
+      "id": "01_basic",
+      "heading": "產品基本資料",
+      "mode": "table",
+      "table_fill": "preserve_row_labels",
+      "detail": "standard",
+      "source_queries": ["產品識別", "产品识别", "商品名稱", "商品名称", "產品類型", "产品类型", "製造商信息", "制造商信息"]
+    },
+    {
+      "id": "02_registration",
+      "heading": "完成產品登錄之證明文件",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["CPNP", "通報", "通知", "參考號", "参考号", "notification", "registration"]
+    },
+    {
+      "id": "03_formula",
+      "heading": "全成分名稱及其各別含量",
+      "mode": "table",
+      "detail": "detailed",
+      "source_queries": ["INCI", "CAS", "定性定量", "成分 %", "formula", "composition"]
+    },
+    {
+      "id": "04_label",
+      "heading": "產品標籤、仿單、外包裝或容器",
+      "mode": "table",
+      "table_fill": "preserve_row_labels",
+      "detail": "standard",
+      "source_queries": ["標籤", "标签", "外包裝", "外包装", "容器", "label", "packaging"]
+    },
+    {
+      "id": "05_gmp",
+      "heading": "製造場所符合化粧品優良製造準則之證明文件或聲明書",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["GMP", "ISO 22716", "良好生产规范", "Good Manufacturing Practice"]
+    },
+    {
+      "id": "06_manufacturing",
+      "heading": "製造方法、流程",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["製造方法", "制造方", "生产流程", "manufacturing method", "metodo di fabbricazione", "fabbricazione", "Parte 3", "第3部分"]
+    },
+    {
+      "id": "07_use",
+      "heading": "使用方法、部位、用量、頻率及族群",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["預期用途", "预期用途", "使用方法", "使用部位", "exposure", "intended use"]
+    },
+    {
+      "id": "08_adverse",
+      "heading": "產品使用不良反應資料",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["不良反應", "不良反应", "adverse", "undesirable"]
+    },
+    {
+      "id": "09_physical_chemical",
+      "heading": "產品及各別成分之物理及化學特性",
+      "mode": "table",
+      "detail": "standard",
+      "source_queries": ["物理", "化學", "化学", "physical", "chemical", "稳定性"]
+    },
+    {
+      "id": "10_toxicology",
+      "heading": "成分之毒理資料",
+      "mode": "table",
+      "detail": "standard",
+      "source_queries": ["毒理", "toxicological", "NOAEL", "MoS", "SED"]
+    },
+    {
+      "id": "11_stability",
+      "heading": "產品安定性試驗報告",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["安定性", "稳定性", "PAO", "stability"]
+    },
+    {
+      "id": "12_microbiology",
+      "heading": "微生物檢測報告",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["微生物", "microbiological", "microbiology"]
+    },
+    {
+      "id": "13_preservative",
+      "heading": "防腐效能試驗報告",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["防腐", "challenge test", "preservative"]
+    },
+    {
+      "id": "14_claims",
+      "heading": "功能評估佐證資料",
+      "mode": "paragraphs",
+      "detail": "brief",
+      "source_queries": ["功效", "功能", "宣稱", "宣称", "claim", "efficacy", "profumare"]
+    },
+    {
+      "id": "15_packaging_material",
+      "heading": "與產品接觸之包裝材質資料",
+      "mode": "paragraphs",
+      "detail": "standard",
+      "source_queries": ["包裝材料", "包装材料", "包装信息", "94/62", "100 ppm", "迁移", "相容"]
+    },
+    {
+      "id": "16_safety",
+      "heading": "產品安全資料",
+      "mode": "paragraphs",
+      "detail": "detailed",
+      "source_queries": ["安全性評估", "安全性评估", "safety assessment", "評估結論", "评估结论"]
+    }
+  ]
+}

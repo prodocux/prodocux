@@ -1,0 +1,5 @@
+# Optional OCR fallback for scanned PDFs (CR-001).
+# Also requires Tesseract binary installed on the system.
+-r requirements.txt
+pytesseract==0.3.13
+Pillow==11.1.0

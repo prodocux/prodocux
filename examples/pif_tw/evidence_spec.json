@@ -1,0 +1,57 @@
+{
+  "schema": "prodocux_evidence_v1",
+  "description": "Synthetic TW PIF evidence image layout for demos/tests. Point extract filenames at local images under examples/pif_tw/_local/ (gitignored) when running real evidence injection.",
+  "extract": [
+    {"id": "label_inner", "method": "embedded", "page": 1, "filename": "label_inner.jpg"},
+    {"id": "label_outer", "method": "embedded", "page": 2, "filename": "label_outer.jpg"},
+    {"id": "gmp_1", "method": "embedded", "page": 3, "filename": "gmp_1.jpg"},
+    {"id": "gmp_2", "method": "embedded", "page": 4, "filename": "gmp_2.jpg"},
+    {"id": "safety_signature", "method": "render", "page": 5, "filename": "safety_signature.png"},
+    {"id": "cpnp_1", "method": "render", "page": 6, "filename": "cpnp_1.png"},
+    {"id": "cpnp_2", "method": "render", "page": 7, "filename": "cpnp_2.png"}
+  ],
+  "inject": [
+    {
+      "type": "table_row",
+      "row_label": "內包裝/容器",
+      "cell_index": 1,
+      "image_id": "label_inner",
+      "caption": "內包裝/容器照片",
+      "width_inches": 3.6
+    },
+    {
+      "type": "table_row",
+      "row_label": "外盒",
+      "cell_index": 1,
+      "image_id": "label_outer",
+      "caption": "外盒展開圖",
+      "width_inches": 3.6
+    },
+    {
+      "type": "appendix",
+      "heading": "CPNP通報證明：",
+      "width_inches": 5.7,
+      "rows": [
+        {"image_id": "cpnp_1", "caption": "CPNP 通報證明第 1 頁"},
+        {"image_id": "cpnp_2", "caption": "CPNP 通報證明第 2 頁"}
+      ]
+    },
+    {
+      "type": "appendix",
+      "heading": "GMP證書：",
+      "width_inches": 5.7,
+      "rows": [
+        {"image_id": "gmp_1", "caption": "GMP 證書"},
+        {"image_id": "gmp_2", "caption": "GMP 證書續頁"}
+      ]
+    },
+    {
+      "type": "appendix",
+      "heading": "安全評估師簽名頁：",
+      "width_inches": 5.7,
+      "rows": [
+        {"image_id": "safety_signature", "caption": "安全評估師簽名頁"}
+      ]
+    }
+  ]
+}

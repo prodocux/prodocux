@@ -1,0 +1,37 @@
+{
+  "schema": "prodocux_pages_v1",
+  "kernel_version": "0.1.0",
+  "engine": "synthetic",
+  "engine_version": "0.1.0",
+  "extracted_at": "2026-07-28T00:00:00+00:00",
+  "source_files": [
+    {
+      "path": "synthetic://demo_eu_pif.pdf",
+      "file": "DEMO_EU_PIF.pdf",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "page_count": 3
+    }
+  ],
+  "errors": {},
+  "page_count": 3,
+  "pages": [
+    {
+      "file": "DEMO_EU_PIF.pdf",
+      "page": 1,
+      "text": "DEMO COSMETICS PIF: SAMPLE EAU DE PARFUM. Responsible person: Demo Responsible Person Ltd. Product notification (CPNP) reference: DEMO-0000001. This file is synthetic fixture data for ProDocuX tests and contains no real customer content.",
+      "char_count": 220
+    },
+    {
+      "file": "DEMO_EU_PIF.pdf",
+      "page": 2,
+      "text": "Part 1 — Product identification. Trade name: Sample Eau de Parfum. Product type: perfume. CPNP notification completed for the demo product. No private addresses, phone numbers, or real brand identities are included.",
+      "char_count": 200
+    },
+    {
+      "file": "DEMO_EU_PIF.pdf",
+      "page": 3,
+      "text": "Part 2A — Qualitative/quantitative composition (synthetic). Aqua 70.00000; Alcohol denat. 25.00000; Parfum 5.00000. Totale 100.0000.",
+      "char_count": 140
+    }
+  ]
+}

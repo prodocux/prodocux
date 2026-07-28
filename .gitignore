@@ -1,0 +1,28 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+skills.zip
+.tmp/
+tmp_*
+.env
+.env.*
+
+# Word binaries (keep only test fixtures under tests/)
+*.docx
+!tests/**/*.docx
+
+# Local / heavy experiment outputs under examples (never publish)
+examples/**/pifgen_inputs_test/
+examples/**/_local/
+examples/**/evidence_images/
+
+# Optional local golden / review captures (never publish answers)
+datasets/dev/*.json
+datasets/heldout/
+datasets/heldout/**
