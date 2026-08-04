@@ -5,6 +5,9 @@ The runtime does not call any LLM API.
 """
 from __future__ import annotations
 
+import base64
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
@@ -18,16 +21,45 @@ from prodocux_kernel.models import (
     ReviewStartResponse,
     ScoreRequest,
     ScoreResponse,
+    TableProfileRequest,
+    TableProfileResponse,
+    WorkbookProfileRequest,
+    WorkbookProfileResponse,
+    DocumentProfileRequest,
+    DocumentProfileResponse,
+    PresentationProfileRequest,
+    PresentationProfileResponse,
     ValidateStructureRequest,
     ValidateStructureResponse,
     VersionResponse,
 )
 from prodocux_kernel.review import capture
 from prodocux_kernel.scoring import scorer
+from api.path_policy import resolve_allowed_input_path
+from prodocux_kernel.intake import (
+    MAX_TABLE_BYTES,
+    MAX_WORKBOOK_BYTES,
+    profile_csv,
+    profile_csv_bytes,
+    profile_xlsx,
+    profile_xlsx_bytes,
+    MAX_DOCX_BYTES,
+    profile_docx,
+    profile_docx_bytes,
+    MAX_PRESENTATION_BYTES,
+    profile_pptx,
+    profile_pptx_bytes,
+)
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
 
-KNOWN_SCHEMAS = ["pif_tw_v1"]
+KNOWN_SCHEMAS = [
+    "pif_tw_v1",
+    "prodocux_table_profile_v1",
+    "prodocux_workbook_profile_v1",
+    "prodocux_docx_profile_v1",
+    "prodocux_presentation_profile_v1",
+]
 
 
 @app.get("/v1/version", response_model=VersionResponse)
@@ -40,9 +72,121 @@ def version() -> VersionResponse:
     )
 
 
+@app.get("/v1/intake/capabilities")
+def intake_capabilities() -> dict:
+    return {
+        "kernel_version": __version__,
+        "formats": [
+            {"extensions": [".pdf"], "status": "available", "operation": "extract_pages"},
+            {"extensions": [".csv"], "status": "available", "operation": "profile_table"},
+            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "additional_operations": ["validate_structure"]},
+            {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation"},
+            {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook"},
+            {"extensions": [".xls"], "status": "planned", "operation": "profile_legacy_workbook"},
+            {"extensions": [".mp4", ".mov", ".mxf"], "status": "external_pipeline_required", "operation": "probe_and_proxy"},
+            {"extensions": [".r3d"], "status": "external_pipeline_required", "operation": "register_raw_and_proxy"},
+        ],
+    }
+
+
+@app.post("/v1/intake/profile-table", response_model=TableProfileResponse)
+def profile_table(req: TableProfileRequest) -> TableProfileResponse:
+    try:
+        if req.document_b64:
+            if Path(req.document_filename).name != req.document_filename:
+                raise ValueError("document_filename must be a plain basename")
+            if not req.document_filename.casefold().endswith(".csv"):
+                raise ValueError("document_filename must end with .csv")
+            if len(req.document_b64) > ((MAX_TABLE_BYTES + 2) // 3) * 4:
+                raise ValueError("document_b64 exceeds CSV intake limit")
+            raw = base64.b64decode(req.document_b64, validate=True)
+            profile = profile_csv_bytes(raw, filename=req.document_filename)
+        elif req.document_path:
+            profile = profile_csv(resolve_allowed_input_path(req.document_path, suffix=".csv"))
+        else:
+            raise ValueError("document_path or document_b64 is required")
+    except (ValueError, UnicodeDecodeError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return TableProfileResponse(kernel_version=__version__, profile=profile)
+
+
+@app.post("/v1/intake/profile-workbook", response_model=WorkbookProfileResponse)
+def profile_workbook(req: WorkbookProfileRequest) -> WorkbookProfileResponse:
+    try:
+        if req.document_b64:
+            if Path(req.document_filename).name != req.document_filename:
+                raise ValueError("document_filename must be a plain basename")
+            if not req.document_filename.casefold().endswith(".xlsx"):
+                raise ValueError("document_filename must end with .xlsx")
+            if len(req.document_b64) > ((MAX_WORKBOOK_BYTES + 2) // 3) * 4:
+                raise ValueError("document_b64 exceeds XLSX intake limit")
+            raw = base64.b64decode(req.document_b64, validate=True)
+            profile = profile_xlsx_bytes(raw, filename=req.document_filename)
+        elif req.document_path:
+            profile = profile_xlsx(resolve_allowed_input_path(req.document_path, suffix=".xlsx"))
+        else:
+            raise ValueError("document_path or document_b64 is required")
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return WorkbookProfileResponse(kernel_version=__version__, profile=profile)
+
+
+@app.post("/v1/intake/profile-document", response_model=DocumentProfileResponse)
+def profile_document(req: DocumentProfileRequest) -> DocumentProfileResponse:
+    try:
+        if req.document_b64:
+            if Path(req.document_filename).name != req.document_filename:
+                raise ValueError("document_filename must be a plain basename")
+            if not req.document_filename.casefold().endswith(".docx"):
+                raise ValueError("document_filename must end with .docx")
+            if len(req.document_b64) > ((MAX_DOCX_BYTES + 2) // 3) * 4:
+                raise ValueError("document_b64 exceeds DOCX intake limit")
+            raw = base64.b64decode(req.document_b64, validate=True)
+            profile = profile_docx_bytes(raw, filename=req.document_filename)
+        elif req.document_path:
+            profile = profile_docx(resolve_allowed_input_path(req.document_path, suffix=".docx"))
+        else:
+            raise ValueError("document_path or document_b64 is required")
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return DocumentProfileResponse(kernel_version=__version__, profile=profile)
+
+
+@app.post("/v1/intake/profile-presentation", response_model=PresentationProfileResponse)
+def profile_presentation(req: PresentationProfileRequest) -> PresentationProfileResponse:
+    try:
+        if req.document_b64:
+            if Path(req.document_filename).name != req.document_filename:
+                raise ValueError("document_filename must be a plain basename")
+            if not req.document_filename.casefold().endswith(".pptx"):
+                raise ValueError("document_filename must end with .pptx")
+            if len(req.document_b64) > ((MAX_PRESENTATION_BYTES + 2) // 3) * 4:
+                raise ValueError("document_b64 exceeds PPTX intake limit")
+            raw = base64.b64decode(req.document_b64, validate=True)
+            profile = profile_pptx_bytes(raw, filename=req.document_filename)
+        elif req.document_path:
+            profile = profile_pptx(resolve_allowed_input_path(req.document_path, suffix=".pptx"))
+        else:
+            raise ValueError("document_path or document_b64 is required")
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return PresentationProfileResponse(kernel_version=__version__, profile=profile)
+
+
 @app.post("/v1/validate-structure", response_model=ValidateStructureResponse)
 def validate_structure(req: ValidateStructureRequest) -> ValidateStructureResponse:
-    results = inv.validate_structure(req.document_path, req.reference_path)
+    try:
+        document_path = resolve_allowed_input_path(req.document_path, suffix=".docx")
+        reference_path = (
+            resolve_allowed_input_path(req.reference_path, suffix=".docx")
+            if req.reference_path
+            else None
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    results = inv.validate_structure(
+        str(document_path), str(reference_path) if reference_path else None
+    )
     return ValidateStructureResponse(
         kernel_version=__version__,
         passed=inv.overall_passed(results),

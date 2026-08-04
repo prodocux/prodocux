@@ -20,6 +20,20 @@ from .pdf_images import (
     extract_evidence_item,
     render_pdf_page,
 )
+from .table import MAX_TABLE_BYTES, TABLE_PROFILE_SCHEMA, profile_csv, profile_csv_bytes
+from .workbook import (
+    MAX_WORKBOOK_BYTES,
+    WORKBOOK_PROFILE_SCHEMA,
+    profile_xlsx,
+    profile_xlsx_bytes,
+)
+from .docx import DOCX_PROFILE_SCHEMA, MAX_DOCX_BYTES, profile_docx, profile_docx_bytes
+from .presentation import (
+    MAX_PRESENTATION_BYTES,
+    PRESENTATION_PROFILE_SCHEMA,
+    profile_pptx,
+    profile_pptx_bytes,
+)
 
 __all__ = [
     "PAGES_SCHEMA",
@@ -42,4 +56,20 @@ __all__ = [
     "pages_for_mapping",
     "render_pdf_page",
     "write_pages_json",
+    "MAX_TABLE_BYTES",
+    "TABLE_PROFILE_SCHEMA",
+    "profile_csv",
+    "profile_csv_bytes",
+    "MAX_WORKBOOK_BYTES",
+    "WORKBOOK_PROFILE_SCHEMA",
+    "profile_xlsx",
+    "profile_xlsx_bytes",
+    "DOCX_PROFILE_SCHEMA",
+    "MAX_DOCX_BYTES",
+    "profile_docx",
+    "profile_docx_bytes",
+    "MAX_PRESENTATION_BYTES",
+    "PRESENTATION_PROFILE_SCHEMA",
+    "profile_pptx",
+    "profile_pptx_bytes",
 ]

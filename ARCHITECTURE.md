@@ -36,4 +36,6 @@ Content drafts are supplied as `drafts.json` by the solver.
 ## First-party skills (shipped)
 
 Structure health, number audit, version diff, clause diff, doc assemble,
-PIF audit (TW), PDF extract. Deterministic; CLI supports `en` / `zh-TW`.
+PIF audit (TW), PDF extract, CSV table profiling, XLSX workbook profiling, and
+DOCX content profiling, and PPTX presentation profiling primitives. Deterministic;
+semantic schedule interpretation remains solver/userland responsibility.

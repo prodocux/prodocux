@@ -74,8 +74,11 @@ visible to the solver (see §6.2).
 
 ## 4. Kernel API (`/v1`)
 
-JSON over HTTP. Files via path (`*_path`) or base64 (`*_b64`). Every response
-includes `kernel_version`.
+JSON over HTTP. Small intake files may use base64 (`*_b64`). Local paths are
+disabled by default and are accepted only for colocated deployments when the
+resolved file remains under a directory listed in
+`PRODOCUX_ALLOWED_INPUT_ROOTS` (use the platform path separator). Every
+response includes `kernel_version`.
 
 ### 4.0 `GET /v1/version`
 
@@ -139,6 +142,10 @@ Request
 
 Run L0 structure invariants on a `.docx`.
 
+`document_path` and optional `reference_path` follow the configured input-root
+policy above; remote callers should use an upload/adapter flow instead of
+arbitrary server filesystem paths.
+
 ### 4.4 `POST /v1/score`
 
 Score a prediction. **Held-out mode returns aggregate scores only — never gold
@@ -152,6 +159,40 @@ Capture human review → golden records (+ correction records).
 
 Ingest corrections → profile update suggestions (applied in Userland; referee
 reviews).
+
+### 4.7 Deterministic intake primitives
+
+- `GET /v1/intake/capabilities` reports executable, planned, and external
+  format pipelines. Storage support does not imply parsing support.
+- `POST /v1/intake/profile-table` accepts an allow-root-local CSV path or small
+  base64 CSV and returns `prodocux_table_profile_v1`: source checksum, columns,
+  row count, and bounded preview. It performs no schedule interpretation or
+  LLM call (`interpretation: none`).
+- `POST /v1/intake/profile-workbook` accepts `.xlsx` and returns
+  `prodocux_workbook_profile_v1`: source checksum, sheet inventory, bounded cell
+  previews, formula text, and cached values when present. Legacy `.xls` is not
+  accepted. It also performs no schedule interpretation.
+- `POST /v1/intake/profile-document` accepts `.docx` and returns
+  `prodocux_docx_profile_v1`: paragraphs/styles, headings, bounded tables,
+  headers/footers, section counts, and source checksum. This is content intake;
+  `/v1/validate-structure` remains the separate structure-health operation.
+- `POST /v1/intake/profile-presentation` accepts `.pptx` and returns
+  `prodocux_presentation_profile_v1`: slide titles/text, speaker notes, bounded
+  tables, image/shape counts, and source checksum. It does not classify the
+  presentation's business purpose.
+
+Format-specific deterministic parsers belong in `prodocux_kernel/intake`.
+First-party skills may wrap them; product applications must call through `/v1`
+or an adapter and must not duplicate parser implementations.
+
+ZIP-based Office formats are preflighted before a parser opens them. The
+Kernel rejects unsafe member names, encrypted entries, excessive entry counts,
+more than 256 MiB declared uncompressed content, or any entry with a compression
+ratio above 200:1. These are resource-safety limits, not claims that the file is
+semantically valid. Entry sizes are central-directory declarations used for
+preflight, not a streaming measurement of decompressed bytes. Presentation
+shape counts are exact within the preview bound and explicitly marked as a
+lower bound when truncated.
 
 ---
 

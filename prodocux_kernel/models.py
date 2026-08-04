@@ -34,6 +34,51 @@ class ValidateStructureResponse(BaseModel):
     invariants: List[InvariantResult]
 
 
+# ---------- /v1/intake/capabilities + /v1/intake/profile-table ----------
+class TableProfileRequest(BaseModel):
+    document_path: Optional[str] = None
+    document_b64: Optional[str] = None
+    document_filename: str = "table.csv"
+
+
+class TableProfileResponse(BaseModel):
+    kernel_version: str
+    profile: Dict[str, Any]
+
+
+class WorkbookProfileRequest(BaseModel):
+    document_path: Optional[str] = None
+    document_b64: Optional[str] = None
+    document_filename: str = "workbook.xlsx"
+
+
+class WorkbookProfileResponse(BaseModel):
+    kernel_version: str
+    profile: Dict[str, Any]
+
+
+class DocumentProfileRequest(BaseModel):
+    document_path: Optional[str] = None
+    document_b64: Optional[str] = None
+    document_filename: str = "document.docx"
+
+
+class DocumentProfileResponse(BaseModel):
+    kernel_version: str
+    profile: Dict[str, Any]
+
+
+class PresentationProfileRequest(BaseModel):
+    document_path: Optional[str] = None
+    document_b64: Optional[str] = None
+    document_filename: str = "presentation.pptx"
+
+
+class PresentationProfileResponse(BaseModel):
+    kernel_version: str
+    profile: Dict[str, Any]
+
+
 # ---------- /v1/review ----------
 class ReviewStartRequest(BaseModel):
     source_path: str
