@@ -73,3 +73,9 @@ See `examples/pif_tw/` for curated **synthetic** fixtures (no customer documents
 | PDF extract | `skills.pdf_extract` |
 
 All first-party skills are deterministic. CLI messages support `en` and `zh-TW`.
+
+## Acknowledgments
+
+Codex and Cursor contributed implementation support, contract hardening, and
+cross-review for the multi-format intake upgrade. Final design and release
+decisions remain with the project maintainers.
