@@ -60,8 +60,8 @@ prodocux/                 # KERNEL (public)
   prodocux_kernel/  api/  skills/  runtime/  tests/
   CONTRACT.md  ARCHITECTURE.md  CAPABILITY_REQUESTS.md
 
-prodocux-labs/            # USERLAND / experiments (private; optional)
-  experiments/  incubator/
+companion-labs/           # USERLAND / external experiments (optional)
+  experiments/  prototypes/
 
 $PRODOCUX_HELDOUT_DIR/    # referee-held answers (never commit to public)
   *.json
