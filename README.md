@@ -52,6 +52,12 @@ private-sidecar notes.
 | Review capture | `POST /v1/review/start`, `/commit` | shipped |
 | Version | `GET /v1/version` | shipped |
 | Semantic extract/render/learn | — | 501 (later) |
+| Deterministic PDF page intake | `POST /v1/intake/extract-pages` | shipped |
+
+The PDF intake endpoint accepts only a bounded base64 payload and a plain
+`.pdf` basename. It returns source SHA-256, bounded page text, truncation
+disclosure, and an explicit `ocr_required` status without persisting the
+source document or calling an LLM.
 
 ## Flagship pipeline
 

@@ -4,9 +4,12 @@ from .evidence import apply_evidence_injections, load_evidence_spec
 from .formula import extract_formula_draft_from_pages, formula_rows_to_draft, parse_formula_rows
 from .ocr import ocr_availability, ocr_pdf_page
 from .pdf import (
+    MAX_PDF_BYTES,
+    MAX_PDF_PAGES,
     PAGES_SCHEMA,
     build_pages_document,
     extract_pdf_pages,
+    extract_pdf_bytes,
     extract_pdfs,
     load_pages_json,
     normalize_page_record,
@@ -37,6 +40,8 @@ from .presentation import (
 
 __all__ = [
     "PAGES_SCHEMA",
+    "MAX_PDF_BYTES",
+    "MAX_PDF_PAGES",
     "apply_evidence_injections",
     "build_pages_document",
     "extract_embedded_page_image",
@@ -44,6 +49,7 @@ __all__ = [
     "extract_evidence_item",
     "extract_formula_draft_from_pages",
     "extract_pdf_pages",
+    "extract_pdf_bytes",
     "formula_rows_to_draft",
     "parse_formula_rows",
     "extract_pdfs",

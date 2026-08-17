@@ -6,6 +6,7 @@ No LLM calls. Engine: pypdf (version pinned in output metadata).
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import re
 from datetime import datetime, timezone
@@ -15,6 +16,10 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 PathLike = Union[str, Path]
 
 PAGES_SCHEMA = "prodocux_pages_v1"
+MAX_PDF_BYTES = 10 * 1024 * 1024
+MAX_PDF_PAGES = 50
+MAX_PDF_PAGE_CHARS = 50_000
+MAX_PDF_TOTAL_CHARS = 500_000
 _EXTRACTION_ERROR_PREFIX = "[EXTRACTION_ERROR]"
 
 _SOURCE_PAGES_HEADER = re.compile(
@@ -134,6 +139,61 @@ def extract_pdf_pages(
             rec["ocr_tesseract"] = ocr_meta.get("tesseract")
         pages.append(rec)
     return pages, None
+
+
+def extract_pdf_bytes(
+    payload: bytes,
+    *,
+    filename: str,
+    max_pages: int = MAX_PDF_PAGES,
+    ocr_min_chars: int = 20,
+) -> Tuple[List[Dict[str, Any]], bool]:
+    """Extract bounded page text from an in-memory PDF.
+
+    Returns ``(pages, truncated)``. This HTTP-facing path intentionally does
+    not persist the source bytes or expose a local source path.
+    """
+    if not payload:
+        raise ValueError("document payload is empty")
+    if len(payload) > MAX_PDF_BYTES:
+        raise ValueError("document_b64 exceeds PDF intake limit")
+    if not 1 <= max_pages <= MAX_PDF_PAGES:
+        raise ValueError("max_pages must be between 1 and 50")
+
+    try:
+        from pypdf import PdfReader  # noqa: WPS433
+
+        reader = PdfReader(io.BytesIO(payload))
+        page_count = len(reader.pages)
+    except Exception as exc:
+        raise ValueError("invalid PDF document") from exc
+
+    if page_count > max_pages:
+        raise ValueError("PDF page count exceeds requested limit")
+
+    pages: List[Dict[str, Any]] = []
+    total_chars = 0
+    truncated = False
+    for page_number, page in enumerate(reader.pages, start=1):
+        try:
+            text = page.extract_text() or ""
+        except Exception:
+            text = ""
+        remaining = max(0, MAX_PDF_TOTAL_CHARS - total_chars)
+        allowed = min(MAX_PDF_PAGE_CHARS, remaining)
+        if len(text) > allowed:
+            text = text[:allowed]
+            truncated = True
+        total_chars += len(text)
+        pages.append({
+            "page_number": page_number,
+            "text": text,
+            "ocr_required": len(text.strip()) < ocr_min_chars,
+        })
+        if remaining == 0:
+            truncated = True
+
+    return pages, truncated
 
 
 def extract_pdfs(

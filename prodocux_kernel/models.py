@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ---------- /v1/version ----------
@@ -77,6 +77,33 @@ class PresentationProfileRequest(BaseModel):
 class PresentationProfileResponse(BaseModel):
     kernel_version: str
     profile: Dict[str, Any]
+
+
+class PdfExtractPagesRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    document_filename: str = Field(min_length=3, max_length=255)
+    document_b64: str = Field(min_length=1, max_length=14_000_000)
+    max_pages: int = Field(default=50, ge=1, le=50)
+
+
+class PdfExtractPage(BaseModel):
+    page_number: int = Field(ge=1)
+    text: str = Field(max_length=50_000)
+    ocr_required: bool
+
+
+class PdfTruncation(BaseModel):
+    truncated: bool
+    total_characters: int = Field(ge=0, le=500_000)
+
+
+class PdfExtractPagesResponse(BaseModel):
+    status: Literal["success", "ocr_required"]
+    source_sha256: str
+    page_count: int = Field(ge=0, le=50)
+    pages: List[PdfExtractPage]
+    truncation: PdfTruncation
 
 
 # ---------- /v1/review ----------

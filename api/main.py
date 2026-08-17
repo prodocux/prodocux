@@ -6,6 +6,7 @@ The runtime does not call any LLM API.
 from __future__ import annotations
 
 import base64
+import hashlib
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -29,6 +30,8 @@ from prodocux_kernel.models import (
     DocumentProfileResponse,
     PresentationProfileRequest,
     PresentationProfileResponse,
+    PdfExtractPagesRequest,
+    PdfExtractPagesResponse,
     ValidateStructureRequest,
     ValidateStructureResponse,
     VersionResponse,
@@ -49,17 +52,50 @@ from prodocux_kernel.intake import (
     MAX_PRESENTATION_BYTES,
     profile_pptx,
     profile_pptx_bytes,
+    MAX_PDF_BYTES,
+    extract_pdf_bytes,
 )
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
 
 KNOWN_SCHEMAS = [
+    "intake_request_v1",
+    "intake_response_v1",
     "pif_tw_v1",
     "prodocux_table_profile_v1",
     "prodocux_workbook_profile_v1",
     "prodocux_docx_profile_v1",
     "prodocux_presentation_profile_v1",
 ]
+
+
+@app.post("/v1/intake/extract-pages", response_model=PdfExtractPagesResponse)
+def extract_pages(req: PdfExtractPagesRequest) -> PdfExtractPagesResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."} or not req.document_filename.casefold().endswith(".pdf"):
+            raise ValueError("document_filename must end with .pdf")
+        if len(req.document_b64) > ((MAX_PDF_BYTES + 2) // 3) * 4:
+            raise ValueError("document_b64 exceeds PDF intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        pages, truncated = extract_pdf_bytes(
+            raw,
+            filename=req.document_filename,
+            max_pages=req.max_pages,
+        )
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    total_characters = sum(len(page["text"]) for page in pages)
+    status = "ocr_required" if any(page["ocr_required"] for page in pages) else "success"
+    return PdfExtractPagesResponse(
+        status=status,
+        source_sha256=hashlib.sha256(raw).hexdigest(),
+        page_count=len(pages),
+        pages=pages,
+        truncation={"truncated": truncated, "total_characters": total_characters},
+    )
 
 
 @app.get("/v1/version", response_model=VersionResponse)
