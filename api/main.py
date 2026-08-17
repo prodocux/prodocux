@@ -28,6 +28,7 @@ from prodocux_kernel.models import (
     WorkbookProfileResponse,
     DocumentProfileRequest,
     DocumentProfileResponse,
+    IntakeCapabilitiesResponse,
     PresentationProfileRequest,
     PresentationProfileResponse,
     PdfExtractPagesRequest,
@@ -61,6 +62,7 @@ app = FastAPI(title="ProDocuX Kernel", version=__version__)
 KNOWN_SCHEMAS = [
     "intake_request_v1",
     "intake_response_v1",
+    "prodocux_intake_capabilities_v1",
     "pif_tw_v1",
     "prodocux_table_profile_v1",
     "prodocux_workbook_profile_v1",
@@ -108,21 +110,27 @@ def version() -> VersionResponse:
     )
 
 
-@app.get("/v1/intake/capabilities")
-def intake_capabilities() -> dict:
-    return {
+@app.get(
+    "/v1/intake/capabilities",
+    response_model=IntakeCapabilitiesResponse,
+    response_model_exclude_none=True,
+)
+def intake_capabilities() -> IntakeCapabilitiesResponse:
+    return IntakeCapabilitiesResponse.model_validate({
+        "schema_version": "prodocux_intake_capabilities_v1",
         "kernel_version": __version__,
+        "api_version": API_VERSION,
         "formats": [
-            {"extensions": [".pdf"], "status": "available", "operation": "extract_pages"},
-            {"extensions": [".csv"], "status": "available", "operation": "profile_table"},
-            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "additional_operations": ["validate_structure"]},
-            {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation"},
-            {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook"},
+            {"extensions": [".pdf"], "status": "available", "operation": "extract_pages", "max_bytes": MAX_PDF_BYTES, "max_pages": 50},
+            {"extensions": [".csv"], "status": "available", "operation": "profile_table", "max_bytes": MAX_TABLE_BYTES},
+            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure"]},
+            {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation", "max_bytes": MAX_PRESENTATION_BYTES},
+            {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook", "max_bytes": MAX_WORKBOOK_BYTES},
             {"extensions": [".xls"], "status": "planned", "operation": "profile_legacy_workbook"},
             {"extensions": [".mp4", ".mov", ".mxf"], "status": "external_pipeline_required", "operation": "probe_and_proxy"},
             {"extensions": [".r3d"], "status": "external_pipeline_required", "operation": "register_raw_and_proxy"},
         ],
-    }
+    })
 
 
 @app.post("/v1/intake/profile-table", response_model=TableProfileResponse)

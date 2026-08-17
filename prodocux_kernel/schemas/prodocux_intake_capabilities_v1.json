@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_intake_capabilities_v1.json",
+  "title": "ProDocuX intake capabilities v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kernel_version", "api_version", "formats"],
+  "properties": {
+    "schema_version": {"const": "prodocux_intake_capabilities_v1"},
+    "kernel_version": {"type": "string", "minLength": 1},
+    "api_version": {"type": "string", "minLength": 1},
+    "formats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["extensions", "status", "operation", "additional_operations"],
+        "properties": {
+          "extensions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "pattern": "^\\.[a-z0-9]+$"}
+          },
+          "status": {
+            "enum": ["available", "planned", "external_pipeline_required"]
+          },
+          "operation": {"type": "string", "minLength": 1},
+          "max_bytes": {"type": "integer", "minimum": 1},
+          "max_pages": {"type": "integer", "minimum": 1},
+          "additional_operations": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}

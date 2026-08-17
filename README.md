@@ -31,6 +31,12 @@ python -m venv .venv
 See [`runtime/INSTALL.md`](runtime/INSTALL.md) for environment variables and
 private-sidecar notes.
 
+Release maintainers can verify a wheel from an isolated temporary directory:
+
+```powershell
+python scripts/verify_clean_install.py
+```
+
 ## Test
 
 ```powershell
@@ -58,6 +64,10 @@ The PDF intake endpoint accepts only a bounded base64 payload and a plain
 `.pdf` basename. It returns source SHA-256, bounded page text, truncation
 disclosure, and an explicit `ocr_required` status without persisting the
 source document or calling an LLM.
+
+`GET /v1/intake/capabilities` is the authoritative machine-readable source
+for available intake operations and their raw-byte/page ceilings. Clients
+should discover these limits instead of copying constants into adapters.
 
 ## Flagship pipeline
 

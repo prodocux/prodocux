@@ -84,7 +84,7 @@ response includes `kernel_version`.
 
 ```json
 {
-  "kernel_version": "0.1.0",
+  "kernel_version": "0.2.0",
   "api_version": "v1",
   "frozen_model": "<solver-side model name/version; kernel makes no LLM calls>",
   "schemas": ["pif_tw_v1"]
@@ -110,7 +110,7 @@ Request
 Response
 ```json
 {
-  "kernel_version": "0.1.0",
+  "kernel_version": "0.2.0",
   "canonical_data": { "product_name": "ABC Cream" },
   "confidence": { "product_name": 0.97 },
   "provenance": { "product_name": {"page": 1, "snippet": "Product: ABC Cream"} },

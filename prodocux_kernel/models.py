@@ -35,6 +35,26 @@ class ValidateStructureResponse(BaseModel):
 
 
 # ---------- /v1/intake/capabilities + /v1/intake/profile-table ----------
+class IntakeFormatCapability(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    extensions: List[str] = Field(min_length=1)
+    status: Literal["available", "planned", "external_pipeline_required"]
+    operation: str = Field(min_length=1)
+    max_bytes: Optional[int] = Field(default=None, ge=1)
+    max_pages: Optional[int] = Field(default=None, ge=1)
+    additional_operations: List[str] = Field(default_factory=list)
+
+
+class IntakeCapabilitiesResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal["prodocux_intake_capabilities_v1"]
+    kernel_version: str
+    api_version: str
+    formats: List[IntakeFormatCapability]
+
+
 class TableProfileRequest(BaseModel):
     document_path: Optional[str] = None
     document_b64: Optional[str] = None
