@@ -10,6 +10,8 @@ License: Apache-2.0. See [LICENSE](LICENSE).
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — public architecture overview
 - [`CONTRACT.md`](CONTRACT.md) — boundaries, API, scoring contract
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
+- [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
+- [`compatibility/pdx_prodocux_compatibility_v1.json`](compatibility/pdx_prodocux_compatibility_v1.json) — compatible versions and schema digests
 
 ## Install
 
