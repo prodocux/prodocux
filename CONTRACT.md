@@ -84,7 +84,7 @@ response includes `kernel_version`.
 
 ```json
 {
-  "kernel_version": "0.2.0",
+  "kernel_version": "0.3.0rc1",
   "api_version": "v1",
   "frozen_model": "<solver-side model name/version; kernel makes no LLM calls>",
   "schemas": ["pif_tw_v1"]
@@ -110,7 +110,7 @@ Request
 Response
 ```json
 {
-  "kernel_version": "0.2.0",
+  "kernel_version": "0.3.0rc1",
   "canonical_data": { "product_name": "ABC Cream" },
   "confidence": { "product_name": 0.97 },
   "provenance": { "product_name": {"page": 1, "snippet": "Product: ABC Cream"} },
@@ -180,6 +180,10 @@ reviews).
   `prodocux_presentation_profile_v1`: slide titles/text, speaker notes, bounded
   tables, image/shape counts, and source checksum. It does not classify the
   presentation's business purpose.
+- `POST /v1/intake/profile-image` accepts bounded JPEG/PNG base64, validates
+  decode/media identity, and returns dimensions, orientation, size, digest,
+  privacy-safe EXIF presence, truncation/review flags, and explicit OCR backend
+  status. OCR is host-injected; the API does not discover local executables.
 
 Format-specific deterministic parsers belong in `prodocux_kernel/intake`.
 First-party skills may wrap them; product applications must call through `/v1`
@@ -193,6 +197,27 @@ semantically valid. Entry sizes are central-directory declarations used for
 preflight, not a streaming measurement of decompressed bytes. Presentation
 shape counts are exact within the preview bound and explicitly marked as a
 lower bound when truncated.
+
+### 4.8 `POST /v1/verify/evidence-bundle`
+
+Validates bounded, already-extracted typed evidence using declarative presence,
+equality, numeric-range, and date/version consistency checks. Results are
+deterministic and use stable pass/fail/review reason codes plus source
+references. Rule selection, claim meaning, and regulatory conclusions belong
+to the calling product.
+
+### 4.9 `POST /v1/compare/normalized-profiles`
+
+Compares bounded JSON-compatible profiles and returns stable JSON Pointer
+paths, reason codes, optional source locators, and truncation disclosure.
+Declared array keys enable reorder-insensitive table-row comparison. The
+operation reports differences only and does not decide semantic equivalence or
+business impact.
+
+The library-level opaque artifact boundary accepts only `artifact://`
+identities resolved by a host-injected resolver. It rejects network URLs and
+local paths, then verifies declared media type, byte size, and SHA-256. Storage,
+authorization, retention, and tenant policy remain outside the Kernel.
 
 ---
 

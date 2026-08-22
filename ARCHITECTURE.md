@@ -1,6 +1,7 @@
 # ProDocuX — architecture overview
 
-> Public summary for kernel v0.1.  
+> Public summary for kernel v0.3 prerelease.
+>
 > Commercial plans and private lab runbooks are not in this repository.  
 > Technical boundaries and APIs: see [`CONTRACT.md`](CONTRACT.md).
 
@@ -13,7 +14,7 @@ Runtime **does not call any LLM API**. Semantic drafting stays on the solver sid
 
 | Layer | Role |
 |---|---|
-| Kernel (`prodocux_kernel/`) | Schemas, doc ops, render, provenance helpers, scoring, review capture |
+| Kernel (`prodocux_kernel/`) | Schemas, bounded intake, evidence verification, normalized diff, opaque artifact validation, doc ops, render, scoring, review capture |
 | Skills (`skills/`) | CLI entry points for structure health, audits, assemble, PDF intake, diffs |
 | Contract (`CONTRACT.md`) | API surface, scoring layers, held-out evaluation rules |
 | Examples (`examples/pif_tw/`) | Synthetic TW PIF fixtures only |
@@ -36,6 +37,7 @@ Content drafts are supplied as `drafts.json` by the solver.
 ## First-party skills (shipped)
 
 Structure health, number audit, version diff, clause diff, doc assemble,
-PIF audit (TW), PDF extract, CSV table profiling, XLSX workbook profiling, and
-DOCX content profiling, and PPTX presentation profiling primitives. Deterministic;
-semantic schedule interpretation remains solver/userland responsibility.
+PIF audit (TW), PDF extract, CSV table profiling, XLSX workbook profiling,
+DOCX content profiling, PPTX presentation profiling, JPEG/PNG technical
+profiling, typed evidence checks, and normalized diff primitives. All are
+deterministic; semantic interpretation remains solver/userland responsibility.
