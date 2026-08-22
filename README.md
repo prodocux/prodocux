@@ -36,10 +36,10 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-After package publication, install the prerelease with:
+Install the published GitHub prerelease wheel with:
 
 ```powershell
-python -m pip install --pre "prodocux==0.3.0rc1"
+python -m pip install "https://github.com/prodocux/prodocux/releases/download/v0.3.0rc1/prodocux-0.3.0rc1-py3-none-any.whl"
 ```
 
 See [`runtime/INSTALL.md`](runtime/INSTALL.md) for environment variables and
