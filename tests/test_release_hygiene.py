@@ -5,7 +5,6 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -16,6 +15,16 @@ def test_wheel_includes_api_and_packaged_schemas() -> None:
     assert "api*" in include
     assert "prodocux_kernel*" in include
     assert "schemas/*.json" in package_data["prodocux_kernel"]
+
+
+def test_public_package_metadata_is_complete() -> None:
+    project = tomllib.loads(
+        (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    )["project"]
+    assert project["license"] == "Apache-2.0"
+    assert project["license-files"] == ["LICENSE"]
+    assert project["authors"]
+    assert project["urls"]["Repository"] == "https://github.com/prodocux/prodocux"
 
 
 def test_capabilities_schema_is_present_in_source_tree() -> None:

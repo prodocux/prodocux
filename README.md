@@ -51,6 +51,9 @@ Release maintainers can verify a wheel from an isolated temporary directory:
 python scripts/verify_clean_install.py
 ```
 
+See [`docs/RELEASE.md`](docs/RELEASE.md) for the PyPI Trusted Publisher and
+GitHub approval-boundary workflow.
+
 ## Test
 
 ```powershell

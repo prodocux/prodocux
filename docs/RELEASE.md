@@ -38,3 +38,34 @@ format ceilings from the capabilities endpoint rather than copy constants.
 
 Tags are created only after maintainers approve the release candidate. Git
 commit pins remain the authority until a tag is published.
+
+## PyPI trusted publication
+
+GitHub Releases are the approval boundary for package publication. The
+`.github/workflows/release.yml` workflow downloads the already-approved wheel
+and source archive, checks their package metadata and GitHub SHA-256 digests,
+installs the tagged source in an isolated environment, and promotes the
+unchanged files to PyPI. It never rebuilds a second set of files for PyPI.
+
+Create a pending or existing-project Trusted Publisher with:
+
+- PyPI project: `prodocux`
+- GitHub owner: `prodocux`
+- Repository: `prodocux`
+- Workflow filename: `release.yml`
+- Environment: `pypi`
+
+Protect the `pypi` GitHub environment with a required reviewer. No long-lived
+PyPI token belongs in repository secrets. Future GitHub Releases start the
+workflow automatically. To promote an existing release, run **Publish release
+assets to PyPI** manually with its exact tag.
+
+The approved `v0.3.0rc1` assets are:
+
+| Asset | SHA-256 |
+|---|---|
+| `prodocux-0.3.0rc1-py3-none-any.whl` | `941295867b3fe1f5253e4c97220237920e26182cdfd25caabf7203e6f49afd9b` |
+| `prodocux-0.3.0rc1.tar.gz` | `01120b5703bd02548438a21b1496418e3ba13916493a74c658baca6863fc81c4` |
+
+PyPI versions are immutable. A failed or incorrectly published version must be
+corrected under a new version.

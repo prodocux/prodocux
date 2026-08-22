@@ -9,6 +9,13 @@ description = "ProDocuX Kernel — deterministic document processing"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
+authors = [{ name = "ProDocuX contributors" }]
+keywords = ["documents", "evidence", "verification", "deterministic"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
 requires-python = ">=3.11"
 dependencies = [
     "fastapi==0.115.6",
@@ -29,6 +36,12 @@ dev = [
     "pytest==8.3.4",
     "jsonschema>=4.22.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/prodocux/prodocux"
+Repository = "https://github.com/prodocux/prodocux"
+Issues = "https://github.com/prodocux/prodocux/issues"
+Releases = "https://github.com/prodocux/prodocux/releases"
 
 [tool.setuptools.packages.find]
 where = ["."]
