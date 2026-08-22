@@ -60,6 +60,16 @@ PyPI token belongs in repository secrets. Future GitHub Releases start the
 workflow automatically. To promote an existing release, run **Publish release
 assets to PyPI** manually with its exact tag.
 
+`0.3.0rc1` is published at
+<https://pypi.org/project/prodocux/0.3.0rc1/>. Both files below were promoted
+unchanged from GitHub Release `v0.3.0rc1`; their PyPI hashes match the approved
+release assets, and PyPI records the `prodocux/prodocux`, `release.yml`,
+`pypi` Trusted Publisher identity in each file's attestation.
+
+```powershell
+python -m pip install "prodocux==0.3.0rc1"
+```
+
 The approved `v0.3.0rc1` assets are:
 
 | Asset | SHA-256 |

@@ -36,11 +36,16 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Install the published GitHub prerelease wheel with:
+Install the published PyPI prerelease with:
 
 ```powershell
-python -m pip install "https://github.com/prodocux/prodocux/releases/download/v0.3.0rc1/prodocux-0.3.0rc1-py3-none-any.whl"
+python -m pip install "prodocux==0.3.0rc1"
 ```
+
+The approved files are available from the
+[`prodocux` PyPI project](https://pypi.org/project/prodocux/0.3.0rc1/); the
+GitHub release remains the publication approval boundary and immutable asset
+record.
 
 See [`runtime/INSTALL.md`](runtime/INSTALL.md) for environment variables and
 private-sidecar notes.
