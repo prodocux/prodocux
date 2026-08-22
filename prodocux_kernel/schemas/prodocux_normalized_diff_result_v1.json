@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_normalized_diff_result_v1.json",
+  "title": "ProDocuX normalized diff result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "verifier_id",
+    "verifier_version",
+    "request_digest",
+    "status",
+    "before_document_id",
+    "after_document_id",
+    "before_source_sha256",
+    "after_source_sha256",
+    "string_normalization",
+    "changes",
+    "total_changes",
+    "truncated"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_normalized_diff_result_v1"},
+    "verifier_id": {"const": "prodocux.normalized_diff"},
+    "verifier_version": {"const": "1"},
+    "request_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "status": {"enum": ["identical", "changed"]},
+    "before_document_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "after_document_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "before_source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "after_source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "string_normalization": {
+      "enum": ["exact", "trim", "collapse_whitespace", "casefold"]
+    },
+    "changes": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "kind", "reason_code"],
+        "properties": {
+          "path": {"type": "string", "maxLength": 512},
+          "kind": {"enum": ["added", "removed", "changed", "type_changed"]},
+          "reason_code": {
+            "enum": ["VALUE_ADDED", "VALUE_REMOVED", "VALUE_CHANGED", "VALUE_TYPE_CHANGED"]
+          },
+          "before_value": {},
+          "after_value": {},
+          "before_locator": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_source_reference_v1.json"
+          },
+          "after_locator": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_source_reference_v1.json"
+          }
+        }
+      }
+    },
+    "total_changes": {"type": "integer", "minimum": 0, "maximum": 5000},
+    "truncated": {"type": "boolean"}
+  }
+}

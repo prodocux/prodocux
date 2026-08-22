@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_evidence_bundle_request_v1.json",
+  "title": "ProDocuX evidence bundle request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "rule_set", "documents", "evidence", "checks"],
+  "properties": {
+    "schema_version": {"const": "prodocux_evidence_bundle_request_v1"},
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "rule_set": {"$ref": "#/$defs/rule_set"},
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {"$ref": "#/$defs/document"}
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {"$ref": "#/$defs/check"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "rule_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "source_sha256", "media_type"],
+      "properties": {
+        "document_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_sha256": {"$ref": "#/$defs/sha256"},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 128}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "document_id",
+        "field_name",
+        "value_type",
+        "value",
+        "confidence",
+        "source_reference"
+      ],
+      "properties": {
+        "evidence_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "document_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "field_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_.-]*$"
+        },
+        "value_type": {"enum": ["string", "number", "integer", "boolean", "date", "version", "null"]},
+        "value": {
+          "oneOf": [
+            {"type": "string", "maxLength": 4096},
+            {"type": "number"},
+            {"type": "boolean"},
+            {"type": "null"}
+          ]
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "source_reference": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_source_reference_v1.json"
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "kind", "evidence_ids"],
+      "properties": {
+        "check_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "kind": {"enum": ["presence", "equality", "numeric_range", "date_order", "version_match"]},
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 128}
+        },
+        "expected": {
+          "oneOf": [
+            {"type": "string", "maxLength": 4096},
+            {"type": "number"},
+            {"type": "boolean"},
+            {"type": "null"}
+          ]
+        },
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"},
+        "minimum_inclusive": {"type": "boolean", "default": true},
+        "maximum_inclusive": {"type": "boolean", "default": true},
+        "minimum_confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

@@ -4,12 +4,16 @@ import hashlib
 import json
 from pathlib import Path
 
-from prodocux_kernel import API_VERSION, __version__
-
-
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "compatibility" / "pdx_prodocux_compatibility_v1.json"
 SCHEMAS = ROOT / "prodocux_kernel" / "schemas"
+FROZEN_MANIFEST_SHA256 = (
+    "0b860fc0a5693a96083de1560ff030398e762c9f0c9dc4c0975eceb1d6ca1303"
+)
+
+
+def test_compatibility_v1_manifest_is_byte_frozen() -> None:
+    assert hashlib.sha256(MANIFEST.read_bytes()).hexdigest() == FROZEN_MANIFEST_SHA256
 
 
 def test_compatibility_manifest_matches_prodocux_release_surface() -> None:
@@ -19,11 +23,11 @@ def test_compatibility_manifest_matches_prodocux_release_surface() -> None:
 
     surface = manifest["prodocux"]
     assert surface["distribution"] == "prodocux"
-    assert surface["version"] == __version__
-    assert surface["api_version"] == API_VERSION
+    assert surface["version"] == "0.2.0"
+    assert surface["api_version"] == "v1"
 
     actual = {
-        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in SCHEMAS.glob("*.json")
+        name: hashlib.sha256((SCHEMAS / name).read_bytes()).hexdigest()
+        for name in surface["schemas"]
     }
     assert surface["schemas"] == actual

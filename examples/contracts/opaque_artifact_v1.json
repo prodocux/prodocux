@@ -1,0 +1,8 @@
+{
+  "schema_version": "prodocux_opaque_artifact_v1",
+  "artifact_id": "document-example-1",
+  "uri": "artifact://run-example-1/input/document.docx",
+  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "size_bytes": 128,
+  "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+}

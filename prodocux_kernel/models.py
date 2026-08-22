@@ -99,6 +99,21 @@ class PresentationProfileResponse(BaseModel):
     profile: Dict[str, Any]
 
 
+class ImageProfileRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    document_b64: str = Field(min_length=1, max_length=14_000_000)
+    document_filename: str = Field(default="image.png", min_length=5, max_length=255)
+    ocr_requested: bool = False
+
+
+class ImageProfileResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    kernel_version: str
+    profile: Dict[str, Any]
+
+
 class PdfExtractPagesRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

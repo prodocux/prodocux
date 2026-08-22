@@ -1,0 +1,15 @@
+{
+  "schema_version": "prodocux_normalized_diff_request_v1",
+  "before": {
+    "document_id": "document-before",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "values": {"name": "Example", "size": 50}
+  },
+  "after": {
+    "document_id": "document-after",
+    "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "values": {"name": "Example", "size": 60}
+  },
+  "string_normalization": "exact",
+  "max_changes": 1000
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_source_reference_v1.json",
+  "title": "ProDocuX source reference v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_sha256",
+    "media_type",
+    "locator",
+    "extraction",
+    "truncated"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_source_reference_v1"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "media_type": {"type": "string", "minLength": 1, "maxLength": 128},
+    "locator": {
+      "oneOf": [
+        {"$ref": "#/$defs/pdf_page"},
+        {"$ref": "#/$defs/worksheet"},
+        {"$ref": "#/$defs/docx"},
+        {"$ref": "#/$defs/presentation"},
+        {"$ref": "#/$defs/image_region"}
+      ]
+    },
+    "snippet": {"type": "string", "maxLength": 2048},
+    "extraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "extractor_id", "extractor_version"],
+      "properties": {
+        "method": {
+          "enum": ["native_text", "table_parser", "ocr", "image_decode", "host_supplied"]
+        },
+        "extractor_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "extractor_version": {"type": "string", "minLength": 1, "maxLength": 64}
+      }
+    },
+    "truncated": {"type": "boolean"}
+  },
+  "$defs": {
+    "bbox": {
+      "type": "array",
+      "description": "Normalized [left, top, right, bottom] coordinates.",
+      "prefixItems": [
+        {"type": "number", "minimum": 0, "maximum": 1},
+        {"type": "number", "minimum": 0, "maximum": 1},
+        {"type": "number", "minimum": 0, "maximum": 1},
+        {"type": "number", "minimum": 0, "maximum": 1}
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "pdf_page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "page"],
+      "properties": {
+        "kind": {"const": "pdf_page"},
+        "page": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "bbox": {"$ref": "#/$defs/bbox"}
+      }
+    },
+    "worksheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sheet", "cell_range"],
+      "properties": {
+        "kind": {"const": "worksheet"},
+        "sheet": {"type": "string", "minLength": 1, "maxLength": 128},
+        "cell_range": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Z]{1,3}[1-9][0-9]*(?::[A-Z]{1,3}[1-9][0-9]*)?$"
+        }
+      }
+    },
+    "docx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {"const": "docx"},
+        "paragraph_index": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "table_index": {"type": "integer", "minimum": 0, "maximum": 100000},
+        "row_index": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "column_index": {"type": "integer", "minimum": 0, "maximum": 100000}
+      },
+      "anyOf": [
+        {"required": ["paragraph_index"]},
+        {"required": ["table_index"]}
+      ]
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "slide"],
+      "properties": {
+        "kind": {"const": "presentation"},
+        "slide": {"type": "integer", "minimum": 1, "maximum": 100000},
+        "shape_id": {"type": "string", "minLength": 1, "maxLength": 128}
+      }
+    },
+    "image_region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "bbox"],
+      "properties": {
+        "kind": {"const": "image_region"},
+        "bbox": {"$ref": "#/$defs/bbox"}
+      }
+    }
+  }
+}

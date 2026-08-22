@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_image_profile_v1.json",
+  "title": "ProDocuX deterministic image profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_sha256",
+    "media_type",
+    "file_size_bytes",
+    "width_pixels",
+    "height_pixels",
+    "mode",
+    "orientation",
+    "valid",
+    "exif",
+    "ocr_required",
+    "ocr",
+    "review_flags"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_image_profile_v1"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "media_type": {"enum": ["image/jpeg", "image/png"]},
+    "file_size_bytes": {"type": "integer", "minimum": 1, "maximum": 10485760},
+    "width_pixels": {"type": "integer", "minimum": 1, "maximum": 40000},
+    "height_pixels": {"type": "integer", "minimum": 1, "maximum": 40000},
+    "mode": {"type": "string", "minLength": 1, "maxLength": 32},
+    "orientation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exif_value", "rotation_degrees", "mirrored"],
+      "properties": {
+        "exif_value": {"type": "integer", "minimum": 1, "maximum": 8},
+        "rotation_degrees": {"enum": [0, 90, 180, 270]},
+        "mirrored": {"type": "boolean"}
+      }
+    },
+    "valid": {"const": true},
+    "exif": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "gps_present"],
+      "properties": {
+        "present": {"type": "boolean"},
+        "gps_present": {"type": "boolean"}
+      }
+    },
+    "ocr_required": {"type": "boolean"},
+    "ocr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requested", "available", "status", "regions", "truncated"],
+      "properties": {
+        "requested": {"type": "boolean"},
+        "available": {"type": "boolean"},
+        "status": {"enum": ["not_requested", "unavailable", "completed"]},
+        "backend": {"type": "string", "minLength": 1, "maxLength": 128},
+        "backend_version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "regions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y", "width", "height", "text"],
+            "properties": {
+              "x": {"type": "integer", "minimum": 0},
+              "y": {"type": "integer", "minimum": 0},
+              "width": {"type": "integer", "minimum": 1},
+              "height": {"type": "integer", "minimum": 1},
+              "text": {"type": "string", "maxLength": 2000},
+              "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+            }
+          }
+        },
+        "truncated": {"type": "boolean"}
+      }
+    },
+    "review_flags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["OCR_REQUIRED", "OCR_UNAVAILABLE", "TEXT_REGIONS_TRUNCATED"]
+      }
+    }
+  }
+}

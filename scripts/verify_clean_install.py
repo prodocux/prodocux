@@ -12,6 +12,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 IMPORTS = ("prodocux_kernel", "api.main")
+PACKAGED_SCHEMAS = (
+    "prodocux_intake_capabilities_v1.json",
+    "prodocux_source_reference_v1.json",
+    "prodocux_evidence_bundle_request_v1.json",
+    "prodocux_evidence_bundle_result_v1.json",
+    "prodocux_image_profile_v1.json",
+    "prodocux_normalized_diff_request_v1.json",
+    "prodocux_normalized_diff_result_v1.json",
+    "prodocux_opaque_artifact_v1.json",
+)
 
 
 def _run(*args: str, cwd: Path) -> None:
@@ -34,10 +44,10 @@ def main() -> int:
         python = env_dir / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
         _run(str(python), "-m", "pip", "install", str(wheel), cwd=work)
         smoke = "; ".join(f"import {name}" for name in IMPORTS)
-        smoke += (
-            "; from importlib.resources import files"
-            "; assert files('prodocux_kernel.schemas')"
-            ".joinpath('prodocux_intake_capabilities_v1.json').is_file()"
+        smoke += "; from importlib.resources import files; schema_root = files('prodocux_kernel.schemas')"
+        smoke += "".join(
+            f"; assert schema_root.joinpath({name!r}).is_file()"
+            for name in PACKAGED_SCHEMAS
         )
         _run(str(python), "-c", smoke, cwd=work)
         print(f"clean-install PASS: {wheel.name}")

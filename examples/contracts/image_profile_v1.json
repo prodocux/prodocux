@@ -1,0 +1,21 @@
+{
+  "schema_version": "prodocux_image_profile_v1",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "media_type": "image/png",
+  "file_size_bytes": 128,
+  "width_pixels": 640,
+  "height_pixels": 480,
+  "mode": "RGB",
+  "orientation": {"exif_value": 1, "rotation_degrees": 0, "mirrored": false},
+  "valid": true,
+  "exif": {"present": false, "gps_present": false},
+  "ocr_required": true,
+  "ocr": {
+    "requested": true,
+    "available": false,
+    "status": "unavailable",
+    "regions": [],
+    "truncated": false
+  },
+  "review_flags": ["OCR_REQUIRED", "OCR_UNAVAILABLE"]
+}

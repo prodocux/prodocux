@@ -1,0 +1,22 @@
+{
+  "schema_version": "prodocux_evidence_bundle_result_v1",
+  "request_id": "evidence-example-001",
+  "canonical_request_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "verifier": {"id": "prodocux.evidence_bundle", "version": "1"},
+  "rule_set": {
+    "id": "example.consistency",
+    "version": "1",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "status": "pass",
+  "results": [
+    {
+      "check_id": "volume-range",
+      "status": "pass",
+      "reason_codes": ["VALUE_WITHIN_RANGE"],
+      "evidence_ids": ["ev-volume"],
+      "expected": "50..70",
+      "actual": 60
+    }
+  ]
+}

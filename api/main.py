@@ -11,11 +11,38 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 
+from api.path_policy import resolve_allowed_input_path
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
 from prodocux_kernel.config import golden_path
 from prodocux_kernel.docops import invariants as inv
+from prodocux_kernel.intake import (
+    MAX_DOCX_BYTES,
+    MAX_IMAGE_BYTES,
+    MAX_PDF_BYTES,
+    MAX_PRESENTATION_BYTES,
+    MAX_TABLE_BYTES,
+    MAX_WORKBOOK_BYTES,
+    extract_pdf_bytes,
+    profile_csv,
+    profile_csv_bytes,
+    profile_docx,
+    profile_docx_bytes,
+    profile_image_bytes,
+    profile_pptx,
+    profile_pptx_bytes,
+    profile_xlsx,
+    profile_xlsx_bytes,
+)
 from prodocux_kernel.models import (
-    Prediction,
+    DocumentProfileRequest,
+    DocumentProfileResponse,
+    ImageProfileRequest,
+    ImageProfileResponse,
+    IntakeCapabilitiesResponse,
+    PdfExtractPagesRequest,
+    PdfExtractPagesResponse,
+    PresentationProfileRequest,
+    PresentationProfileResponse,
     ReviewCommitRequest,
     ReviewCommitResponse,
     ReviewStartRequest,
@@ -24,37 +51,27 @@ from prodocux_kernel.models import (
     ScoreResponse,
     TableProfileRequest,
     TableProfileResponse,
-    WorkbookProfileRequest,
-    WorkbookProfileResponse,
-    DocumentProfileRequest,
-    DocumentProfileResponse,
-    IntakeCapabilitiesResponse,
-    PresentationProfileRequest,
-    PresentationProfileResponse,
-    PdfExtractPagesRequest,
-    PdfExtractPagesResponse,
     ValidateStructureRequest,
     ValidateStructureResponse,
     VersionResponse,
+    WorkbookProfileRequest,
+    WorkbookProfileResponse,
 )
 from prodocux_kernel.review import capture
 from prodocux_kernel.scoring import scorer
-from api.path_policy import resolve_allowed_input_path
-from prodocux_kernel.intake import (
-    MAX_TABLE_BYTES,
-    MAX_WORKBOOK_BYTES,
-    profile_csv,
-    profile_csv_bytes,
-    profile_xlsx,
-    profile_xlsx_bytes,
-    MAX_DOCX_BYTES,
-    profile_docx,
-    profile_docx_bytes,
-    MAX_PRESENTATION_BYTES,
-    profile_pptx,
-    profile_pptx_bytes,
-    MAX_PDF_BYTES,
-    extract_pdf_bytes,
+from prodocux_kernel.verification import (
+    EvidenceValidationError,
+    NormalizedDiffError,
+    compare_normalized_profiles,
+    verify_evidence_bundle,
+)
+from prodocux_kernel.verification.diff_models import (
+    NormalizedDiffRequestV1,
+    NormalizedDiffResultV1,
+)
+from prodocux_kernel.verification.evidence_models import (
+    EvidenceBundleRequestV1,
+    EvidenceBundleResultV1,
 )
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
@@ -68,7 +85,40 @@ KNOWN_SCHEMAS = [
     "prodocux_workbook_profile_v1",
     "prodocux_docx_profile_v1",
     "prodocux_presentation_profile_v1",
+    "prodocux_source_reference_v1",
+    "prodocux_evidence_bundle_request_v1",
+    "prodocux_evidence_bundle_result_v1",
+    "prodocux_image_profile_v1",
+    "prodocux_normalized_diff_request_v1",
+    "prodocux_normalized_diff_result_v1",
+    "prodocux_opaque_artifact_v1",
 ]
+
+
+@app.post(
+    "/v1/verify/evidence-bundle",
+    response_model=EvidenceBundleResultV1,
+    response_model_exclude_none=True,
+)
+def verify_evidence(req: EvidenceBundleRequestV1) -> EvidenceBundleResultV1:
+    try:
+        result = verify_evidence_bundle(req)
+    except EvidenceValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return EvidenceBundleResultV1.model_validate(result)
+
+
+@app.post(
+    "/v1/compare/normalized-profiles",
+    response_model=NormalizedDiffResultV1,
+    response_model_exclude_unset=True,
+)
+def compare_profiles(req: NormalizedDiffRequestV1) -> NormalizedDiffResultV1:
+    try:
+        result = compare_normalized_profiles(req)
+    except NormalizedDiffError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return NormalizedDiffResultV1.model_validate(result)
 
 
 @app.post("/v1/intake/extract-pages", response_model=PdfExtractPagesResponse)
@@ -126,11 +176,30 @@ def intake_capabilities() -> IntakeCapabilitiesResponse:
             {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure"]},
             {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation", "max_bytes": MAX_PRESENTATION_BYTES},
             {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook", "max_bytes": MAX_WORKBOOK_BYTES},
+            {"extensions": [".jpg", ".jpeg", ".png"], "status": "available", "operation": "profile_image", "max_bytes": MAX_IMAGE_BYTES},
             {"extensions": [".xls"], "status": "planned", "operation": "profile_legacy_workbook"},
             {"extensions": [".mp4", ".mov", ".mxf"], "status": "external_pipeline_required", "operation": "probe_and_proxy"},
             {"extensions": [".r3d"], "status": "external_pipeline_required", "operation": "register_raw_and_proxy"},
         ],
     })
+
+
+@app.post("/v1/intake/profile-image", response_model=ImageProfileResponse)
+def profile_image(req: ImageProfileRequest) -> ImageProfileResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if len(req.document_b64) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
+            raise ValueError("document_b64 exceeds image intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        profile = profile_image_bytes(
+            raw,
+            filename=req.document_filename,
+            ocr_requested=req.ocr_requested,
+        )
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return ImageProfileResponse(kernel_version=__version__, profile=profile)
 
 
 @app.post("/v1/intake/profile-table", response_model=TableProfileResponse)

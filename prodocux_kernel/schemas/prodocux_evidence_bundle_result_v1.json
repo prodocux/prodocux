@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_evidence_bundle_result_v1.json",
+  "title": "ProDocuX evidence bundle result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "canonical_request_sha256",
+    "verifier",
+    "rule_set",
+    "status",
+    "results"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_evidence_bundle_result_v1"},
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "canonical_request_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "version": {"type": "string", "minLength": 1, "maxLength": 64}
+      }
+    },
+    "rule_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "status": {"enum": ["pass", "fail", "review"]},
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "status", "reason_codes", "evidence_ids"],
+        "properties": {
+          "check_id": {"type": "string", "minLength": 1, "maxLength": 128},
+          "status": {"enum": ["pass", "fail", "review"]},
+          "reason_codes": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1, "maxLength": 128}
+          },
+          "evidence_ids": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1, "maxLength": 128}
+          },
+          "expected": {
+            "oneOf": [
+              {"type": "string", "maxLength": 4096},
+              {"type": "number"},
+              {"type": "boolean"},
+              {"type": "null"}
+            ]
+          },
+          "actual": {
+            "oneOf": [
+              {"type": "string", "maxLength": 4096},
+              {"type": "number"},
+              {"type": "boolean"},
+              {"type": "null"}
+            ]
+          },
+          "details": {
+            "type": "object",
+            "maxProperties": 10,
+            "propertyNames": {"pattern": "^[a-zA-Z0-9_.-]{1,64}$"},
+            "additionalProperties": {"type": ["string", "number", "boolean", "null"]}
+          }
+        }
+      }
+    }
+  }
+}

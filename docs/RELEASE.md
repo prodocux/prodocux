@@ -1,7 +1,8 @@
 # Release policy
 
-ProDocuX `0.2.0` is the release-candidate boundary for the deterministic
+ProDocuX `0.3.0rc1` is the coordinated release candidate for the deterministic
 document Kernel and HTTP API v1. Runtime code makes no implicit LLM calls.
+The frozen `0.2.0` compatibility v1 surface remains historical evidence.
 
 ## Frozen public surface
 
@@ -11,10 +12,11 @@ document Kernel and HTTP API v1. Runtime code makes no implicit LLM calls.
 - the packaged request, response, and capabilities schemas
 - package imports `prodocux_kernel` and `api.main`
 
-The authoritative machine-readable schema digests and compatible PDX Core
-version are recorded in `compatibility/pdx_prodocux_compatibility_v1.json`.
-Applications must discover format ceilings from the capabilities endpoint
-rather than copy constants.
+The frozen machine-readable surface is recorded in
+`compatibility/pdx_prodocux_compatibility_v1.json`; the active coordinated
+release-candidate surface is recorded in
+`compatibility/pdx_prodocux_compatibility_v2.json`. Applications must discover
+format ceilings from the capabilities endpoint rather than copy constants.
 
 ## Change policy
 

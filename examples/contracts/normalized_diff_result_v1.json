@@ -1,0 +1,23 @@
+{
+  "schema_version": "prodocux_normalized_diff_result_v1",
+  "verifier_id": "prodocux.normalized_diff",
+  "verifier_version": "1",
+  "request_digest": "4c2ead599ca9433ab831022bf79544ae86abe385d4271cc8cf3b1514bd92f538",
+  "status": "changed",
+  "before_document_id": "document-before",
+  "after_document_id": "document-after",
+  "before_source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "after_source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "string_normalization": "exact",
+  "changes": [
+    {
+      "path": "/size",
+      "kind": "changed",
+      "reason_code": "VALUE_CHANGED",
+      "before_value": 50,
+      "after_value": 60
+    }
+  ],
+  "total_changes": 1,
+  "truncated": false
+}

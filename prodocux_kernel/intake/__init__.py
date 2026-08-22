@@ -2,6 +2,13 @@
 
 from .evidence import apply_evidence_injections, load_evidence_spec
 from .formula import extract_formula_draft_from_pages, formula_rows_to_draft, parse_formula_rows
+from .image import (
+    IMAGE_PROFILE_SCHEMA,
+    MAX_IMAGE_BYTES,
+    MAX_IMAGE_PIXELS,
+    ImageOcrBackend,
+    profile_image_bytes,
+)
 from .ocr import ocr_availability, ocr_pdf_page
 from .pdf import (
     MAX_PDF_BYTES,
@@ -41,6 +48,10 @@ from .presentation import (
 __all__ = [
     "PAGES_SCHEMA",
     "MAX_PDF_BYTES",
+    "MAX_IMAGE_BYTES",
+    "MAX_IMAGE_PIXELS",
+    "IMAGE_PROFILE_SCHEMA",
+    "ImageOcrBackend",
     "MAX_PDF_PAGES",
     "apply_evidence_injections",
     "build_pages_document",
@@ -66,6 +77,7 @@ __all__ = [
     "TABLE_PROFILE_SCHEMA",
     "profile_csv",
     "profile_csv_bytes",
+    "profile_image_bytes",
     "MAX_WORKBOOK_BYTES",
     "WORKBOOK_PROFILE_SCHEMA",
     "profile_xlsx",

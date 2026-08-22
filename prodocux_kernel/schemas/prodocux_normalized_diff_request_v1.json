@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_normalized_diff_request_v1.json",
+  "title": "ProDocuX normalized diff request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "before", "after"],
+  "properties": {
+    "schema_version": {"const": "prodocux_normalized_diff_request_v1"},
+    "before": {"$ref": "#/$defs/profile"},
+    "after": {"$ref": "#/$defs/profile"},
+    "string_normalization": {
+      "enum": ["exact", "trim", "collapse_whitespace", "casefold"]
+    },
+    "max_changes": {"type": "integer", "minimum": 1, "maximum": 2000},
+    "array_key_fields": {
+      "type": "object",
+      "maxProperties": 100,
+      "propertyNames": {"pattern": "^/", "maxLength": 512},
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "source_sha256", "values"],
+      "properties": {
+        "document_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "values": {"type": "object", "maxProperties": 1000},
+        "locators": {
+          "type": "object",
+          "maxProperties": 2000,
+          "propertyNames": {"type": "string", "maxLength": 512},
+          "additionalProperties": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_source_reference_v1.json"
+          }
+        }
+      }
+    }
+  }
+}

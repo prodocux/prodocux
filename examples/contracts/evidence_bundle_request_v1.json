@@ -1,0 +1,49 @@
+{
+  "schema_version": "prodocux_evidence_bundle_request_v1",
+  "request_id": "evidence-example-001",
+  "rule_set": {
+    "id": "example.consistency",
+    "version": "1",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "documents": [
+    {
+      "document_id": "document-a",
+      "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "media_type": "application/pdf"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ev-volume",
+      "document_id": "document-a",
+      "field_name": "declared_volume_ml",
+      "value_type": "number",
+      "value": 60,
+      "confidence": 0.99,
+      "source_reference": {
+        "schema_version": "prodocux_source_reference_v1",
+        "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "media_type": "application/pdf",
+        "locator": {"kind": "pdf_page", "page": 2},
+        "snippet": "Declared volume: 60 ml",
+        "extraction": {
+          "method": "native_text",
+          "extractor_id": "example.extractor",
+          "extractor_version": "1"
+        },
+        "truncated": false
+      }
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "volume-range",
+      "kind": "numeric_range",
+      "evidence_ids": ["ev-volume"],
+      "minimum": 50,
+      "maximum": 70,
+      "minimum_confidence": 0.9
+    }
+  ]
+}
