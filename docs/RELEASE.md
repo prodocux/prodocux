@@ -1,8 +1,11 @@
 # Release policy
 
-ProDocuX `0.3.0rc1` is the coordinated release candidate for the deterministic
-document Kernel and HTTP API v1. Runtime code makes no implicit LLM calls.
-The frozen `0.2.0` compatibility v1 surface remains historical evidence.
+ProDocuX `0.3.0rc2` is the coordinated prerelease that distributes the A6
+extract/render surface for the deterministic document Kernel and HTTP API v1.
+Runtime code makes no implicit LLM calls. The frozen `0.2.0` compatibility v1
+surface remains historical evidence. Frozen v2/v3 manifests still record
+surface version `0.3.0rc1`; that is the contract pin, not the live package
+version.
 
 ## Frozen public surface
 
@@ -27,17 +30,18 @@ The already-published PyPI artifacts for `0.3.0rc1` (GitHub Release
 `v0.3.0rc1`) predate the A6 extract/render freeze. Those files must not be
 rebuilt or re-uploaded; PyPI versions are immutable.
 
-Live extract/render is pinned by compatibility v3 at ProDocuX Commit A
+`0.3.0rc2` is the first PyPI prerelease that includes A6 extract/render.
+Compatibility v3 remains byte-frozen and still pins live contract Commit A
 `53c4784d4b2bae4437252a287193e897973e8474` (v3 file SHA-256
 `9591ab363472db78efb64265e3050fa4626be43783f848d0888e732898486d2b`).
-Hosts that need that surface must install from git (Commit B includes the
-v3 manifest) until maintainers approve a later prerelease such as
-`0.3.0rc2`. Do not bump the public package to `0.4.0` for this additive
-`/v1` work.
+Do not bump the public package to `0.4.0` for this additive `/v1` work.
 
 ```powershell
-python -m pip install "prodocux @ git+https://github.com/prodocux/prodocux.git@8c7eb3b4fe1e171a40759270a5894b0b89803845"
+python -m pip install "prodocux==0.3.0rc2"
 ```
+
+Asset SHA-256 digests for `v0.3.0rc2` are recorded on the GitHub Release and
+must match the files promoted to PyPI.
 
 ## Change policy
 

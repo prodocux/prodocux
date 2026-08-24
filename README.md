@@ -5,10 +5,9 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Current prerelease: **`0.3.0rc1`**. It adds product-neutral evidence
-verification, bounded JPEG/PNG profiling, deterministic normalized profile
-diffs, and a host-injected opaque artifact boundary while preserving HTTP API
-`/v1` and the frozen `0.2.0` compatibility surface.
+Current prerelease: **`0.3.0rc2`**. It distributes the A6 extract/render
+surface while preserving HTTP API `/v1` and the frozen `0.2.0` compatibility
+v1 bytes. Frozen v2/v3 manifests still record surface version `0.3.0rc1`.
 
 ## Documents
 
@@ -37,17 +36,17 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The published PyPI prerelease `0.3.0rc1` does **not** include the A6
-extract/render surface. Until a later prerelease is approved, pin git
-Commit B (v3 manifest + live writers):
+Install the A6 extract/render prerelease from PyPI:
 
 ```powershell
-python -m pip install "prodocux @ git+https://github.com/prodocux/prodocux.git@8c7eb3b4fe1e171a40759270a5894b0b89803845"
+python -m pip install "prodocux==0.3.0rc2"
 ```
 
-The older approved wheel remains at
+The older published wheel
 [`prodocux` PyPI `0.3.0rc1`](https://pypi.org/project/prodocux/0.3.0rc1/)
-and must not be overwritten. See [`docs/RELEASE.md`](docs/RELEASE.md).
+predates A6 and must not be overwritten. Frozen compatibility v3 still pins
+Commit A `53c4784d4b2bae4437252a287193e897973e8474`. See
+[`docs/RELEASE.md`](docs/RELEASE.md).
 
 See [`runtime/INSTALL.md`](runtime/INSTALL.md) for environment variables and
 private-sidecar notes.

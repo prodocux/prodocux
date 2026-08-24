@@ -162,10 +162,12 @@ pdx-artifact-engine). The v3 file pins Commit A:
 - ProDocuX: `53c4784d4b2bae4437252a287193e897973e8474`
 - pdx-artifact-engine: `37e89752560b22dc8724d470dce96187f19e3f98`
 
-Compatibility v1 and v2 remain byte-immutable. Package version stays
-`0.3.0rc1`. Hosts map their own render-bundle spec onto
-`prodocux_render_request_v1` before calling these routes, and must pin the
-v3 commits before claiming live ProDocuX integration.
+Compatibility v1 and v2 remain byte-immutable. Frozen v2/v3 manifests still
+record surface version `0.3.0rc1`. The live distribution that includes A6
+extract/render is package `0.3.0rc2`. Hosts map their own render-bundle spec
+onto `prodocux_render_request_v1` before calling these routes. Git Commit A
+pins in v3 remain the contract authority; `0.3.0rc2` is the PyPI distribution
+of that surface.
 
 Schemas: `prodocux_content_blocks_v1`, `prodocux_render_request_v1`,
 `prodocux_render_result_v1`, `prodocux_render_capabilities_v1`.
