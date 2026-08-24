@@ -21,6 +21,24 @@ pins and G1A fixture digests are recorded in
 immutable. Applications must discover format ceilings from the capabilities
 endpoint rather than copy constants.
 
+## Git pin vs published PyPI
+
+The already-published PyPI artifacts for `0.3.0rc1` (GitHub Release
+`v0.3.0rc1`) predate the A6 extract/render freeze. Those files must not be
+rebuilt or re-uploaded; PyPI versions are immutable.
+
+Live extract/render is pinned by compatibility v3 at ProDocuX Commit A
+`fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30` (v3 file SHA-256
+`4a3950a60666731d6dd5ad9009afd54335ac386dacb053866583a1b549e1e185`).
+Hosts that need that surface must install from git (Commit B includes the
+v3 manifest) until maintainers approve a later prerelease such as
+`0.3.0rc2`. Do not bump the public package to `0.4.0` for this additive
+`/v1` work.
+
+```powershell
+python -m pip install "prodocux @ git+https://github.com/prodocux/prodocux.git@8c7eb3b4fe1e171a40759270a5894b0b89803845"
+```
+
 ## Change policy
 
 - Security and correctness fixes may be backported without changing API v1

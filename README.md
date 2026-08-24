@@ -37,16 +37,17 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Install the published PyPI prerelease with:
+The published PyPI prerelease `0.3.0rc1` does **not** include the A6
+extract/render surface. Until a later prerelease is approved, pin git
+Commit B (v3 manifest + live writers):
 
 ```powershell
-python -m pip install "prodocux==0.3.0rc1"
+python -m pip install "prodocux @ git+https://github.com/prodocux/prodocux.git@8c7eb3b4fe1e171a40759270a5894b0b89803845"
 ```
 
-The approved files are available from the
-[`prodocux` PyPI project](https://pypi.org/project/prodocux/0.3.0rc1/); the
-GitHub release remains the publication approval boundary and immutable asset
-record.
+The older approved wheel remains at
+[`prodocux` PyPI `0.3.0rc1`](https://pypi.org/project/prodocux/0.3.0rc1/)
+and must not be overwritten. See [`docs/RELEASE.md`](docs/RELEASE.md).
 
 See [`runtime/INSTALL.md`](runtime/INSTALL.md) for environment variables and
 private-sidecar notes.
