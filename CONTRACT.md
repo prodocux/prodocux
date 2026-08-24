@@ -157,8 +157,8 @@ A6 pins are recorded in
 `compatibility/pdx_prodocux_compatibility_v3.json` (byte-identical with
 pdx-artifact-engine). The v3 file pins Commit A:
 
-- ProDocuX: `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30`
-- pdx-artifact-engine: `cccc9a192d1f773d5bf6b8becbe16e41e3164dd2`
+- ProDocuX: `9b159bdaadf0f6846da444048708c8489e7e7018`
+- pdx-artifact-engine: `814f37467bca4c7550e2c807341644e862d6afe2`
 
 Compatibility v1 and v2 remain byte-immutable. Package version stays
 `0.3.0rc1`. Hosts map their own render-bundle spec onto

@@ -41,9 +41,11 @@ identities such as `gs://` belong to the host/PDX layer, never Kernel requests.
 
 Commit A `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30` landed live extract and
 five-format writers. Decision 6 applied only to the A0 draft window.
-This freeze publishes `compatibility/pdx_prodocux_compatibility_v3.json`
-pinning that commit and pdx-artifact-engine Commit A
-`cccc9a192d1f773d5bf6b8becbe16e41e3164dd2`. Decisions 1–5 remain.
+A later review required retrievable artifact identities, output digest
+verification, and template rejection. The repaired live surface is Commit A
+`9b159bdaadf0f6846da444048708c8489e7e7018`, pinned with pdx-artifact-engine
+Commit A `814f37467bca4c7550e2c807341644e862d6afe2` in
+`compatibility/pdx_prodocux_compatibility_v3.json`. Decisions 1–5 remain.
 
 ## Consequences
 
