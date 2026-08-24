@@ -42,6 +42,11 @@ Install the A6 extract/render prerelease from PyPI:
 python -m pip install "prodocux==0.3.0rc2"
 ```
 
+See the
+[`prodocux` PyPI `0.3.0rc2` release](https://pypi.org/project/prodocux/0.3.0rc2/)
+and
+[GitHub prerelease](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc2).
+
 The older published wheel
 [`prodocux` PyPI `0.3.0rc1`](https://pypi.org/project/prodocux/0.3.0rc1/)
 predates A6 and must not be overwritten. Frozen compatibility v3 still pins

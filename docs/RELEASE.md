@@ -85,6 +85,22 @@ PyPI token belongs in repository secrets. Future GitHub Releases start the
 workflow automatically. To promote an existing release, run **Publish release
 assets to PyPI** manually with its exact tag.
 
+`0.3.0rc2` is published at
+<https://pypi.org/project/prodocux/0.3.0rc2/> from GitHub Release
+<https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc2>. Workflow run
+`32692317376` promoted the two approved files unchanged. PyPI records one
+attestation per file with repository `prodocux/prodocux`, workflow
+`release.yml`, and environment `pypi`; each attestation subject digest matches
+the published file.
+
+| Asset | SHA-256 |
+|---|---|
+| `prodocux-0.3.0rc2-py3-none-any.whl` | `76fe43d1f1a316502af63dd8490ee47a8562b425ea5544fa3b5d81848fd1cf35` |
+| `prodocux-0.3.0rc2.tar.gz` | `d3dedfba33af6bc58bf66cdc1d7d98bb2fa9e46b498b045c6573f9a5e57d987e` |
+
+Clean installation from the PyPI exact pin, package imports, version metadata,
+and packaged render-schema smoke checks passed.
+
 `0.3.0rc1` is published at
 <https://pypi.org/project/prodocux/0.3.0rc1/>. Both files below were promoted
 unchanged from GitHub Release `v0.3.0rc1`; their PyPI hashes match the approved
