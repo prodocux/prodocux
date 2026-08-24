@@ -1,0 +1,38 @@
+{
+  "schema_version": "prodocux_content_blocks_v1",
+  "document": {
+    "title": "Synthetic summary",
+    "locale": "en"
+  },
+  "blocks": [
+    {
+      "id": "title",
+      "type": "heading",
+      "level": 1,
+      "text": "Synthetic summary"
+    },
+    {
+      "id": "body",
+      "type": "paragraphs",
+      "paragraphs": ["This fixture is synthetic and contains no production data."]
+    },
+    {
+      "id": "values",
+      "type": "key_values",
+      "pairs": [
+        {"label": "Record", "value": "demo-001"}
+      ]
+    },
+    {
+      "id": "grid",
+      "type": "table",
+      "table": {
+        "header_rows": 1,
+        "rows": [
+          ["Name", "Amount"],
+          ["Alpha", "1"]
+        ]
+      }
+    }
+  ]
+}

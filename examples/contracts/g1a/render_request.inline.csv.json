@@ -1,0 +1,26 @@
+{
+  "schema_version": "prodocux_render_request_v1",
+  "request_id": "g1a-render-csv-inline",
+  "target_format": "csv",
+  "content": {
+    "schema_version": "prodocux_content_blocks_v1",
+    "blocks": [
+      {
+        "id": "sheet1",
+        "type": "sheet",
+        "name": "Records",
+        "table": {
+          "header_rows": 1,
+          "rows": [
+            ["id", "label"],
+            ["1", "alpha"]
+          ]
+        }
+      }
+    ]
+  },
+  "output": {
+    "output_name": "records.csv",
+    "delivery_mode": "inline"
+  }
+}

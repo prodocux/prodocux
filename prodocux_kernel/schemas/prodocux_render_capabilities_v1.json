@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_render_capabilities_v1.json",
+  "title": "ProDocuX render capabilities v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kernel_version", "api_version", "formats"],
+  "properties": {
+    "schema_version": {"const": "prodocux_render_capabilities_v1"},
+    "kernel_version": {"type": "string", "minLength": 1},
+    "api_version": {"type": "string", "minLength": 1},
+    "formats": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "format",
+          "status",
+          "operation",
+          "requires_template",
+          "delivery_modes",
+          "max_template_bytes",
+          "max_artifact_output_bytes",
+          "max_inline_output_bytes",
+          "accepts_inline_template"
+        ],
+        "properties": {
+          "format": {"enum": ["docx", "xlsx", "csv", "pptx", "pdf"]},
+          "status": {"enum": ["available", "planned", "unavailable"]},
+          "operation": {"type": "string", "minLength": 1, "maxLength": 128},
+          "requires_template": {"type": "boolean"},
+          "delivery_modes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"enum": ["artifact", "inline"]}
+          },
+          "max_template_bytes": {"type": "integer", "minimum": 1},
+          "max_artifact_output_bytes": {"type": "integer", "minimum": 1},
+          "max_inline_output_bytes": {"type": "integer", "minimum": 1},
+          "accepts_inline_template": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

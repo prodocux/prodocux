@@ -21,6 +21,10 @@ PACKAGED_SCHEMAS = (
     "prodocux_normalized_diff_request_v1.json",
     "prodocux_normalized_diff_result_v1.json",
     "prodocux_opaque_artifact_v1.json",
+    "prodocux_content_blocks_v1.json",
+    "prodocux_render_request_v1.json",
+    "prodocux_render_result_v1.json",
+    "prodocux_render_capabilities_v1.json",
 )
 
 

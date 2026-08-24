@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_render_request_v1.json",
+  "title": "ProDocuX render request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "target_format",
+    "content",
+    "output"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_render_request_v1"},
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 256},
+    "target_format": {"enum": ["docx", "xlsx", "csv", "pptx", "pdf"]},
+    "content": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "inline_b64": {"type": "string", "minLength": 1, "maxLength": 22369622},
+        "filename": {"type": "string", "minLength": 1, "maxLength": 128},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 128}
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output_name", "delivery_mode"],
+      "properties": {
+        "output_name": {"type": "string", "minLength": 1, "maxLength": 128},
+        "delivery_mode": {"enum": ["artifact", "inline"]}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "template": {
+            "required": ["inline_b64"]
+          }
+        },
+        "required": ["template"]
+      },
+      "then": {
+        "properties": {
+          "template": {
+            "required": ["inline_b64", "filename", "sha256", "media_type"]
+          }
+        }
+      }
+    }
+  ]
+}

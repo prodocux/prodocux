@@ -124,19 +124,36 @@ Response
 
 ### 4.2 `POST /v1/render`
 
-Deterministically fill a template from canonical data using profile policy
-(mappings / transformations / media_policy / template_repair).
+Legacy path-shaped stub. Path-shaped bodies (`template_path` / `output_path`)
+remain **501**. If the body carries `schema_version: prodocux_render_request_v1`,
+the route aliases `POST /v1/render/artifact`.
 
-Request
-```json
-{
-  "canonical_data": { "...": "..." },
-  "template_path": "….docx",
-  "profile_id": "foreign_pif_to_tw",
-  "profile_version": 1,
-  "output_path": "out.docx"
-}
-```
+### 4.2a Cloud-safe render contract (live)
+
+Operations, additive under API `/v1`:
+
+- `GET /v1/render/capabilities` — five formats are `available`; `requires_template`
+  is `false` (Fleet/host templates are not Kernel templates).
+- `POST /v1/content-blocks/validate` — product-neutral IR validation only.
+- `POST /v1/render/artifact` — write `docx` / `xlsx` / `csv` / `pptx` / `pdf`
+  from `prodocux_content_blocks_v1`. Artifact delivery uses a host-injected
+  `ArtifactSinkPort` (`artifact://` identity, create-if-absent). Inline delivery
+  returns `content_b64` and is capped at 2 MiB decoded.
+- `POST /v1/intake/extract-blocks` — parse a 5-format binary (`document_filename`
+  + `document_b64`) into `prodocux_content_blocks_v1` plus a product-neutral
+  `text_items` projection (`id`, `type`, `text`, `source_locator`) for host
+  adapters. Kernel does not emit Fleet cosmetics fields.
+
+Templates, when present, remain `artifact://` identities. The Kernel never
+accepts `gs://`, signed URLs, local paths, or caller-chosen output URIs.
+Callers must not send `template_path` or `output_path`.
+
+This release does **not** freeze A6 pins, compatibility v3, or a B-line live
+integration claim. Hosts map their own render-bundle spec onto
+`prodocux_render_request_v1` before calling these routes.
+
+Schemas: `prodocux_content_blocks_v1`, `prodocux_render_request_v1`,
+`prodocux_render_result_v1`, `prodocux_render_capabilities_v1`.
 
 ### 4.3 `POST /v1/validate-structure`
 

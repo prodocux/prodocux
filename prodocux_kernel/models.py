@@ -141,6 +141,13 @@ class PdfExtractPagesResponse(BaseModel):
     truncation: PdfTruncation
 
 
+class ExtractBlocksRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    document_filename: str = Field(min_length=3, max_length=255)
+    document_b64: str = Field(min_length=1, max_length=45_000_000)
+
+
 # ---------- /v1/review ----------
 class ReviewStartRequest(BaseModel):
     source_path: str

@@ -1,0 +1,12 @@
+{
+  "fixture_id": "g1a-render-request-artifact-docx",
+  "status": "draft",
+  "synthetic": true,
+  "upstream_repo": "prodocux/prodocux",
+  "source_commit": null,
+  "schema_id": "prodocux_render_request_v1",
+  "schema_file": "prodocux_kernel/schemas/prodocux_render_request_v1.json",
+  "notes": "source_commit remains null until A6 Commit A exists.",
+  "schema_digest": "eed2c466ddbcd21b4b130e5fff93a30fca2232a28dc97e80d137aaf5637750a9",
+  "canonical_sha256": "5d3be9012aac39c53ba94da38a367779c5ac1f9ad52daa4a38a7aa48a910bd9b"
+}

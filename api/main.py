@@ -10,6 +10,7 @@ import hashlib
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 
 from api.path_policy import resolve_allowed_input_path
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
@@ -36,6 +37,7 @@ from prodocux_kernel.intake import (
 from prodocux_kernel.models import (
     DocumentProfileRequest,
     DocumentProfileResponse,
+    ExtractBlocksRequest,
     ImageProfileRequest,
     ImageProfileResponse,
     IntakeCapabilitiesResponse,
@@ -57,6 +59,14 @@ from prodocux_kernel.models import (
     WorkbookProfileRequest,
     WorkbookProfileResponse,
 )
+from prodocux_kernel.rendering import (
+    InMemoryArtifactSink,
+    capabilities_document,
+    content_blocks_validation_result,
+    execute_extract_blocks,
+    execute_render_artifact,
+)
+from prodocux_kernel.rendering.errors import HTTP_STATUS, RenderContractError
 from prodocux_kernel.review import capture
 from prodocux_kernel.scoring import scorer
 from prodocux_kernel.verification import (
@@ -92,6 +102,10 @@ KNOWN_SCHEMAS = [
     "prodocux_normalized_diff_request_v1",
     "prodocux_normalized_diff_result_v1",
     "prodocux_opaque_artifact_v1",
+    "prodocux_content_blocks_v1",
+    "prodocux_render_request_v1",
+    "prodocux_render_result_v1",
+    "prodocux_render_capabilities_v1",
 ]
 
 
@@ -150,6 +164,22 @@ def extract_pages(req: PdfExtractPagesRequest) -> PdfExtractPagesResponse:
     )
 
 
+@app.post("/v1/intake/extract-blocks")
+def extract_blocks(req: ExtractBlocksRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."}:
+            raise ValueError("document_filename must be a plain basename")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        body = execute_extract_blocks(req.document_filename, raw)
+    except RenderContractError as exc:
+        raise HTTPException(status_code=HTTP_STATUS.get(exc.code, 400), detail=exc.public_message) from exc
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=body)
+
+
 @app.get("/v1/version", response_model=VersionResponse)
 def version() -> VersionResponse:
     return VersionResponse(
@@ -171,11 +201,11 @@ def intake_capabilities() -> IntakeCapabilitiesResponse:
         "kernel_version": __version__,
         "api_version": API_VERSION,
         "formats": [
-            {"extensions": [".pdf"], "status": "available", "operation": "extract_pages", "max_bytes": MAX_PDF_BYTES, "max_pages": 50},
-            {"extensions": [".csv"], "status": "available", "operation": "profile_table", "max_bytes": MAX_TABLE_BYTES},
-            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure"]},
-            {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation", "max_bytes": MAX_PRESENTATION_BYTES},
-            {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook", "max_bytes": MAX_WORKBOOK_BYTES},
+            {"extensions": [".pdf"], "status": "available", "operation": "extract_pages", "max_bytes": MAX_PDF_BYTES, "max_pages": 50, "additional_operations": ["extract_blocks"]},
+            {"extensions": [".csv"], "status": "available", "operation": "profile_table", "max_bytes": MAX_TABLE_BYTES, "additional_operations": ["extract_blocks"]},
+            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure", "extract_blocks"]},
+            {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation", "max_bytes": MAX_PRESENTATION_BYTES, "additional_operations": ["extract_blocks"]},
+            {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook", "max_bytes": MAX_WORKBOOK_BYTES, "additional_operations": ["extract_blocks"]},
             {"extensions": [".jpg", ".jpeg", ".png"], "status": "available", "operation": "profile_image", "max_bytes": MAX_IMAGE_BYTES},
             {"extensions": [".xls"], "status": "planned", "operation": "profile_legacy_workbook"},
             {"extensions": [".mp4", ".mov", ".mxf"], "status": "external_pipeline_required", "operation": "probe_and_proxy"},
@@ -364,8 +394,27 @@ def extract(_: dict) -> None:
     raise HTTPException(status_code=501, detail="P2 in progress; runtime LLM is executed by the solver side")
 
 
+@app.get("/v1/render/capabilities")
+def render_capabilities() -> dict:
+    return capabilities_document()
+
+
+@app.post("/v1/content-blocks/validate")
+def validate_content_blocks(payload: dict) -> JSONResponse:
+    status, body = content_blocks_validation_result(payload)
+    return JSONResponse(status_code=status, content=body)
+
+
+@app.post("/v1/render/artifact")
+def render_artifact(payload: dict) -> JSONResponse:
+    status, body = execute_render_artifact(payload, sink=InMemoryArtifactSink())
+    return JSONResponse(status_code=status, content=body)
+
+
 @app.post("/v1/render")
-def render(_: dict) -> None:
+def render(payload: dict) -> JSONResponse:
+    if isinstance(payload, dict) and payload.get("schema_version") == "prodocux_render_request_v1":
+        return render_artifact(payload)
     raise HTTPException(status_code=501, detail="P2 in progress")
 
 

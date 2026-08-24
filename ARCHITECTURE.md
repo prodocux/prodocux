@@ -14,7 +14,7 @@ Runtime **does not call any LLM API**. Semantic drafting stays on the solver sid
 
 | Layer | Role |
 |---|---|
-| Kernel (`prodocux_kernel/`) | Schemas, bounded intake, evidence verification, normalized diff, opaque artifact validation, doc ops, render, scoring, review capture |
+| Kernel (`prodocux_kernel/`) | Schemas, bounded intake, evidence verification, normalized diff, opaque artifact validation, render contract/transport, doc ops, scoring, review capture |
 | Skills (`skills/`) | CLI entry points for structure health, audits, assemble, PDF intake, diffs |
 | Contract (`CONTRACT.md`) | API surface, scoring layers, held-out evaluation rules |
 | Examples (`examples/pif_tw/`) | Synthetic TW PIF fixtures only |

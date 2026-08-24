@@ -1,0 +1,12 @@
+{
+  "fixture_id": "g1a-content-blocks-minimal",
+  "status": "draft",
+  "synthetic": true,
+  "upstream_repo": "prodocux/prodocux",
+  "source_commit": null,
+  "schema_id": "prodocux_content_blocks_v1",
+  "schema_file": "prodocux_kernel/schemas/prodocux_content_blocks_v1.json",
+  "notes": "source_commit remains null until A6 Commit A exists.",
+  "schema_digest": "6bd2a342a2cc8418bda35d7e1281f58e90b1be9890babd14bec415ff684f33c3",
+  "canonical_sha256": "13c689d348afc11a16b5876f57a2529db0de7ddfbcaced9612ac6364233018a4"
+}
