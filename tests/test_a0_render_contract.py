@@ -50,13 +50,16 @@ def test_content_blocks_minimal_fixture_validates() -> None:
     validate_content_blocks(_load("content_blocks.minimal.json"))
 
 
-def test_g1a_provenance_is_draft_without_source_commit() -> None:
+PRODOCUX_COMMIT_A = "fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30"
+
+
+def test_g1a_provenance_is_frozen_to_commit_a() -> None:
     schema = ROOT / "prodocux_kernel" / "schemas" / "prodocux_content_blocks_v1.json"
     digest = hashlib.sha256(schema.read_bytes()).hexdigest()
     provenance = _load("content_blocks.minimal.provenance.json")
-    assert provenance["status"] == "draft"
+    assert provenance["status"] == "frozen"
     assert provenance["synthetic"] is True
-    assert provenance["source_commit"] is None
+    assert provenance["source_commit"] == PRODOCUX_COMMIT_A
     if "schema_digest" in provenance:
         assert provenance["schema_digest"] == digest
 

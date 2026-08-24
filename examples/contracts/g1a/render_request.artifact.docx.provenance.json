@@ -1,12 +1,12 @@
 {
   "fixture_id": "g1a-render-request-artifact-docx",
-  "status": "draft",
+  "status": "frozen",
   "synthetic": true,
   "upstream_repo": "prodocux/prodocux",
-  "source_commit": null,
+  "source_commit": "fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30",
   "schema_id": "prodocux_render_request_v1",
   "schema_file": "prodocux_kernel/schemas/prodocux_render_request_v1.json",
-  "notes": "source_commit remains null until A6 Commit A exists.",
+  "notes": "Frozen to A6 Commit A. source_commit is the ProDocuX commit that landed the live extract/render surface.",
   "schema_digest": "eed2c466ddbcd21b4b130e5fff93a30fca2232a28dc97e80d137aaf5637750a9",
   "canonical_sha256": "5d3be9012aac39c53ba94da38a367779c5ac1f9ad52daa4a38a7aa48a910bd9b"
 }

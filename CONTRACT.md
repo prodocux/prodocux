@@ -148,9 +148,17 @@ Templates, when present, remain `artifact://` identities. The Kernel never
 accepts `gs://`, signed URLs, local paths, or caller-chosen output URIs.
 Callers must not send `template_path` or `output_path`.
 
-This release does **not** freeze A6 pins, compatibility v3, or a B-line live
-integration claim. Hosts map their own render-bundle spec onto
-`prodocux_render_request_v1` before calling these routes.
+A6 pins are recorded in
+`compatibility/pdx_prodocux_compatibility_v3.json` (byte-identical with
+pdx-artifact-engine). The v3 file pins Commit A:
+
+- ProDocuX: `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30`
+- pdx-artifact-engine: `cccc9a192d1f773d5bf6b8becbe16e41e3164dd2`
+
+Compatibility v1 and v2 remain byte-immutable. Package version stays
+`0.3.0rc1`. Hosts map their own render-bundle spec onto
+`prodocux_render_request_v1` before calling these routes, and must pin the
+v3 commits before claiming live ProDocuX integration.
 
 Schemas: `prodocux_content_blocks_v1`, `prodocux_render_request_v1`,
 `prodocux_render_result_v1`, `prodocux_render_capabilities_v1`.

@@ -33,6 +33,14 @@ identities such as `gs://` belong to the host/PDX layer, never Kernel requests.
    `planned` and `POST /v1/render/artifact` returns `RENDERER_NOT_AVAILABLE`
    after contract validation.
 
+## Update (A6, 2026-08-24)
+
+Commit A `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30` landed live extract and
+five-format writers. Decision 6 applied only to the A0 draft window.
+This freeze publishes `compatibility/pdx_prodocux_compatibility_v3.json`
+pinning that commit and pdx-artifact-engine Commit A
+`cccc9a192d1f773d5bf6b8becbe16e41e3164dd2`. Decisions 1–5 remain.
+
 ## Consequences
 
 - Hosted callers can integrate against a stable fail-closed contract before

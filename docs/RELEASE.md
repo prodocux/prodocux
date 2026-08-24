@@ -15,8 +15,11 @@ The frozen `0.2.0` compatibility v1 surface remains historical evidence.
 The frozen machine-readable surface is recorded in
 `compatibility/pdx_prodocux_compatibility_v1.json`; the active coordinated
 release-candidate surface is recorded in
-`compatibility/pdx_prodocux_compatibility_v2.json`. Applications must discover
-format ceilings from the capabilities endpoint rather than copy constants.
+`compatibility/pdx_prodocux_compatibility_v2.json`. Additive render/extract
+pins and G1A fixture digests are recorded in
+`compatibility/pdx_prodocux_compatibility_v3.json`. v1 and v2 bytes are
+immutable. Applications must discover format ceilings from the capabilities
+endpoint rather than copy constants.
 
 ## Change policy
 

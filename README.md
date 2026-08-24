@@ -16,7 +16,8 @@ diffs, and a host-injected opaque artifact boundary while preserving HTTP API
 - [`CONTRACT.md`](CONTRACT.md) — boundaries, API, scoring contract
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
-- [`compatibility/pdx_prodocux_compatibility_v2.json`](compatibility/pdx_prodocux_compatibility_v2.json) — active prerelease versions, operations, and schema digests
+- [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A fixture digests
+- [`compatibility/pdx_prodocux_compatibility_v2.json`](compatibility/pdx_prodocux_compatibility_v2.json) — 0.3.0rc1 prerelease versions, operations, and schema digests
 - [`compatibility/pdx_prodocux_compatibility_v1.json`](compatibility/pdx_prodocux_compatibility_v1.json) — frozen historical compatibility evidence
 
 ## Install
