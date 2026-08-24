@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import zipfile
 from io import BytesIO
 from pathlib import Path
@@ -19,6 +20,7 @@ from prodocux_kernel.rendering import (
     validate_content_blocks,
     validate_render_request,
 )
+from prodocux_kernel.rendering.validate import validate_render_result
 from prodocux_kernel.rendering.errors import (
     ARTIFACT_CREATE_CONFLICT,
     ARTIFACT_SINK_UNAVAILABLE,
@@ -180,7 +182,7 @@ def test_inline_ceiling_and_cancel_before_sink() -> None:
             cancellation=cancel,
         )
     assert cancelled.value.code == "CANCELLED"
-    assert "summary.pdf" not in sink._store
+    assert "summary.pdf" not in sink._by_name
 
 
 def test_http_routes_capabilities_validate_and_live_render() -> None:
@@ -277,3 +279,90 @@ def test_http_sink_keeps_identity_after_later_requests() -> None:
     fetched = client.get(f"/v1/render/artifacts/{first_id}")
     assert fetched.status_code == 200
     assert hashlib.sha256(fetched.content).hexdigest() == first.json()["output_sha256"]
+
+
+def test_sink_artifact_ids_distinguish_dot_and_hyphen_names() -> None:
+    sink = InMemoryArtifactSink()
+    left = sink.create_if_absent(
+        output_name="collision.a.csv",
+        media_type="text/csv",
+        payload=b"left-bytes",
+        sha256=hashlib.sha256(b"left-bytes").hexdigest(),
+    )
+    right = sink.create_if_absent(
+        output_name="collision-a.csv",
+        media_type="text/csv",
+        payload=b"right-bytes",
+        sha256=hashlib.sha256(b"right-bytes").hexdigest(),
+    )
+    assert left["artifact_id"] != right["artifact_id"]
+    fetched_left, _ = sink.get(left["artifact_id"]) or (None, None)
+    fetched_right, _ = sink.get(right["artifact_id"]) or (None, None)
+    assert fetched_left == b"left-bytes"
+    assert fetched_right == b"right-bytes"
+
+
+def test_sink_create_if_absent_serializes_same_name() -> None:
+    sink = InMemoryArtifactSink()
+    payload = b"same-bytes"
+    digest = hashlib.sha256(payload).hexdigest()
+    seen: list[str] = []
+
+    def worker() -> None:
+        identity = sink.create_if_absent(
+            output_name="shared.csv",
+            media_type="text/csv",
+            payload=payload,
+            sha256=digest,
+        )
+        seen.append(str(identity["artifact_id"]))
+
+    threads = [threading.Thread(target=worker) for _ in range(16)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert len(set(seen)) == 1
+    assert len(sink._by_id) == 1
+
+
+def test_http_artifact_ids_do_not_collide_for_dot_vs_hyphen_names() -> None:
+    client = TestClient(app)
+    dotted = _artifact_csv_request("collision.a.csv")
+    hyphen = _artifact_csv_request("collision-a.csv")
+    hyphen["content"]["blocks"][0]["table"]["rows"] = [
+        ["id", "label"],
+        ["2", "beta"],
+    ]
+    first = client.post("/v1/render/artifact", json=dotted)
+    second = client.post("/v1/render/artifact", json=hyphen)
+    assert first.status_code == 200
+    assert second.status_code == 200
+    first_id = first.json()["artifact"]["artifact_id"]
+    second_id = second.json()["artifact"]["artifact_id"]
+    assert first_id != second_id
+    fetched_first = client.get(f"/v1/render/artifacts/{first_id}")
+    fetched_second = client.get(f"/v1/render/artifacts/{second_id}")
+    assert fetched_first.status_code == 200
+    assert fetched_second.status_code == 200
+    assert hashlib.sha256(fetched_first.content).hexdigest() == first.json()["output_sha256"]
+    assert hashlib.sha256(fetched_second.content).hexdigest() == second.json()["output_sha256"]
+    assert fetched_first.content != fetched_second.content
+
+
+def test_completed_result_requires_exactly_one_delivery_envelope() -> None:
+    body = {
+        "schema_version": "prodocux_render_result_v1",
+        "status": "completed",
+        "kernel_version": "0.3.0rc1",
+        "renderer_id": "prodocux.blocks.csv",
+        "renderer_version": "0.3.0rc1",
+        "target_format": "csv",
+        "validation": {"passed": True, "reasons": []},
+        "media_type": "text/csv",
+        "output_sha256": hashlib.sha256(b"id\n").hexdigest(),
+    }
+    with pytest.raises(RenderContractError):
+        validate_render_result(body)
+    body["content_b64"] = "aWQK"
+    validate_render_result(body)

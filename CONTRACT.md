@@ -140,9 +140,11 @@ Operations, additive under API `/v1`:
   host sink (`artifact://` identity, create-if-absent). Inline delivery
   returns `content_b64` and is capped at 2 MiB decoded.
 - `GET /v1/render/artifacts/{artifact_id}` — retrieve the bytes previously
-  stored by this process for that identity. Tests and hosts must re-fetch and
-  re-hash; a URI prefix is not proof of retrievability. Restarting the process
-  drops the sink.
+  stored by this process for that identity. `artifact_id` is assigned by the
+  sink and is unique for each `output_name` + digest pair (not a hyphenated
+  filename). Tests and hosts must re-fetch and re-hash; a URI prefix is not
+  proof of retrievability. Restarting the process drops the sink. Create and
+  get are serialized so concurrent requests cannot publish a colliding identity.
 - `POST /v1/intake/extract-blocks` — parse a 5-format binary (`document_filename`
   + `document_b64`) into `prodocux_content_blocks_v1` plus a product-neutral
   `text_items` projection (`id`, `type`, `text`, `source_locator`) for host

@@ -4,12 +4,19 @@ from __future__ import annotations
 
 import hashlib
 import re
+import threading
 from collections.abc import Mapping
 from typing import Any
 
 from .errors import ARTIFACT_CREATE_CONFLICT, RenderContractError
 
 _SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,126}$")
+
+
+def assign_artifact_id(output_name: str, digest: str) -> str:
+    """Return a collision-resistant sink ID for ``output_name`` + payload digest."""
+    token = hashlib.sha256(f"{output_name}\0{digest}".encode("utf-8")).hexdigest()
+    return token[:128]
 
 
 class InMemoryArtifactResolver:
@@ -35,7 +42,9 @@ class InMemoryArtifactSink:
     """Host-like sink: assigns artifact:// URIs and never accepts caller URIs."""
 
     def __init__(self) -> None:
-        self._store: dict[str, tuple[bytes, dict[str, Any]]] = {}
+        self._lock = threading.Lock()
+        self._by_id: dict[str, tuple[bytes, dict[str, Any]]] = {}
+        self._by_name: dict[str, str] = {}
 
     def create_if_absent(
         self,
@@ -54,29 +63,34 @@ class InMemoryArtifactSink:
             raise RenderContractError(
                 ARTIFACT_CREATE_CONFLICT, "payload digest does not match declaration"
             )
-        existing = self._store.get(output_name)
-        if existing is not None:
-            previous, identity = existing
-            if hashlib.sha256(previous).hexdigest() != digest:
-                raise RenderContractError(
-                    ARTIFACT_CREATE_CONFLICT,
-                    "output already exists with a different digest",
-                )
+        with self._lock:
+            existing_id = self._by_name.get(output_name)
+            if existing_id is not None:
+                previous, identity = self._by_id[existing_id]
+                if hashlib.sha256(previous).hexdigest() != digest:
+                    raise RenderContractError(
+                        ARTIFACT_CREATE_CONFLICT,
+                        "output already exists with a different digest",
+                    )
+                return identity
+            artifact_id = assign_artifact_id(output_name, digest)
+            identity = {
+                "schema_version": "prodocux_opaque_artifact_v1",
+                "artifact_id": artifact_id,
+                "uri": f"artifact://render/{output_name}",
+                "sha256": digest,
+                "size_bytes": len(payload),
+                "media_type": media_type,
+            }
+            self._by_id[artifact_id] = (bytes(payload), identity)
+            self._by_name[output_name] = artifact_id
             return identity
-        identity = {
-            "schema_version": "prodocux_opaque_artifact_v1",
-            "artifact_id": output_name.replace(".", "-")[:128],
-            "uri": f"artifact://render/{output_name}",
-            "sha256": digest,
-            "size_bytes": len(payload),
-            "media_type": media_type,
-        }
-        self._store[output_name] = (bytes(payload), identity)
-        return identity
 
     def get(self, artifact_id: str) -> tuple[bytes, Mapping[str, Any]] | None:
         """Return payload and identity for a sink-assigned artifact_id."""
-        for payload, identity in self._store.values():
-            if identity["artifact_id"] == artifact_id:
-                return payload, identity
-        return None
+        with self._lock:
+            found = self._by_id.get(artifact_id)
+            if found is None:
+                return None
+            payload, identity = found
+            return payload, identity

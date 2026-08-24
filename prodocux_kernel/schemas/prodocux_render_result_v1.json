@@ -61,7 +61,17 @@
     {
       "if": {"properties": {"status": {"const": "completed"}}},
       "then": {
-        "required": ["media_type", "output_sha256"]
+        "required": ["media_type", "output_sha256"],
+        "oneOf": [
+          {
+            "required": ["content_b64"],
+            "not": {"required": ["artifact"]}
+          },
+          {
+            "required": ["artifact"],
+            "not": {"required": ["content_b64"]}
+          }
+        ]
       }
     },
     {

@@ -23,11 +23,12 @@ identities such as `gs://` belong to the host/PDX layer, never Kernel requests.
 3. Kernel render I/O uses `artifact://` identities plus bounded inline bytes.
    Hosts inject `ArtifactResolverPort` and `ArtifactSinkPort`. The HTTP host
    uses a process-lifetime sink and exposes `GET /v1/render/artifacts/{artifact_id}`
-   so identities can be resolved in-process. The sink assigns output URIs
-   (create-if-absent; conflicting digest fails closed). Callers supply only
-   `output_name` and `delivery_mode`. This release rejects `template`; hosts map
-   Template Packs to content blocks until a resolver-backed template renderer
-   exists.
+   so identities can be resolved in-process. The sink assigns unique `artifact_id`
+   values (create-if-absent; conflicting digest fails closed) and serializes
+   create/get. Callers supply only `output_name` and `delivery_mode`. This release
+   rejects `template`; hosts map Template Packs to content blocks until a
+   resolver-backed template renderer exists. Completed results must carry exactly
+   one delivery envelope matching that mode (`content_b64` or `artifact`).
 4. Content blocks are a product-neutral IR. Domain packs stay outside
    `prodocux_kernel/rendering`.
 5. Compatibility v1 and v2 manifests are immutable. A later A6 freeze publishes
