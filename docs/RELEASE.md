@@ -28,8 +28,8 @@ The already-published PyPI artifacts for `0.3.0rc1` (GitHub Release
 rebuilt or re-uploaded; PyPI versions are immutable.
 
 Live extract/render is pinned by compatibility v3 at ProDocuX Commit A
-`9b159bdaadf0f6846da444048708c8489e7e7018` (v3 file SHA-256
-`923e8c9ee862ef16c3ccfcb77db329b7b5e5e664498d6498f8a6b371a2ced8e2`).
+`53c4784d4b2bae4437252a287193e897973e8474` (v3 file SHA-256
+`9591ab363472db78efb64265e3050fa4626be43783f848d0888e732898486d2b`).
 Hosts that need that surface must install from git (Commit B includes the
 v3 manifest) until maintainers approve a later prerelease such as
 `0.3.0rc2`. Do not bump the public package to `0.4.0` for this additive

@@ -43,9 +43,10 @@ identities such as `gs://` belong to the host/PDX layer, never Kernel requests.
 Commit A `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30` landed live extract and
 five-format writers. Decision 6 applied only to the A0 draft window.
 A later review required retrievable artifact identities, output digest
-verification, and template rejection. The repaired live surface is Commit A
-`9b159bdaadf0f6846da444048708c8489e7e7018`, pinned with pdx-artifact-engine
-Commit A `814f37467bca4c7550e2c807341644e862d6afe2` in
+verification, template rejection, unique sink IDs, and a completed delivery
+envelope. The repaired live surface is Commit A
+`53c4784d4b2bae4437252a287193e897973e8474`, pinned with pdx-artifact-engine
+Commit A `37e89752560b22dc8724d470dce96187f19e3f98` in
 `compatibility/pdx_prodocux_compatibility_v3.json`. Decisions 1–5 remain.
 
 ## Consequences
