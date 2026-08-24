@@ -73,3 +73,10 @@ class InMemoryArtifactSink:
         }
         self._store[output_name] = (bytes(payload), identity)
         return identity
+
+    def get(self, artifact_id: str) -> tuple[bytes, Mapping[str, Any]] | None:
+        """Return payload and identity for a sink-assigned artifact_id."""
+        for payload, identity in self._store.values():
+            if identity["artifact_id"] == artifact_id:
+                return payload, identity
+        return None

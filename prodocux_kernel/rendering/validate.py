@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import json
 from collections.abc import Mapping
 from importlib import resources
@@ -10,14 +9,13 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from ..artifacts import validate_opaque_artifact
 from .errors import (
     CONTENT_BLOCKS_INVALID,
     DELIVERY_MODE_INVALID,
     FORMAT_NOT_SUPPORTED,
-    INLINE_TEMPLATE_TOO_LARGE,
     REQUEST_INVALID,
     TEMPLATE_IDENTITY_INVALID,
+    TEMPLATE_NOT_SUPPORTED,
     RenderContractError,
 )
 from .limits import FORMAT_MAX_BYTES, validate_output_name
@@ -82,29 +80,11 @@ def validate_render_request(request: Mapping[str, Any]) -> Mapping[str, Any]:
     validate_output_name(str(output["output_name"]), target)
     if output["delivery_mode"] not in {"artifact", "inline"}:
         raise RenderContractError(DELIVERY_MODE_INVALID, "delivery_mode is not supported")
-    template = request.get("template")
-    if template:
-        if "artifact" in template:
-            identity = template["artifact"]
-            errors = validate_opaque_artifact(identity)
-            if errors:
-                raise RenderContractError(TEMPLATE_IDENTITY_INVALID, errors[0][:1024])
-            uri = str(identity.get("uri", ""))
-            if not uri.startswith("artifact://"):
-                raise RenderContractError(
-                    TEMPLATE_IDENTITY_INVALID,
-                    "template identity URI must be artifact://",
-                )
-        if "inline_b64" in template:
-            try:
-                raw = base64.b64decode(str(template["inline_b64"]), validate=True)
-            except Exception as exc:
-                raise RenderContractError(REQUEST_INVALID, "inline template is not valid base64") from exc
-            if len(raw) > FORMAT_MAX_BYTES[target]:
-                raise RenderContractError(
-                    INLINE_TEMPLATE_TOO_LARGE,
-                    "inline template exceeds format byte limit",
-                )
+    if request.get("template"):
+        raise RenderContractError(
+            TEMPLATE_NOT_SUPPORTED,
+            "this kernel version does not apply templates; map Template Pack to content blocks first",
+        )
     return request
 
 

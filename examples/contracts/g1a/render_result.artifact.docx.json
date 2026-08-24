@@ -1,0 +1,23 @@
+{
+  "schema_version": "prodocux_render_result_v1",
+  "status": "completed",
+  "kernel_version": "0.3.0rc1",
+  "renderer_id": "prodocux.blocks.docx",
+  "renderer_version": "0.3.0rc1",
+  "target_format": "docx",
+  "validation": {
+    "passed": true,
+    "reasons": []
+  },
+  "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "output_sha256": "6be950ee87a7cabb561b81bf45b18ba0c798ceafe286a5346e34c02fb7dd0d19",
+  "request_id": "g1a-render-docx-artifact",
+  "artifact": {
+    "schema_version": "prodocux_opaque_artifact_v1",
+    "artifact_id": "summary-docx",
+    "uri": "artifact://render/summary.docx",
+    "sha256": "6be950ee87a7cabb561b81bf45b18ba0c798ceafe286a5346e34c02fb7dd0d19",
+    "size_bytes": 36612,
+    "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  }
+}

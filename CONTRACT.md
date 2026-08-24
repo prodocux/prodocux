@@ -136,15 +136,20 @@ Operations, additive under API `/v1`:
   is `false` (Fleet/host templates are not Kernel templates).
 - `POST /v1/content-blocks/validate` — product-neutral IR validation only.
 - `POST /v1/render/artifact` — write `docx` / `xlsx` / `csv` / `pptx` / `pdf`
-  from `prodocux_content_blocks_v1`. Artifact delivery uses a host-injected
-  `ArtifactSinkPort` (`artifact://` identity, create-if-absent). Inline delivery
+  from `prodocux_content_blocks_v1`. Artifact delivery uses a process-lifetime
+  host sink (`artifact://` identity, create-if-absent). Inline delivery
   returns `content_b64` and is capped at 2 MiB decoded.
+- `GET /v1/render/artifacts/{artifact_id}` — retrieve the bytes previously
+  stored by this process for that identity. Tests and hosts must re-fetch and
+  re-hash; a URI prefix is not proof of retrievability. Restarting the process
+  drops the sink.
 - `POST /v1/intake/extract-blocks` — parse a 5-format binary (`document_filename`
   + `document_b64`) into `prodocux_content_blocks_v1` plus a product-neutral
   `text_items` projection (`id`, `type`, `text`, `source_locator`) for host
   adapters. Kernel does not emit Fleet cosmetics fields.
 
-Templates, when present, remain `artifact://` identities. The Kernel never
+This release **rejects** `template` (artifact or inline). Hosts map Template
+Packs onto `prodocux_content_blocks_v1` before calling render. The Kernel never
 accepts `gs://`, signed URLs, local paths, or caller-chosen output URIs.
 Callers must not send `template_path` or `output_path`.
 

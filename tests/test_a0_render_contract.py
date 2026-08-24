@@ -21,11 +21,13 @@ from prodocux_kernel.rendering import (
 )
 from prodocux_kernel.rendering.errors import (
     ARTIFACT_CREATE_CONFLICT,
+    ARTIFACT_SINK_UNAVAILABLE,
     INLINE_OUTPUT_TOO_LARGE,
     OUTPUT_NAME_INVALID,
     RENDERER_NOT_AVAILABLE,
     TEMPLATE_IDENTITY_INVALID,
     TEMPLATE_MAGIC_MISMATCH,
+    TEMPLATE_NOT_SUPPORTED,
     RenderContractError,
 )
 from prodocux_kernel.rendering.media import assert_magic_matches_format
@@ -208,3 +210,70 @@ def test_http_routes_capabilities_validate_and_live_render() -> None:
 
     stale = client.post("/v1/render", json={"template_path": "C:/secret.docx"})
     assert stale.status_code == 501
+
+
+def test_template_field_is_rejected_this_release() -> None:
+    request = _load("render_request.artifact.docx.json")
+    request = dict(request)
+    request["template"] = {
+        "artifact": {
+            "schema_version": "prodocux_opaque_artifact_v1",
+            "artifact_id": "tpl-synthetic-docx",
+            "uri": "artifact://g1a/templates/summary.docx",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size_bytes": 0,
+            "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }
+    }
+    with pytest.raises(RenderContractError) as exc:
+        validate_render_request(request)
+    assert exc.value.code == TEMPLATE_NOT_SUPPORTED
+
+
+def test_artifact_delivery_without_sink_fails_closed() -> None:
+    request = _load("render_request.artifact.docx.json")
+    status, body = execute_render_artifact(request, sink=None)
+    assert status == 503
+    assert body["error"]["code"] == ARTIFACT_SINK_UNAVAILABLE
+
+
+def _artifact_csv_request(output_name: str) -> dict:
+    request = json.loads(json.dumps(_load("render_request.inline.csv.json")))
+    request["output"]["delivery_mode"] = "artifact"
+    request["output"]["output_name"] = output_name
+    return request
+
+
+def test_http_artifact_bytes_are_retrievable_by_identity() -> None:
+    client = TestClient(app)
+    rendered = client.post(
+        "/v1/render/artifact", json=_artifact_csv_request("retrievable.csv")
+    )
+    assert rendered.status_code == 200
+    body = rendered.json()
+    assert body["status"] == "completed"
+    identity = body["artifact"]
+    artifact_id = identity["artifact_id"]
+    fetched = client.get(f"/v1/render/artifacts/{artifact_id}")
+    assert fetched.status_code == 200
+    digest = hashlib.sha256(fetched.content).hexdigest()
+    assert digest == body["output_sha256"]
+    assert digest == identity["sha256"]
+    assert fetched.headers["x-prodocux-sha256"] == digest
+    assert fetched.headers["x-prodocux-artifact-uri"] == identity["uri"]
+
+
+def test_http_sink_keeps_identity_after_later_requests() -> None:
+    client = TestClient(app)
+    first = client.post(
+        "/v1/render/artifact", json=_artifact_csv_request("keep-first.csv")
+    )
+    assert first.status_code == 200
+    later = client.post(
+        "/v1/render/artifact", json=_artifact_csv_request("keep-later.csv")
+    )
+    assert later.status_code == 200
+    first_id = first.json()["artifact"]["artifact_id"]
+    fetched = client.get(f"/v1/render/artifacts/{first_id}")
+    assert fetched.status_code == 200
+    assert hashlib.sha256(fetched.content).hexdigest() == first.json()["output_sha256"]

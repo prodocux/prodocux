@@ -9,8 +9,10 @@ import base64
 import hashlib
 from pathlib import Path
 
+import re
+
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from api.path_policy import resolve_allowed_input_path
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
@@ -107,6 +109,9 @@ KNOWN_SCHEMAS = [
     "prodocux_render_result_v1",
     "prodocux_render_capabilities_v1",
 ]
+
+_ARTIFACT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,126}$")
+_RENDER_SINK = InMemoryArtifactSink()
 
 
 @app.post(
@@ -407,8 +412,26 @@ def validate_content_blocks(payload: dict) -> JSONResponse:
 
 @app.post("/v1/render/artifact")
 def render_artifact(payload: dict) -> JSONResponse:
-    status, body = execute_render_artifact(payload, sink=InMemoryArtifactSink())
+    status, body = execute_render_artifact(payload, sink=_RENDER_SINK)
     return JSONResponse(status_code=status, content=body)
+
+
+@app.get("/v1/render/artifacts/{artifact_id}")
+def get_render_artifact(artifact_id: str) -> Response:
+    if not _ARTIFACT_ID.fullmatch(artifact_id):
+        raise HTTPException(status_code=400, detail="artifact_id is not a safe identifier")
+    found = _RENDER_SINK.get(artifact_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="artifact not found")
+    payload, identity = found
+    return Response(
+        content=payload,
+        media_type=str(identity["media_type"]),
+        headers={
+            "X-ProDocuX-SHA256": str(identity["sha256"]),
+            "X-ProDocuX-Artifact-URI": str(identity["uri"]),
+        },
+    )
 
 
 @app.post("/v1/render")
