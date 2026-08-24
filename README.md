@@ -5,9 +5,10 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Current prerelease: **`0.3.0rc2`**. It distributes the A6 extract/render
-surface while preserving HTTP API `/v1` and the frozen `0.2.0` compatibility
-v1 bytes. Frozen v2/v3 manifests still record surface version `0.3.0rc1`.
+Current prerelease: **`0.3.0rc2`**. It distributes the additive deterministic
+extract/render surface frozen in compatibility v3 while preserving HTTP API
+`/v1` and the frozen `0.2.0` compatibility v1 bytes. Frozen v2/v3 manifests
+still record their contract surface version `0.3.0rc1`.
 
 ## Documents
 
@@ -15,7 +16,8 @@ v1 bytes. Frozen v2/v3 manifests still record surface version `0.3.0rc1`.
 - [`CONTRACT.md`](CONTRACT.md) — boundaries, API, scoring contract
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
-- [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A fixture digests
+- [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A render-conformance fixture digests
+- [`compatibility/pdx_prodocux_release_v1.json`](compatibility/pdx_prodocux_release_v1.json) — current tags, package versions, release assets, and publication status
 - [`compatibility/pdx_prodocux_compatibility_v2.json`](compatibility/pdx_prodocux_compatibility_v2.json) — 0.3.0rc1 prerelease versions, operations, and schema digests
 - [`compatibility/pdx_prodocux_compatibility_v1.json`](compatibility/pdx_prodocux_compatibility_v1.json) — frozen historical compatibility evidence
 
@@ -36,7 +38,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Install the A6 extract/render prerelease from PyPI:
+Install the deterministic extract/render prerelease from PyPI:
 
 ```powershell
 python -m pip install "prodocux==0.3.0rc2"
@@ -49,8 +51,9 @@ and
 
 The older published wheel
 [`prodocux` PyPI `0.3.0rc1`](https://pypi.org/project/prodocux/0.3.0rc1/)
-predates A6 and must not be overwritten. Frozen compatibility v3 still pins
-Commit A `53c4784d4b2bae4437252a287193e897973e8474`. See
+predates the additive extract/render freeze and must not be overwritten. Frozen
+compatibility v3 still pins implementation commit
+`53c4784d4b2bae4437252a287193e897973e8474`. See
 [`docs/RELEASE.md`](docs/RELEASE.md).
 
 See [`runtime/INSTALL.md`](runtime/INSTALL.md) for environment variables and
@@ -77,7 +80,7 @@ GitHub approval-boundary workflow.
 .\.venv\Scripts\python.exe run_kernel.py   # http://localhost:8900/v1
 ```
 
-## P1 delivered
+## Available capabilities
 
 | Component | Endpoint | Status |
 |---|---|---|
@@ -85,7 +88,10 @@ GitHub approval-boundary workflow.
 | Scorer (L0–L3) | `POST /v1/score` | shipped |
 | Review capture | `POST /v1/review/start`, `/commit` | shipped |
 | Version | `GET /v1/version` | shipped |
-| Semantic extract/render/learn | — | 501 (later) |
+| Legacy semantic extract/learn and path-shaped render | `POST /v1/extract`, `/learn`, `/render` | stub or 501 |
+| Deterministic block extraction | `POST /v1/intake/extract-blocks` | shipped |
+| Deterministic artifact render | `POST /v1/render/artifact` | shipped |
+| Render capabilities/artifact retrieval | `GET /v1/render/capabilities`, `/artifacts/{artifact_id}` | shipped |
 | Deterministic PDF page intake | `POST /v1/intake/extract-pages` | shipped |
 | JPEG/PNG technical profile | `POST /v1/intake/profile-image` | shipped |
 | Typed evidence verification | `POST /v1/verify/evidence-bundle` | shipped |

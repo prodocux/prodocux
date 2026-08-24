@@ -1,8 +1,10 @@
 # ProDocuX — CONTRACT
 
-> Version: v0.1  
-> Last updated: 2026-07-28  
-> Companion: `ARCHITECTURE.md`  
+> Contract revision: v0.3
+>
+> Last updated: 2026-08-24
+>
+> Companion: `ARCHITECTURE.md`
 > This document is the technical source of truth for Kernel boundaries, APIs,
 > formats, and scoring. Code or data that violate this contract break the
 > evaluation setup.
@@ -84,7 +86,7 @@ response includes `kernel_version`.
 
 ```json
 {
-  "kernel_version": "0.3.0rc1",
+  "kernel_version": "0.3.0rc2",
   "api_version": "v1",
   "frozen_model": "<solver-side model name/version; kernel makes no LLM calls>",
   "schemas": ["pif_tw_v1"]
@@ -110,7 +112,7 @@ Request
 Response
 ```json
 {
-  "kernel_version": "0.3.0rc1",
+  "kernel_version": "0.3.0rc2",
   "canonical_data": { "product_name": "ABC Cream" },
   "confidence": { "product_name": 0.97 },
   "provenance": { "product_name": {"page": 1, "snippet": "Product: ABC Cream"} },
@@ -155,19 +157,22 @@ Packs onto `prodocux_content_blocks_v1` before calling render. The Kernel never
 accepts `gs://`, signed URLs, local paths, or caller-chosen output URIs.
 Callers must not send `template_path` or `output_path`.
 
-A6 pins are recorded in
+The additive extract/render contract pins are recorded in
 `compatibility/pdx_prodocux_compatibility_v3.json` (byte-identical with
-pdx-artifact-engine). The v3 file pins Commit A:
+pdx-artifact-engine). The v3 file pins these implementation commits:
 
 - ProDocuX: `53c4784d4b2bae4437252a287193e897973e8474`
 - pdx-artifact-engine: `37e89752560b22dc8724d470dce96187f19e3f98`
 
 Compatibility v1 and v2 remain byte-immutable. Frozen v2/v3 manifests still
-record surface version `0.3.0rc1`. The live distribution that includes A6
-extract/render is package `0.3.0rc2`. Hosts map their own render-bundle spec
-onto `prodocux_render_request_v1` before calling these routes. Git Commit A
-pins in v3 remain the contract authority; `0.3.0rc2` is the PyPI distribution
-of that surface.
+record contract surface version `0.3.0rc1`. The live distribution that includes
+the additive extract/render surface is package `0.3.0rc2`. Hosts map their own
+render-bundle spec onto `prodocux_render_request_v1` before calling these routes.
+The implementation commits pinned in v3 remain the contract authority;
+`0.3.0rc2` is the PyPI distribution of that surface. Current publication
+metadata is recorded separately in
+`compatibility/pdx_prodocux_release_v1.json` so the frozen v3 bytes do not need
+to change.
 
 Schemas: `prodocux_content_blocks_v1`, `prodocux_render_request_v1`,
 `prodocux_render_result_v1`, `prodocux_render_capabilities_v1`.

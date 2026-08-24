@@ -1,7 +1,7 @@
 # Release policy
 
-ProDocuX `0.3.0rc2` is the coordinated prerelease that distributes the A6
-extract/render surface for the deterministic document Kernel and HTTP API v1.
+ProDocuX `0.3.0rc2` is the coordinated prerelease that distributes the additive
+deterministic extract/render surface for the document Kernel and HTTP API v1.
 Runtime code makes no implicit LLM calls. The frozen `0.2.0` compatibility v1
 surface remains historical evidence. Frozen v2/v3 manifests still record
 surface version `0.3.0rc1`; that is the contract pin, not the live package
@@ -12,26 +12,39 @@ version.
 - `GET /v1/version`
 - `GET /v1/intake/capabilities`
 - the five deterministic intake operations reported by that endpoint
-- the packaged request, response, and capabilities schemas
+- the packaged intake request, response, and capabilities schemas
 - package imports `prodocux_kernel` and `api.main`
+
+Compatibility v3 adds the frozen deterministic render/extract surface:
+
+- `GET /v1/render/capabilities`
+- `GET /v1/render/artifacts/{artifact_id}`
+- `POST /v1/content-blocks/validate`
+- `POST /v1/render/artifact`
+- `POST /v1/intake/extract-blocks`
+- the packaged content-block, render request/result, and render-capability schemas
 
 The frozen machine-readable surface is recorded in
 `compatibility/pdx_prodocux_compatibility_v1.json`; the active coordinated
-release-candidate surface is recorded in
+release-candidate base is recorded in
 `compatibility/pdx_prodocux_compatibility_v2.json`. Additive render/extract
-pins and G1A fixture digests are recorded in
-`compatibility/pdx_prodocux_compatibility_v3.json`. v1 and v2 bytes are
-immutable. Applications must discover format ceilings from the capabilities
-endpoint rather than copy constants.
+pins and G1A render-conformance fixture digests are recorded in
+`compatibility/pdx_prodocux_compatibility_v3.json`. Current release tags,
+versions, assets, and publication state are recorded separately in
+`compatibility/pdx_prodocux_release_v1.json`. v1, v2, and v3 bytes remain
+immutable; the v3 `publication_gate` is historical pre-release evidence, not
+the current publication status. Applications must discover format ceilings
+from the capabilities endpoint rather than copy constants.
 
 ## Git pin vs published PyPI
 
 The already-published PyPI artifacts for `0.3.0rc1` (GitHub Release
-`v0.3.0rc1`) predate the A6 extract/render freeze. Those files must not be
+`v0.3.0rc1`) predate the additive extract/render freeze. Those files must not be
 rebuilt or re-uploaded; PyPI versions are immutable.
 
-`0.3.0rc2` is the first PyPI prerelease that includes A6 extract/render.
-Compatibility v3 remains byte-frozen and still pins live contract Commit A
+`0.3.0rc2` is the first PyPI prerelease that includes deterministic
+extract/render. Compatibility v3 remains byte-frozen and still pins live
+implementation commit
 `53c4784d4b2bae4437252a287193e897973e8474` (v3 file SHA-256
 `9591ab363472db78efb64265e3050fa4626be43783f848d0888e732898486d2b`).
 Do not bump the public package to `0.4.0` for this additive `/v1` work.

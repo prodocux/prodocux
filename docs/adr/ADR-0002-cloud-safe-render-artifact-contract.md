@@ -1,6 +1,6 @@
 # ADR-0002: Cloud-safe render artifact contract
 
-Status: Accepted for A0 implementation
+Status: Accepted and implemented
 
 Date: 2026-08-23
 
@@ -31,28 +31,31 @@ identities such as `gs://` belong to the host/PDX layer, never Kernel requests.
    one delivery envelope matching that mode (`content_b64` or `artifact`).
 4. Content blocks are a product-neutral IR. Domain packs stay outside
    `prodocux_kernel/rendering`.
-5. Compatibility v1 and v2 manifests are immutable. A later A6 freeze publishes
-   compatibility v3 after a two-commit provenance sequence. A0 does not write
-   v3 or self-referential git SHAs.
-6. A0 does not invoke format writers. Capabilities mark all five formats
+5. Compatibility v1 and v2 manifests are immutable. A later compatibility
+   freeze publishes v3 after a two-commit provenance sequence. The initial
+   contract-only phase does not write v3 or self-referential git SHAs.
+6. The initial contract-only phase does not invoke format writers. Capabilities
+   mark all five formats
    `planned` and `POST /v1/render/artifact` returns `RENDERER_NOT_AVAILABLE`
    after contract validation.
 
-## Update (A6, 2026-08-24)
+## Implementation and compatibility-freeze update (2026-08-24)
 
-Commit A `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30` landed live extract and
-five-format writers. Decision 6 applied only to the A0 draft window.
+Implementation commit `fa35cb05b9c4926ecd3b56dc705a1ecacc55ac30`
+landed live extract and five-format writers. Decision 6 applied only to the
+initial contract-only window.
 A later review required retrievable artifact identities, output digest
 verification, template rejection, unique sink IDs, and a completed delivery
-envelope. The repaired live surface is Commit A
+envelope. The repaired live surface is implementation commit
 `53c4784d4b2bae4437252a287193e897973e8474`, pinned with pdx-artifact-engine
-Commit A `37e89752560b22dc8724d470dce96187f19e3f98` in
+implementation commit `37e89752560b22dc8724d470dce96187f19e3f98` in
 `compatibility/pdx_prodocux_compatibility_v3.json`. Decisions 1–5 remain.
 
 ## Consequences
 
-- Hosted callers can integrate against a stable fail-closed contract before
-  any renderer exists.
+- Hosted callers could integrate against a stable fail-closed contract before
+  the renderer existed; current callers use the same contract with the live
+  five-format implementation.
 - Existing path-shaped clients continue to receive 501 on `/v1/render`.
 - PDX reuses ToolRequest / ToolResult / receipt schemas; it does not add
   format-specific Core contracts for render.
