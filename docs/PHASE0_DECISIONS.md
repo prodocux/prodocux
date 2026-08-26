@@ -78,7 +78,7 @@ The manifest file itself is excluded from the hashed set.
 - [x] Frozen compatibility v2 SHA-256 `c301aba7…378e` (test-enforced)
 - [x] Frozen compatibility v3 SHA-256 `9591ab36…6d2b` (test-enforced)
 - [x] Phase 0 fixture digest manifest present (`docs/phase0/fixture-digest-manifest.json`)
-- [ ] Phase 0 contract commit SHA recorded after the contracts commit
+- [x] Phase 0 contract freeze commit SHA `60c306a7d418cce537ca54fdd000117ae08dec6e`
 
 ## Explicitly out of Phase 0
 
@@ -97,5 +97,5 @@ The manifest file itself is excluded from the hashed set.
 - [x] Frozen compatibility v1/v2/v3 bytes are tested unchanged.
 - [x] No application-host types in Phase 0 schemas.
 - [x] Fixture digest manifest and canonical hash rule.
-- [ ] Maintainer records Phase 0 commit SHA after the contracts commit.
+- [x] Maintainer records Phase 0 commit SHA after the contracts commit.
 
