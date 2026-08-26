@@ -1,0 +1,16 @@
+{
+  "schema_version": "prodocux_phase0_limits_v1",
+  "source": "cited from Kernel 0.3.0rc2; live clients must use GET /v1/intake/capabilities and GET /v1/render/capabilities",
+  "max_pdf_bytes": 10485760,
+  "max_pdf_pages": 50,
+  "max_docx_bytes": 16777216,
+  "max_workbook_bytes": 16777216,
+  "max_presentation_bytes": 33554432,
+  "max_table_bytes": 8388608,
+  "max_image_bytes": 10485760,
+  "max_extract_blocks_bytes": 33554432,
+  "max_inline_output_bytes": 2097152,
+  "tmp_mount": "/var/lib/prodocux/tmp",
+  "output_mount": "/var/lib/prodocux/artifacts",
+  "root_filesystem": "read_only"
+}

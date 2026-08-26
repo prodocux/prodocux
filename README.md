@@ -14,6 +14,7 @@ still record their contract surface version `0.3.0rc1`.
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — public architecture overview
 - [`CONTRACT.md`](CONTRACT.md) — boundaries, API, scoring contract
+- [`docs/PHASE0_DECISIONS.md`](docs/PHASE0_DECISIONS.md) — Phase 0 sidecar, sink, and private-auth paper freeze
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
 - [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A render-conformance fixture digests

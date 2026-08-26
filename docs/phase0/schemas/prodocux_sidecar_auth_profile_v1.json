@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/phase0/prodocux_sidecar_auth_profile_v1.json",
+  "title": "ProDocuX sidecar private authentication profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile",
+    "network",
+    "request_body_logging",
+    "public_ingress"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_sidecar_auth_profile_v1"},
+    "profile": {"enum": ["self_hosted", "production_mtls"]},
+    "network": {"const": "private"},
+    "request_body_logging": {"const": false},
+    "public_ingress": {"const": false},
+    "bearer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["header", "scheme", "rotatable", "logged"],
+      "properties": {
+        "header": {"const": "Authorization"},
+        "scheme": {"const": "Bearer"},
+        "rotatable": {"const": true},
+        "logged": {"const": false}
+      }
+    },
+    "mtls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"profile": {"const": "self_hosted"}}},
+      "then": {
+        "required": ["bearer"],
+        "properties": {
+          "mtls": {
+            "properties": {"required": {"const": false}}
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"profile": {"const": "production_mtls"}}},
+      "then": {
+        "required": ["bearer", "mtls"],
+        "properties": {
+          "mtls": {
+            "required": ["required"],
+            "properties": {"required": {"const": true}}
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/phase0/prodocux_safe_error_v1.json",
+  "title": "ProDocuX additive safe error envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ok",
+    "code",
+    "message",
+    "retryable",
+    "request_id"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_safe_error_v1"},
+    "ok": {"const": false},
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "message": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "retryable": {"type": "boolean"},
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "correlation_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "kernel_version": {"type": "string", "minLength": 1, "maxLength": 64}
+  }
+}

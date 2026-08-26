@@ -1,0 +1,9 @@
+{
+  "schema_version": "prodocux_safe_error_v1",
+  "ok": false,
+  "code": "INTERNAL_SANITIZED",
+  "message": "Traceback (most recent call last): File /app/api/main.py",
+  "retryable": false,
+  "request_id": "request-example-1",
+  "stack": "not-allowed"
+}

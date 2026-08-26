@@ -1,0 +1,20 @@
+{
+  "schema_version": "prodocux_phase0_fixture_digest_manifest_v1",
+  "algorithm": "sha256",
+  "canonicalization": "raw UTF-8 file bytes as stored; JSON uses LF; no JSON re-encoding",
+  "root": "docs/phase0",
+  "files": {
+    "examples/filesystem_sink_record.ok.json": "cfbcb99597cbcfb5a083d037965df9089b5fbc3b10e4673fe606b7fade4ec776",
+    "examples/safe_error.ok.json": "b7178ef40837469b4737daf7119a974aa3ab809a3542252b07ab4be178b241d8",
+    "examples/sidecar_auth.production_mtls.json": "4283ce46d1662a7ab916368f486f4eb7fe1bc42d4817383271c0e792eba7a32e",
+    "examples/sidecar_auth.self_hosted.json": "f9d1110955bf51826ee29936698405851adea33ba28ce30175cfd5e624cbcacf",
+    "limits.json": "ea8e75f5c71ba5f6d02100dcb80de1a6b87291dedc2170b18bff2d17f97f8d42",
+    "negative/filesystem_sink.gs_uri.json": "76201b767a35c37350b45afa71c377720216ae0a7402764f261e6b1a63c1223e",
+    "negative/filesystem_sink.local_path.json": "587b9ce99376e60dae580efdd06c65eede284b5806fa4bc82208f9738dc9b54e",
+    "negative/safe_error.extra_stack.json": "6e53c6ad4a22b6d253878489b2a87b061d6199d2234cf458f5d6a68a43b3aa91",
+    "negative/sidecar_auth.body_logging.json": "792cbd6ea6a798feb1a119ef511885eafd8157f5ad7effc62de1acc3e6bf928b",
+    "schemas/prodocux_filesystem_sink_record_v1.json": "9c511a3ee7ad34bb648f044f111a35cb8f22e91ddc723e4ca7dde9004d6e2efd",
+    "schemas/prodocux_safe_error_v1.json": "0df12067f6cc00b6bc76a070912193ec907d7bbbda24c4463c2c1b476e90a1fb",
+    "schemas/prodocux_sidecar_auth_profile_v1.json": "ad444ba283542c2821ffd62f343776e1a710bff6cd5ece3fab77471bd1fe25a1"
+  }
+}

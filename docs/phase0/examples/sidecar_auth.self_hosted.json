@@ -1,0 +1,16 @@
+{
+  "schema_version": "prodocux_sidecar_auth_profile_v1",
+  "profile": "self_hosted",
+  "network": "private",
+  "request_body_logging": false,
+  "public_ingress": false,
+  "bearer": {
+    "header": "Authorization",
+    "scheme": "Bearer",
+    "rotatable": true,
+    "logged": false
+  },
+  "mtls": {
+    "required": false
+  }
+}

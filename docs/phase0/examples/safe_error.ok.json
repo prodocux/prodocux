@@ -1,0 +1,10 @@
+{
+  "schema_version": "prodocux_safe_error_v1",
+  "ok": false,
+  "code": "REQUEST_INVALID",
+  "message": "document_filename must be a plain basename",
+  "retryable": false,
+  "request_id": "request-example-1",
+  "correlation_id": "correlation-example-1",
+  "kernel_version": "0.3.0rc2"
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/phase0/prodocux_filesystem_sink_record_v1.json",
+  "title": "ProDocuX filesystem output sink record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_status",
+    "output_name",
+    "artifact_id",
+    "uri",
+    "sha256",
+    "size_bytes",
+    "media_type"
+  ],
+  "properties": {
+    "schema_version": {"const": "prodocux_filesystem_sink_record_v1"},
+    "record_status": {"enum": ["created", "no_op", "conflict"]},
+    "output_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "artifact_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "uri": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^artifact://[a-zA-Z0-9_-]+/(?!(?:.*/)?\\.\\.(?:/|$))(?!(?:.*/)?\\.(?:/|$))[a-zA-Z0-9/_.-]+$"
+    },
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "size_bytes": {"type": "integer", "minimum": 0, "maximum": 104857600},
+    "media_type": {"type": "string", "minLength": 1, "maxLength": 128},
+    "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 256},
+    "mount": {"const": "output"}
+  }
+}
