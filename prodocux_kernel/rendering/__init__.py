@@ -4,6 +4,7 @@ from .capabilities import render_capabilities
 from .delivery import deliver_output
 from .errors import RenderContractError
 from .extract import extract_content_blocks, flatten_text_items
+from .filesystem import FilesystemArtifactSink
 from .memory import InMemoryArtifactResolver, InMemoryArtifactSink, ManualCancellation
 from .ports import ArtifactResolverPort, ArtifactSinkPort, CancellationProbe
 from .service import (
@@ -19,6 +20,7 @@ __all__ = [
     "ArtifactResolverPort",
     "ArtifactSinkPort",
     "CancellationProbe",
+    "FilesystemArtifactSink",
     "InMemoryArtifactResolver",
     "InMemoryArtifactSink",
     "ManualCancellation",

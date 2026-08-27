@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 # ---------- /v1/version ----------
@@ -145,7 +145,36 @@ class ExtractBlocksRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     document_filename: str = Field(min_length=3, max_length=255)
+    document_b64: Optional[str] = Field(default=None, min_length=1, max_length=45_000_000)
+    document_artifact: Optional[Dict[str, Any]] = None
+
+    @model_validator(mode="after")
+    def _exactly_one_document_source(self) -> "ExtractBlocksRequest":
+        has_b64 = self.document_b64 is not None
+        has_artifact = self.document_artifact is not None
+        if has_b64 == has_artifact:
+            raise ValueError(
+                "exactly one of document_b64 or document_artifact is required"
+            )
+        return self
+
+
+class IntakeMaterializeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    document_filename: str = Field(min_length=3, max_length=255)
     document_b64: str = Field(min_length=1, max_length=45_000_000)
+    media_type: str = Field(min_length=1, max_length=128)
+    sha256: Optional[str] = Field(default=None, min_length=64, max_length=64)
+
+
+class DerivedArtifactStoreRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    output_name: str = Field(min_length=3, max_length=255)
+    content_b64: str = Field(min_length=1, max_length=45_000_000)
+    media_type: str = Field(min_length=1, max_length=128)
+    sha256: Optional[str] = Field(default=None, min_length=64, max_length=64)
 
 
 # ---------- /v1/review ----------

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import os
 from pathlib import Path
 
 import re
@@ -14,6 +15,7 @@ import re
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, Response
 
+from api.auth import BearerAuthMiddleware, auth_profile_ok
 from api.path_policy import resolve_allowed_input_path
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
 from prodocux_kernel.config import golden_path
@@ -43,6 +45,8 @@ from prodocux_kernel.models import (
     ImageProfileRequest,
     ImageProfileResponse,
     IntakeCapabilitiesResponse,
+    IntakeMaterializeRequest,
+    DerivedArtifactStoreRequest,
     PdfExtractPagesRequest,
     PdfExtractPagesResponse,
     PresentationProfileRequest,
@@ -62,12 +66,17 @@ from prodocux_kernel.models import (
     WorkbookProfileResponse,
 )
 from prodocux_kernel.rendering import (
+    FilesystemArtifactSink,
     InMemoryArtifactSink,
     capabilities_document,
     content_blocks_validation_result,
     execute_extract_blocks,
     execute_render_artifact,
 )
+from prodocux_kernel.rendering.filesystem import default_output_mount
+from prodocux_kernel.rendering.intake_store import IntakeMaterialStore
+from prodocux_kernel.rendering.derived_store import DerivedArtifactStore
+from prodocux_kernel.artifacts import ArtifactResolutionError, resolve_opaque_artifact
 from prodocux_kernel.rendering.errors import HTTP_STATUS, RenderContractError
 from prodocux_kernel.review import capture
 from prodocux_kernel.scoring import scorer
@@ -87,6 +96,7 @@ from prodocux_kernel.verification.evidence_models import (
 )
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
+app.add_middleware(BearerAuthMiddleware)
 
 KNOWN_SCHEMAS = [
     "intake_request_v1",
@@ -111,7 +121,78 @@ KNOWN_SCHEMAS = [
 ]
 
 _ARTIFACT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,126}$")
-_RENDER_SINK = InMemoryArtifactSink()
+
+
+def _build_render_sink():
+    if os.environ.get("PRODOCUX_ARTIFACT_MOUNT", "").strip():
+        return FilesystemArtifactSink()
+    return InMemoryArtifactSink()
+
+
+_RENDER_SINK = _build_render_sink()
+_INTAKE_STORE = IntakeMaterialStore()
+_DERIVED_STORE = DerivedArtifactStore()
+_MAX_EXTRACT_BLOCKS_BYTES = 32 * 1024 * 1024
+
+
+@app.get("/health")
+def health() -> dict:
+    return {"status": "ok", "service": "prodocux-kernel"}
+
+
+@app.get("/ready")
+def ready() -> JSONResponse:
+    checks: dict[str, bool] = {"process": True}
+    mount = os.environ.get("PRODOCUX_ARTIFACT_MOUNT", "").strip()
+    if mount:
+        root = default_output_mount()
+        checks["artifact_mount_writable"] = root.exists() and os.access(root, os.W_OK)
+    else:
+        checks["artifact_mount_writable"] = True
+    checks["auth_profile_ok"] = auth_profile_ok()
+    ready_ok = all(checks.values())
+    return JSONResponse(
+        status_code=200 if ready_ok else 503,
+        content={"status": "ready" if ready_ok else "not_ready", "checks": checks},
+    )
+
+
+@app.post("/v1/intake/materialize")
+def intake_materialize(req: IntakeMaterializeRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        if len(raw) > _MAX_EXTRACT_BLOCKS_BYTES:
+            raise ValueError("document exceeds extract-blocks byte limit")
+        identity = _INTAKE_STORE.materialize(
+            output_name=req.document_filename,
+            media_type=req.media_type,
+            payload=raw,
+            sha256=req.sha256,
+        )
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=dict(identity))
+
+
+@app.post("/v1/artifacts/derived")
+def store_derived_artifact(req: DerivedArtifactStoreRequest) -> JSONResponse:
+    try:
+        if Path(req.output_name).name != req.output_name:
+            raise ValueError("output_name must be a plain basename")
+        raw = base64.b64decode(req.content_b64, validate=True)
+        if len(raw) > _MAX_EXTRACT_BLOCKS_BYTES:
+            raise ValueError("derived artifact exceeds byte limit")
+        identity = _DERIVED_STORE.store(
+            output_name=req.output_name,
+            media_type=req.media_type,
+            payload=raw,
+            sha256=req.sha256,
+        )
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=dict(identity))
 
 
 @app.post(
@@ -176,11 +257,21 @@ def extract_blocks(req: ExtractBlocksRequest) -> JSONResponse:
             raise ValueError("document_filename must be a plain basename")
         if req.document_filename in {".", ".."}:
             raise ValueError("document_filename must be a plain basename")
-        raw = base64.b64decode(req.document_b64, validate=True)
+        if req.document_artifact is not None:
+            raw = resolve_opaque_artifact(
+                req.document_artifact,
+                _INTAKE_STORE,
+                max_bytes=_MAX_EXTRACT_BLOCKS_BYTES,
+            )
+        else:
+            assert req.document_b64 is not None
+            raw = base64.b64decode(req.document_b64, validate=True)
         body = execute_extract_blocks(req.document_filename, raw)
     except RenderContractError as exc:
         raise HTTPException(status_code=HTTP_STATUS.get(exc.code, 400), detail=exc.public_message) from exc
-    except (ValueError, OSError) as exc:
+    except ArtifactResolutionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except (ValueError, OSError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return JSONResponse(status_code=200, content=body)
 
