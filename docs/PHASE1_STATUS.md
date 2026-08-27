@@ -15,8 +15,8 @@ client-certificate wiring remain **deployment-owned** prerequisites
 
 ## Freeze SHA
 
-Recorded after this Phase 1 implementation commit (see git history /
-companion Engine `docs/PHASE1_STATUS.md`).
+- Kernel Phase 1: `f5fc9516b36e0ca5fb105244a45799fc441c3a76`
+- Engine Phase 1 (companion): `a2cd14a166dd8b9985530d007731acdabf7cc19a`
 
 ## Landed
 
