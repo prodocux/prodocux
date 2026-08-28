@@ -9,7 +9,10 @@ Profiles:
 - ``production_mtls``: rotatable bearer **and** verified client certificate
 
 mTLS may be terminated at the process (TLS layer) or at a private reverse
-proxy. Proxy deployments set ``SSL_CLIENT_VERIFY: SUCCESS`` (configurable).
+proxy. Proxy deployments set the configured verify header
+(default ``SSL_CLIENT_VERIFY: SUCCESS``) and must overwrite/strip that
+header from untrusted clients. Only requests from
+``PRODOCUX_MTLS_TRUSTED_PEERS`` (default loopback) may present the header.
 """
 
 from __future__ import annotations
@@ -100,24 +103,25 @@ def _mtls_verify_value() -> str:
     return os.environ.get("PRODOCUX_MTLS_VERIFY_VALUE", "SUCCESS").strip() or "SUCCESS"
 
 
-def client_certificate_verified(headers: Mapping[str, str]) -> bool:
-    """Return True when the edge asserts a verified client certificate.
+def _mtls_trusted_peers() -> frozenset[str]:
+    raw = os.environ.get(
+        "PRODOCUX_MTLS_TRUSTED_PEERS", "127.0.0.1,::1,localhost,testclient"
+    ).strip()
+    return frozenset(part.strip() for part in raw.split(",") if part.strip())
 
-    Accepts the configured proxy verify header, or the presence of a
-    non-empty ``X-Forwarded-Tls-Client-Cert`` / ``X-Client-Cert`` header as
-    a secondary private-proxy signal.
+
+def client_certificate_verified(
+    headers: Mapping[str, str], *, peer: str | None = None
+) -> bool:
+    """Return True when a trusted edge asserts a verified client certificate.
+
+    Only the explicitly configured verify header and value are accepted, and
+    only from a trusted peer (loopback by default). Header presence of
+    ``X-Client-Cert`` / ``X-Forwarded-Tls-Client-Cert`` is never sufficient.
     """
-    verify_header = _mtls_verify_header()
-    expected = _mtls_verify_value()
-    # Starlette headers are case-insensitive Mapping.
-    if headers.get(verify_header) == expected:
-        return True
-    # Alternate common private-proxy signals (presence = verified).
-    for name in ("x-forwarded-tls-client-cert", "x-client-cert"):
-        value = headers.get(name)
-        if isinstance(value, str) and value.strip():
-            return True
-    return False
+    if peer is None or peer not in _mtls_trusted_peers():
+        return False
+    return headers.get(_mtls_verify_header()) == _mtls_verify_value()
 
 
 def _safe_error(*, code: str, message: str, status_code: int) -> JSONResponse:
@@ -150,7 +154,10 @@ class BearerAuthMiddleware(BaseHTTPMiddleware):
         if not path.startswith("/v1"):
             return await call_next(request)
 
-        if mtls_required() and not client_certificate_verified(request.headers):
+        if mtls_required() and not client_certificate_verified(
+            request.headers,
+            peer=request.client.host if request.client else None,
+        ):
             return _safe_error(
                 code="AUTH_MTLS_REQUIRED",
                 message="verified client certificate required",

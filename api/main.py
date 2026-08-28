@@ -135,10 +135,31 @@ def _build_render_sink():
     return InMemoryArtifactSink()
 
 
-_RENDER_SINK = _build_render_sink()
-_INTAKE_STORE = IntakeMaterialStore()
-_DERIVED_STORE = DerivedArtifactStore()
+_RENDER_SINK = None
+_INTAKE_STORE = None
+_DERIVED_STORE = None
 _MAX_EXTRACT_BLOCKS_BYTES = 32 * 1024 * 1024
+
+
+def _render_sink():
+    global _RENDER_SINK
+    if _RENDER_SINK is None:
+        _RENDER_SINK = _build_render_sink()
+    return _RENDER_SINK
+
+
+def _intake_store() -> IntakeMaterialStore:
+    global _INTAKE_STORE
+    if _INTAKE_STORE is None:
+        _INTAKE_STORE = IntakeMaterialStore()
+    return _INTAKE_STORE
+
+
+def _derived_store() -> DerivedArtifactStore:
+    global _DERIVED_STORE
+    if _DERIVED_STORE is None:
+        _DERIVED_STORE = DerivedArtifactStore()
+    return _DERIVED_STORE
 
 
 @app.get("/health")
@@ -171,7 +192,7 @@ def intake_materialize(req: IntakeMaterializeRequest) -> JSONResponse:
         raw = base64.b64decode(req.document_b64, validate=True)
         if len(raw) > _MAX_EXTRACT_BLOCKS_BYTES:
             raise ValueError("document exceeds extract-blocks byte limit")
-        identity = _INTAKE_STORE.materialize(
+        identity = _intake_store().materialize(
             output_name=req.document_filename,
             media_type=req.media_type,
             payload=raw,
@@ -190,7 +211,7 @@ def store_derived_artifact(req: DerivedArtifactStoreRequest) -> JSONResponse:
         raw = base64.b64decode(req.content_b64, validate=True)
         if len(raw) > _MAX_EXTRACT_BLOCKS_BYTES:
             raise ValueError("derived artifact exceeds byte limit")
-        identity = _DERIVED_STORE.store(
+        identity = _derived_store().store(
             output_name=req.output_name,
             media_type=req.media_type,
             payload=raw,
@@ -211,9 +232,9 @@ def retrieve_artifact(req: ArtifactRetrieveRequest) -> JSONResponse:
     try:
         raw = retrieve_verified_opaque_artifact(
             identity,
-            intake_store=_INTAKE_STORE,
-            derived_store=_DERIVED_STORE,
-            render_sink=_RENDER_SINK,
+            intake_store=_intake_store(),
+            derived_store=_derived_store(),
+            render_sink=_render_sink(),
             max_bytes=_MAX_RETRIEVAL_BYTES,
         )
     except ArtifactTooLargeError as exc:
@@ -309,7 +330,7 @@ def extract_blocks(req: ExtractBlocksRequest) -> JSONResponse:
         if req.document_artifact is not None:
             raw = resolve_opaque_artifact(
                 req.document_artifact,
-                _INTAKE_STORE,
+                _intake_store(),
                 max_bytes=_MAX_EXTRACT_BLOCKS_BYTES,
             )
         else:
@@ -552,7 +573,7 @@ def validate_content_blocks(payload: dict) -> JSONResponse:
 
 @app.post("/v1/render/artifact")
 def render_artifact(payload: dict) -> JSONResponse:
-    status, body = execute_render_artifact(payload, sink=_RENDER_SINK)
+    status, body = execute_render_artifact(payload, sink=_render_sink())
     return JSONResponse(status_code=status, content=body)
 
 
@@ -560,7 +581,7 @@ def render_artifact(payload: dict) -> JSONResponse:
 def get_render_artifact(artifact_id: str) -> Response:
     if not _ARTIFACT_ID.fullmatch(artifact_id):
         raise HTTPException(status_code=400, detail="artifact_id is not a safe identifier")
-    found = _RENDER_SINK.get(artifact_id)
+    found = _render_sink().get(artifact_id)
     if found is None:
         raise HTTPException(status_code=404, detail="artifact not found")
     payload, identity = found

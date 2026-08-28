@@ -1,6 +1,15 @@
 # Kernel Phase 3 — verified bytes retrieval (freeze)
 
-Status: **COMPLETE** (2026-08-28).
+Working tree version: **0.3.0rc3** (unpublished; no push/tag/PyPI).
+
+## Release-gate fixes (audit)
+
+- Stores initialize lazily; unconfigured mounts use the process temp dir,
+  not `/var/lib/prodocux`
+- Intake `resolve()` no longer re-enters a non-reentrant lock
+- `production_mtls` trusts only the configured verify header from
+  `PRODOCUX_MTLS_TRUSTED_PEERS` (default loopback)
+
 
 ## Formal record
 

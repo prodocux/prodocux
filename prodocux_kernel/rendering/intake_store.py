@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import re
+import tempfile
 import threading
 from collections.abc import Mapping
 from pathlib import Path
@@ -32,7 +33,7 @@ def default_intake_mount() -> Path:
     tmp = os.environ.get("PRODOCUX_TMP_MOUNT", "").strip()
     if tmp:
         return Path(tmp) / "intake"
-    return Path("/var/lib/prodocux/tmp/intake")
+    return Path(tempfile.gettempdir()) / "prodocux" / "intake"
 
 
 def intake_artifact_uri(*, artifact_id: str, output_name: str) -> str:
@@ -98,22 +99,26 @@ class IntakeMaterialStore:
                 identity = json.loads(meta_path.read_text(encoding="utf-8"))
                 if identity.get("uri") == uri:
                     return (self.root / identity["artifact_id"]).read_bytes()
-            # Fast path: artifact://intake/{artifact_id}/…
             if uri.startswith("artifact://intake/"):
                 rest = uri[len("artifact://intake/") :]
                 artifact_id = rest.split("/", 1)[0]
-                found = self.get_by_id(artifact_id)
-                if found is not None:
-                    payload, identity = found
+                payload = self._read_locked(artifact_id)
+                if payload is not None:
+                    raw, identity = payload
                     if identity.get("uri") == uri:
-                        return payload
+                        return raw
         raise KeyError(uri)
 
     def get_by_id(self, artifact_id: str) -> tuple[bytes, Mapping[str, Any]] | None:
         with self._lock:
-            meta_path = self.root / f"{artifact_id}{_META_SUFFIX}"
-            payload_path = self.root / artifact_id
-            if not meta_path.exists() or not payload_path.exists():
-                return None
-            identity = json.loads(meta_path.read_text(encoding="utf-8"))
-            return payload_path.read_bytes(), identity
+            return self._read_locked(artifact_id)
+
+    def _read_locked(
+        self, artifact_id: str
+    ) -> tuple[bytes, Mapping[str, Any]] | None:
+        meta_path = self.root / f"{artifact_id}{_META_SUFFIX}"
+        payload_path = self.root / artifact_id
+        if not meta_path.exists() or not payload_path.exists():
+            return None
+        identity = json.loads(meta_path.read_text(encoding="utf-8"))
+        return payload_path.read_bytes(), identity

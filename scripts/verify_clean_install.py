@@ -53,6 +53,7 @@ def main() -> int:
             f"; assert schema_root.joinpath({name!r}).is_file()"
             for name in PACKAGED_SCHEMAS
         )
+        smoke += "; import api.main as _main; assert _main._INTAKE_STORE is None"
         _run(str(python), "-c", smoke, cwd=work)
         print(f"clean-install PASS: {wheel.name}")
         print(f"isolated cwd: {work}")

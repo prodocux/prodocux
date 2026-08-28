@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import tempfile
 import threading
 from collections.abc import Mapping
 from pathlib import Path
@@ -29,7 +30,7 @@ def default_derived_mount() -> Path:
     artifacts = os.environ.get("PRODOCUX_ARTIFACT_MOUNT", "").strip()
     if artifacts:
         return Path(artifacts) / "derived"
-    return Path("/var/lib/prodocux/artifacts/derived")
+    return Path(tempfile.gettempdir()) / "prodocux" / "derived"
 
 
 def derived_artifact_uri(*, artifact_id: str, output_name: str) -> str:

@@ -68,6 +68,6 @@ def test_release_candidate_version_is_coherent() -> None:
     metadata = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     frozen_surface_version = _manifest()["prodocux"]["version"]
     assert frozen_surface_version == "0.3.0rc1"
-    assert metadata["project"]["version"] == "0.3.0rc2"
+    assert metadata["project"]["version"] == "0.3.0rc3"
     assert __version__ == metadata["project"]["version"]
     assert __version__ != frozen_surface_version

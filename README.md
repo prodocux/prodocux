@@ -5,10 +5,8 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Current prerelease: **`0.3.0rc2`**. It distributes the additive deterministic
-extract/render surface frozen in compatibility v3 while preserving HTTP API
-`/v1` and the frozen `0.2.0` compatibility v1 bytes. Frozen v2/v3 manifests
-still record their contract surface version `0.3.0rc1`.
+Current prerelease on PyPI: **`0.3.0rc2`**. Working tree for the next unpublished
+distribution is **`0.3.0rc3`** (not pushed, tagged, or published).
 
 ## Documents
 
