@@ -172,7 +172,8 @@ The implementation commits pinned in v3 remain the contract authority;
 `0.3.0rc2` is the PyPI distribution of that surface. Current publication
 metadata is recorded separately in
 `compatibility/pdx_prodocux_release_v1.json` so the frozen v3 bytes do not need
-to change.
+to change. The unpublished working tree `0.3.0rc3` / Engine `0.3.0a3` overlay is
+`compatibility/pdx_prodocux_release_rc3_a3.json`; it does not rewrite v1.
 
 Schemas: `prodocux_content_blocks_v1`, `prodocux_render_request_v1`,
 `prodocux_render_result_v1`, `prodocux_render_capabilities_v1`.

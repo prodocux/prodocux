@@ -98,4 +98,3 @@ The manifest file itself is excluded from the hashed set.
 - [x] No application-host types in Phase 0 schemas.
 - [x] Fixture digest manifest and canonical hash rule.
 - [x] Maintainer records Phase 0 commit SHA after the contracts commit.
-
