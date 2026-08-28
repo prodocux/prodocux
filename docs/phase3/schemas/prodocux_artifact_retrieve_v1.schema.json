@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/phase3/prodocux_artifact_retrieve_v1.schema.json",
+  "title": "ProDocuX verified artifact retrieval request v1",
+  "description": "POST /v1/artifacts/retrieve. Caller supplies the exact opaque identity previously returned by Kernel or Engine result envelopes. Response bytes are verified against declared size and SHA-256.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "artifact"],
+  "properties": {
+    "schema_version": {"const": "prodocux_artifact_retrieve_v1"},
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "uri",
+        "sha256",
+        "size_bytes",
+        "media_type"
+      ],
+      "properties": {
+        "schema_version": {"const": "prodocux_opaque_artifact_v1"},
+        "artifact_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^artifact://(intake|derived|sink|render)/[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)?$"
+        },
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "size_bytes": {"type": "integer", "minimum": 0, "maximum": 104857600},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 128}
+      }
+    }
+  }
+}

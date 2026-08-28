@@ -177,6 +177,25 @@ class DerivedArtifactStoreRequest(BaseModel):
     sha256: Optional[str] = Field(default=None, min_length=64, max_length=64)
 
 
+class OpaqueArtifactIdentityV1(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal["prodocux_opaque_artifact_v1"]
+    artifact_id: str = Field(min_length=1, max_length=128)
+    uri: str = Field(min_length=1, max_length=1024)
+    sha256: str = Field(min_length=64, max_length=64)
+    size_bytes: int = Field(ge=0, le=104857600)
+    media_type: str = Field(min_length=1, max_length=128)
+
+
+class ArtifactRetrieveRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal["prodocux_artifact_retrieve_v1"]
+    request_id: str = Field(min_length=1, max_length=128)
+    artifact: OpaqueArtifactIdentityV1
+
+
 # ---------- /v1/review ----------
 class ReviewStartRequest(BaseModel):
     source_path: str

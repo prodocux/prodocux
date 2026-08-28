@@ -47,6 +47,7 @@ from prodocux_kernel.models import (
     IntakeCapabilitiesResponse,
     IntakeMaterializeRequest,
     DerivedArtifactStoreRequest,
+    ArtifactRetrieveRequest,
     PdfExtractPagesRequest,
     PdfExtractPagesResponse,
     PresentationProfileRequest,
@@ -76,6 +77,10 @@ from prodocux_kernel.rendering import (
 from prodocux_kernel.rendering.filesystem import default_output_mount
 from prodocux_kernel.rendering.intake_store import IntakeMaterialStore
 from prodocux_kernel.rendering.derived_store import DerivedArtifactStore
+from prodocux_kernel.rendering.artifact_retrieval import (
+    ArtifactRetrievalError,
+    retrieve_verified_opaque_artifact,
+)
 from prodocux_kernel.artifacts import ArtifactResolutionError, resolve_opaque_artifact
 from prodocux_kernel.rendering.errors import HTTP_STATUS, RenderContractError
 from prodocux_kernel.review import capture
@@ -193,6 +198,37 @@ def store_derived_artifact(req: DerivedArtifactStoreRequest) -> JSONResponse:
     except (ValueError, OSError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return JSONResponse(status_code=200, content=dict(identity))
+
+
+_MAX_RETRIEVAL_BYTES = 32 * 1024 * 1024
+
+
+@app.post("/v1/artifacts/retrieve")
+def retrieve_artifact(req: ArtifactRetrieveRequest) -> JSONResponse:
+    """Phase 3 verified retrieval: identity-bound bytes with digest recheck."""
+    identity = req.artifact.model_dump()
+    try:
+        raw = retrieve_verified_opaque_artifact(
+            identity,
+            intake_store=_INTAKE_STORE,
+            derived_store=_DERIVED_STORE,
+            render_sink=_RENDER_SINK,
+            max_bytes=_MAX_RETRIEVAL_BYTES,
+        )
+    except (ArtifactRetrievalError, ValueError, KeyError, OSError) as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return JSONResponse(
+        status_code=200,
+        content={
+            "schema_version": "prodocux_artifact_content_v1",
+            "request_id": req.request_id,
+            "artifact": identity,
+            "media_type": identity["media_type"],
+            "size_bytes": len(raw),
+            "sha256": identity["sha256"],
+            "content_b64": base64.b64encode(raw).decode("ascii"),
+        },
+    )
 
 
 @app.post(
