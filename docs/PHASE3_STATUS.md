@@ -7,12 +7,13 @@ Status: **COMPLETE** (2026-08-28).
 Phase 3 freezes **identity-bound verified byte retrieval** for opaque
 `artifact://intake|derived|sink|render/…` handles. This unblocks
 Farpals `prodocux_publish_artifact`, WordPress Media Library writes,
-and compare/evidence UI — those remain Farpals-owned slices.
+and compare/evidence UI consumption paths.
 
 ## Freeze SHA
 
 - Kernel Phase 3 implementation: `f6cee0d`
 - Engine Phase 3 companion: `fb3aa6d`
+- Phase 3 tail (compare/verify worker + `ARTIFACT_TOO_LARGE`): _(this commit)_
 
 ## Landed
 
@@ -20,6 +21,8 @@ and compare/evidence UI — those remain Farpals-owned slices.
   `prodocux_artifact_content_v1`)
 - `prodocux_kernel/rendering/artifact_retrieval.py` — namespace
   resolution, digest/size verification, 32 MiB cap
+- Stable **413** `ARTIFACT_TOO_LARGE` for retrieval policy violations
+- Identity **100 MiB** vs retrieval **32 MiB** layering documented
 - Schemas under `docs/phase3/schemas/`
 - Tests: `tests/test_phase3_retrieve.py`
 
@@ -37,5 +40,5 @@ Phase 3 consumers must use identity-bound `POST /v1/artifacts/retrieve`.
 
 ## Companion
 
-Engine job-bound hop: `POST /internal/v1/jobs/{job_id}/retrieve`.
-See `pdx-artifact-engine/docs/PHASE3_STATUS.md`.
+Engine job-bound hop and compare/verify worker:
+`pdx-artifact-engine/docs/PHASE3_STATUS.md`.

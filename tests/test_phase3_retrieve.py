@@ -112,3 +112,37 @@ def test_retrieve_rejects_digest_mismatch(tmp_path: Path, monkeypatch) -> None:
         },
     )
     assert retrieved.status_code == 404
+
+
+def test_retrieve_rejects_oversized_artifact(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("PRODOCUX_DERIVED_MOUNT", str(tmp_path / "derived"))
+    monkeypatch.delenv("PRODOCUX_BEARER_TOKENS", raising=False)
+    from api import main as main_mod
+    from prodocux_kernel.rendering.derived_store import DerivedArtifactStore
+
+    main_mod._DERIVED_STORE = DerivedArtifactStore(tmp_path / "derived")
+    main_mod._MAX_RETRIEVAL_BYTES = 64
+    client = TestClient(main_mod.app)
+    raw = b"x" * 128
+    stored = client.post(
+        "/v1/artifacts/derived",
+        json={
+            "output_name": "large.bin",
+            "content_b64": base64.b64encode(raw).decode("ascii"),
+            "media_type": "application/octet-stream",
+        },
+    )
+    identity = stored.json()
+
+    retrieved = client.post(
+        "/v1/artifacts/retrieve",
+        json={
+            "schema_version": "prodocux_artifact_retrieve_v1",
+            "request_id": "req-retrieve-4",
+            "artifact": identity,
+        },
+    )
+    assert retrieved.status_code == 413
+    body = retrieved.json()
+    assert body["code"] == "ARTIFACT_TOO_LARGE"
+    assert body["retryable"] is False

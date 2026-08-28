@@ -26,6 +26,10 @@ class ArtifactRetrievalError(ValueError):
     """Opaque artifact retrieval failed closed."""
 
 
+class ArtifactTooLargeError(ArtifactRetrievalError):
+    """Resolved artifact exceeds the retrieval wire byte limit."""
+
+
 def retrieve_verified_opaque_artifact(
     identity: Mapping[str, Any],
     *,
@@ -63,7 +67,7 @@ def retrieve_verified_opaque_artifact(
     if len(payload) != identity["size_bytes"]:
         raise ArtifactRetrievalError("resolved artifact size mismatch")
     if len(payload) > max_bytes:
-        raise ArtifactRetrievalError("artifact exceeds retrieval byte limit")
+        raise ArtifactTooLargeError("artifact exceeds retrieval byte limit")
     digest = hashlib.sha256(payload).hexdigest()
     if digest != identity["sha256"]:
         raise ArtifactRetrievalError("resolved artifact digest mismatch")

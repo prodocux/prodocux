@@ -79,6 +79,7 @@ from prodocux_kernel.rendering.intake_store import IntakeMaterialStore
 from prodocux_kernel.rendering.derived_store import DerivedArtifactStore
 from prodocux_kernel.rendering.artifact_retrieval import (
     ArtifactRetrievalError,
+    ArtifactTooLargeError,
     retrieve_verified_opaque_artifact,
 )
 from prodocux_kernel.artifacts import ArtifactResolutionError, resolve_opaque_artifact
@@ -214,6 +215,18 @@ def retrieve_artifact(req: ArtifactRetrieveRequest) -> JSONResponse:
             derived_store=_DERIVED_STORE,
             render_sink=_RENDER_SINK,
             max_bytes=_MAX_RETRIEVAL_BYTES,
+        )
+    except ArtifactTooLargeError as exc:
+        return JSONResponse(
+            status_code=413,
+            content={
+                "schema_version": "prodocux_safe_error_v1",
+                "ok": False,
+                "code": "ARTIFACT_TOO_LARGE",
+                "message": str(exc) or "artifact exceeds retrieval byte limit",
+                "retryable": False,
+                "request_id": req.request_id,
+            },
         )
     except (ArtifactRetrievalError, ValueError, KeyError, OSError) as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
