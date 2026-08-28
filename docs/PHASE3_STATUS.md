@@ -13,7 +13,7 @@ and compare/evidence UI consumption paths.
 
 - Kernel Phase 3 implementation: `f6cee0d`
 - Engine Phase 3 companion: `fb3aa6d`
-- Phase 3 tail (compare/verify worker + `ARTIFACT_TOO_LARGE`): _(this commit)_
+- Phase 3 tail (compare/verify worker + `ARTIFACT_TOO_LARGE`): `50d250a` (Kernel)
 
 ## Landed
 
