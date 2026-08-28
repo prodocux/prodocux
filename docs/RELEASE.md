@@ -111,13 +111,15 @@ the published file.
 | `prodocux-0.3.0rc2-py3-none-any.whl` | `76fe43d1f1a316502af63dd8490ee47a8562b425ea5544fa3b5d81848fd1cf35` |
 | `prodocux-0.3.0rc2.tar.gz` | `d3dedfba33af6bc58bf66cdc1d7d98bb2fa9e46b498b045c6573f9a5e57d987e` |
 
-## Unpublished rc3 overlay
+## Published rc3 overlay
 
-Working tree `0.3.0rc3` is unpublished (no tag, GitHub Release, or PyPI).
-Publication intent for this cut is recorded in
+`0.3.0rc3` is published from tag `v0.3.0rc3` at release commit
+`466dd0de02a8cbb3834d78c9e5f91bcfe320087e`. GitHub Actions run
+`33221429380` verified the release assets and promoted the unchanged files to
+PyPI through the protected `pypi` environment. The GitHub, PyPI, and Integrity
+API SHA-256 evidence is recorded in
 `compatibility/pdx_prodocux_release_rc3_a3.json`. That overlay does not replace
-`pdx_prodocux_release_v1.json`, which remains the frozen published `0.3.0rc2`
-record. Fill tag SHA and asset digests only at publication.
+`pdx_prodocux_release_v1.json`, which remains the frozen `0.3.0rc2` record.
 
 Clean installation from the PyPI exact pin, package imports, version metadata,
 and packaged render-schema smoke checks passed.

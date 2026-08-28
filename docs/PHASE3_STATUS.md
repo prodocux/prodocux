@@ -1,6 +1,6 @@
 # Kernel Phase 3 — verified bytes retrieval (freeze)
 
-Working tree version: **0.3.0rc3** (unpublished; no push/tag/PyPI).
+Published version: **0.3.0rc3** (`v0.3.0rc3`; PyPI and provenance verified).
 
 ## Release-gate fixes (audit)
 

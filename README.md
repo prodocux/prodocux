@@ -5,8 +5,8 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Current prerelease on PyPI: **`0.3.0rc2`**. Working tree for the next unpublished
-distribution is **`0.3.0rc3`** (not pushed, tagged, or published).
+Current prerelease on PyPI: **`0.3.0rc3`**, published from tag
+**`v0.3.0rc3`** at commit `466dd0de02a8cbb3834d78c9e5f91bcfe320087e`.
 
 ## Documents
 
@@ -17,7 +17,7 @@ distribution is **`0.3.0rc3`** (not pushed, tagged, or published).
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
 - [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A render-conformance fixture digests
 - [`compatibility/pdx_prodocux_release_v1.json`](compatibility/pdx_prodocux_release_v1.json) — published rc2/a2 tags, package versions, release assets, and publication status
-- [`compatibility/pdx_prodocux_release_rc3_a3.json`](compatibility/pdx_prodocux_release_rc3_a3.json) — unpublished rc3/a3 working-tree overlay; does not rewrite v1
+- [`compatibility/pdx_prodocux_release_rc3_a3.json`](compatibility/pdx_prodocux_release_rc3_a3.json) — published rc3/a3 tags, package hashes, and workflow evidence; does not rewrite v1
 - [`compatibility/pdx_prodocux_compatibility_v2.json`](compatibility/pdx_prodocux_compatibility_v2.json) — 0.3.0rc1 prerelease versions, operations, and schema digests
 - [`compatibility/pdx_prodocux_compatibility_v1.json`](compatibility/pdx_prodocux_compatibility_v1.json) — frozen historical compatibility evidence
 
