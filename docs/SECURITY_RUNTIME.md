@@ -28,3 +28,7 @@ image site-packages. Local development and wheel builds still use
 OS/base-image packages, WordPress/plugins, and future advisories are not
 cleared by this overlay. Absence of a failing functional test is not a
 waiver.
+
+Candidate SHA, isolated pip-audit, image digests, and OS disposition are in
+`docs/SECURITY_CANDIDATE_EVIDENCE.md`. Pin Kernel `120cbd3f1ad6fe2fb8a9263ce9000bcaaba043bb`,
+not a later evidence-only commit.
