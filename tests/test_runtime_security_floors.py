@@ -25,7 +25,7 @@ def test_pypdf_meets_security_floor() -> None:
 
 
 def test_starlette_meets_security_floor() -> None:
-    assert _numeric_prefix(version("starlette")) >= (1, 3, 1)
+    assert _numeric_prefix(version("starlette")) >= (1, 6, 0)
 
 
 def test_fastapi_is_compatible_set() -> None:

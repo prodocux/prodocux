@@ -9,7 +9,7 @@ replace the Phase 5 scan pins (`466dd0d` Kernel image).
 | Package | Previous image | Working-tree floor | Reason |
 |---|---|---|---|
 | `pypdf` | 5.1.0 | `6.15.0` | Close PDF parser DoS / memory advisories through GHSA-fp3f-mc75-235c |
-| `fastapi` | 0.115.6 | `0.141.1` | Compatible set that allows Starlette 1.3.x |
+| `fastapi` | 0.115.6 | `0.141.1` | Compatible set; Starlette is pinned to `1.6.0` inside FastAPI's range |
 | `starlette` | 0.41.3 (transitive) | `1.6.0` (direct pin inside FastAPI 0.141.1's `>=0.46.0` range) | Host/path URL reconstruction and form-limit advisories |
 
 Do not pin Starlette outside the range declared by the selected FastAPI
