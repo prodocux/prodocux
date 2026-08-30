@@ -39,6 +39,7 @@ COPY prodocux_kernel ./prodocux_kernel
 COPY run_kernel.py ./
 
 RUN pip install --no-cache-dir . \
+    && pip uninstall -y pip setuptools \
     && mkdir -p /var/lib/prodocux/tmp/intake \
                /var/lib/prodocux/artifacts/derived \
     && useradd --system --uid 10001 --home /nonexistent --shell /usr/sbin/nologin pdx \

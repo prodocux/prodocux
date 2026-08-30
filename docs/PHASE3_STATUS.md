@@ -9,6 +9,9 @@ Published version: **0.3.0rc3** (`v0.3.0rc3`; PyPI and provenance verified).
 - Intake `resolve()` no longer re-enters a non-reentrant lock
 - `production_mtls` trusts only the configured verify header from
   `PRODOCUX_MTLS_TRUSTED_PEERS` (default loopback)
+- Working-tree security overlay: `pypdf==6.15.0`, `fastapi==0.141.1` with
+  Starlette `1.6.0`; runtime image uninstalls `pip`/`setuptools`. See
+  `docs/SECURITY_RUNTIME.md`.
 
 
 ## Formal record
