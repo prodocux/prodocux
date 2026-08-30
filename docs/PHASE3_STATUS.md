@@ -1,9 +1,9 @@
 # Kernel Phase 3 — verified bytes retrieval (freeze)
 
-Next coordinated release candidate: see [rc4/a4 preparation](RELEASE_RC4_A4.md).
+Current coordinated prerelease: see [published rc4/a4](RELEASE_RC4_A4.md).
 The published versions and freeze history below are historical records.
 
-Published version: **0.3.0rc3** (`v0.3.0rc3`; PyPI and provenance verified).
+Historical Phase 3 release: **0.3.0rc3** (`v0.3.0rc3`; PyPI and provenance verified).
 
 ## Release-gate fixes (audit)
 
