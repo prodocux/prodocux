@@ -152,6 +152,12 @@ these candidate images. OS/base-image advisories remain and are inherited
 from `python:3.11-slim`. They are recorded, not suppressed. They do not
 authorize rewriting frozen records or promoting Farpals official pins.
 
+The formal maintainer acceptance for those residual OS risks is
+`docs/SECURITY_OS_ACCEPTANCE.md`. Farpals candidate E2E does not replace
+that record. Independent Engine Trivy on the same `FROM` digest produced
+the same 14 HIGH/CRITICAL CVE IDs. Extra `pip` metadata seen only in a
+dirty-tree Engine `COPY . .` is not the git-export candidate surface.
+
 ## Out of scope (Farpals line)
 
 - Changing official `phase3-pins.json`, compose, or compatibility matrix
