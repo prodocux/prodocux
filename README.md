@@ -8,6 +8,10 @@ License: Apache-2.0. See [LICENSE](LICENSE).
 Current prerelease on PyPI: **`0.3.0rc3`**, published from tag
 **`v0.3.0rc3`** at commit `466dd0de02a8cbb3834d78c9e5f91bcfe320087e`.
 
+Next release candidate: **`0.3.0rc4`** (not published). It updates PDF/web-stack
+security dependencies and the runtime image recipe without changing frozen
+contracts. See [rc4/a4 release preparation](docs/RELEASE_RC4_A4.md).
+
 ## Documents
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — public architecture overview

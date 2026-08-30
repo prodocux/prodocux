@@ -111,6 +111,12 @@ the published file.
 | `prodocux-0.3.0rc2-py3-none-any.whl` | `76fe43d1f1a316502af63dd8490ee47a8562b425ea5544fa3b5d81848fd1cf35` |
 | `prodocux-0.3.0rc2.tar.gz` | `d3dedfba33af6bc58bf66cdc1d7d98bb2fa9e46b498b045c6573f9a5e57d987e` |
 
+## Next coordinated release candidate
+
+See [rc4/a4 preparation](RELEASE_RC4_A4.md) for the new versioned candidate,
+exact-source build boundary and remaining publication gates. Historical
+published records below remain unchanged.
+
 ## Published rc3 overlay
 
 `0.3.0rc3` is published from tag `v0.3.0rc3` at release commit
