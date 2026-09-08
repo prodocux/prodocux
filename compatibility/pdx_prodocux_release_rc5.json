@@ -1,0 +1,31 @@
+{
+  "schema_version": "pdx_prodocux_release_overlay_v1",
+  "status": "published",
+  "published_at": "2026-09-08T10:01:57Z",
+  "supersedes": {
+    "record": "pdx_prodocux_release_rc4_a4.json",
+    "note": "The published rc2/a2, rc3/a3, and rc4/a4 records and compatibility v1-v3 remain byte-frozen. This Kernel-only overlay records the rc5 PDF rendering repair."
+  },
+  "prodocux": {
+    "distribution": "prodocux",
+    "version": "0.3.0rc5",
+    "tag": "v0.3.0rc5",
+    "release_commit": "e09684059519c16c8ec517e8f988e440ad3c9d09",
+    "github_release": "https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc5",
+    "pypi_release": "https://pypi.org/project/prodocux/0.3.0rc5/",
+    "workflow_run": "https://github.com/prodocux/prodocux/actions/runs/34213120573",
+    "files": {
+      "prodocux-0.3.0rc5-py3-none-any.whl": "58ff5622188d337ba4aa0f049eeaaa502b08e0500bc9d4d9aa045943930377d6",
+      "prodocux-0.3.0rc5.tar.gz": "e262a3e41d174404fea3d46b9749e8fe19ae9fb477d0a73db9d82f93f5a51e32"
+    }
+  },
+  "scope": {
+    "summary": "Deterministic PDF wrapping, explicit line handling, pagination, and mixed Latin/CJK font-run repair.",
+    "contracts": "No public schema, route, Engine, Media, or frozen compatibility bytes changed.",
+    "verification": "Kernel 236 passed / 10 skipped before release; exact-source build, twine checks, protected workflow verification/publication, fresh PyPI installation, pip check, version and rendering imports passed."
+  },
+  "downstream_boundary": {
+    "studiotower": "StudioTower must separately pin prodocux==0.3.0rc5 and pass its clean Docker and 36-format matrix gates.",
+    "other_consumers": "No downstream pin or deployment approval is changed by this publication."
+  }
+}

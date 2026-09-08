@@ -5,12 +5,12 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Release candidate being prepared: **`0.3.0rc5`**. The current published
-prerelease remains **`0.3.0rc4`** until the rc5 publication workflow succeeds.
+Current prerelease on PyPI: **`0.3.0rc5`**, published from tag
+**`v0.3.0rc5`** at commit `e09684059519c16c8ec517e8f988e440ad3c9d09`.
 
 This Kernel-only release fixes deterministic PDF wrapping, explicit line
 breaks, pagination, and mixed Latin/CJK font selection without changing frozen
-contracts. See [rc5 release candidate](docs/RELEASE_RC5.md).
+contracts. See [rc5 publication record](docs/RELEASE_RC5.md).
 
 ```powershell
 python -m pip install "prodocux==0.3.0rc5"
@@ -28,6 +28,7 @@ python -m pip install "prodocux==0.3.0rc5"
 - [`compatibility/pdx_prodocux_release_v1.json`](compatibility/pdx_prodocux_release_v1.json) — published rc2/a2 tags, package versions, release assets, and publication status
 - [`compatibility/pdx_prodocux_release_rc3_a3.json`](compatibility/pdx_prodocux_release_rc3_a3.json) — published rc3/a3 tags, package hashes, and workflow evidence; does not rewrite v1
 - [`compatibility/pdx_prodocux_release_rc4_a4.json`](compatibility/pdx_prodocux_release_rc4_a4.json) — current rc4/a4 release pins, hashes, publication evidence and security boundary
+- [`compatibility/pdx_prodocux_release_rc5.json`](compatibility/pdx_prodocux_release_rc5.json) — Kernel-only rc5 source pin, hashes, workflow evidence, and downstream boundary
 - [`compatibility/pdx_prodocux_compatibility_v2.json`](compatibility/pdx_prodocux_compatibility_v2.json) — 0.3.0rc1 prerelease versions, operations, and schema digests
 - [`compatibility/pdx_prodocux_compatibility_v1.json`](compatibility/pdx_prodocux_compatibility_v1.json) — frozen historical compatibility evidence
 
