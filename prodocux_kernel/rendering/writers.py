@@ -238,25 +238,78 @@ def _write_pdf(content: Mapping[str, Any]) -> bytes:
     page = document.new_page(width=595, height=842)
     cursor = 48.0
 
+    page_bottom = 800.0
+    text_width = 499.0
+
     def ensure_space(height: float) -> None:
         nonlocal page, cursor
-        if cursor + height > 800:
+        if cursor + height > page_bottom:
             page = document.new_page(width=595, height=842)
             cursor = 48.0
+
+    def font_runs(text: str) -> list[tuple[str, str]]:
+        """Keep Latin kerning while selecting a CJK-capable font only as needed."""
+        runs: list[tuple[str, str]] = []
+        for char in text:
+            font = "china-s" if ord(char) > 127 else "helv"
+            if runs and runs[-1][1] == font:
+                runs[-1] = (runs[-1][0] + char, font)
+            else:
+                runs.append((char, font))
+        return runs
+
+    def measured_width(text: str, size: float) -> float:
+        return sum(
+            float(fitz.get_text_length(run, fontname=font, fontsize=size))
+            for run, font in font_runs(text)
+        )
+
+    def wrap_text(payload: str, size: float) -> list[str]:
+        """Wrap on whitespace when possible and on characters for CJK/long tokens."""
+        lines: list[str] = []
+        normalized = payload.replace("\r\n", "\n").replace("\r", "\n")
+        for logical_line in normalized.split("\n"):
+            current = ""
+            for token in re.findall(r"\S+\s*", logical_line):
+                candidate = current + token
+                if measured_width(candidate.rstrip(), size) <= text_width:
+                    current = candidate
+                    continue
+                if current.rstrip():
+                    lines.append(current.rstrip())
+                    current = ""
+                # A single token may itself be wider than the page (URLs and CJK).
+                for char in token:
+                    candidate = current + char
+                    if current and measured_width(candidate.rstrip(), size) > text_width:
+                        lines.append(current.rstrip())
+                        current = char
+                    else:
+                        current = candidate
+            # Preserve explicit (including empty) logical lines so pagination and
+            # the caller's cursor account for every line PyMuPDF will render.
+            lines.append(current.rstrip())
+        return lines or [""]
 
     def draw(text: str, *, size: float = 11, height: float = 18) -> None:
         nonlocal cursor
         payload = _clip(text)
         if not payload:
             return
-        ensure_space(height)
-        rect = fitz.Rect(48, cursor, 547, cursor + height)
-        font = "china-s" if any(ord(ch) > 127 for ch in payload) else "helv"
-        try:
-            page.insert_textbox(rect, payload, fontsize=size, fontname=font)
-        except Exception:
-            page.insert_textbox(rect, payload, fontsize=size, fontname="helv")
-        cursor += height + 4
+        # PyMuPDF needs room for ascenders, descenders, and its textbox line
+        # leading; a visually 11pt line does not fit reliably in an 18pt box.
+        line_height = max(height, size * 1.8)
+        for line in wrap_text(payload, size):
+            ensure_space(line_height)
+            x_pos = 48.0
+            baseline = cursor + size * 1.25
+            for run, run_font in font_runs(line):
+                page.insert_text((x_pos, baseline), run, fontsize=size, fontname=run_font)
+                x_pos += measured_width(run, size)
+            if x_pos > 547.01:
+                raise RenderContractError(FORMAT_NOT_SUPPORTED, "PDF text exceeded page boundary")
+            cursor += line_height
+        cursor += 4
 
     for block in _blocks(content):
         kind = block.get("type")

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import base64
 import json
-from io import BytesIO
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -80,6 +79,74 @@ def test_minimal_fixture_round_trips_all_five_formats() -> None:
         blob = json.dumps(extracted["content"], ensure_ascii=True)
         assert MARKER in blob or MARKER in json.dumps(extracted["text_items"])
         validate_content_blocks(extracted["content"])
+
+
+def test_pdf_wraps_long_table_rows_and_paginates_without_dropping_text() -> None:
+    import fitz
+
+    last_marker = "FINAL-ROW-079"
+    long_value = (
+        "A deliberately long production location description with multilingual "
+        "content 中文場景 and operational notes that must remain inside page boundaries."
+    )
+    content = {
+        "schema_version": "prodocux_content_blocks_v1",
+        "document": {"title": "Boundary test", "locale": "en"},
+        "blocks": [
+            {
+                "id": "rows",
+                "type": "table",
+                "table": {
+                    "header_rows": 1,
+                    "rows": [["ID", "Description"]]
+                    + [[f"ROW-{index:03d}", f"{long_value} FINAL-ROW-{index:03d}"] for index in range(80)],
+                },
+            }
+        ],
+    }
+
+    payload = write_content_blocks(content, "pdf")
+    pdf = fitz.open(stream=payload, filetype="pdf")
+    extracted = "\n".join(page.get_text() for page in pdf)
+    assert len(pdf) > 1
+    assert all(f"ROW-{index:03d}" in extracted for index in range(80))
+    assert all(f"FINAL-ROW-{index:03d}" in extracted for index in range(80))
+    assert last_marker in extracted
+    assert all(
+        word[2] <= 547.01 and word[3] <= 800.01
+        for page in pdf
+        for word in page.get_text("words")
+    )
+
+
+def test_pdf_explicit_lines_advance_cursor_and_paginate_without_overlap() -> None:
+    import fitz
+
+    explicit_lines = [f"EXPLICIT-LINE-{index:03d}" for index in range(60)]
+    next_marker = "NEXT-PARAGRAPH"
+    content = {
+        "schema_version": "prodocux_content_blocks_v1",
+        "document": {"title": "Explicit line test", "locale": "en"},
+        "blocks": [
+            {
+                "id": "paragraphs",
+                "type": "paragraphs",
+                "paragraphs": ["\n".join(explicit_lines), next_marker],
+            }
+        ],
+    }
+
+    payload = write_content_blocks(content, "pdf")
+    pdf = fitz.open(stream=payload, filetype="pdf")
+    words = [word for page in pdf for word in page.get_text("words")]
+    extracted = "\n".join(page.get_text() for page in pdf)
+    next_word = next(word for word in words if word[4] == next_marker)
+
+    assert len(pdf) > 1
+    assert all(marker in extracted for marker in explicit_lines)
+    assert next_marker in extracted
+    assert next_word[1] > 48.0
+    assert all(word[2] <= 547.01 and word[3] <= 800.01 for word in words)
 
 
 def test_http_extract_blocks_and_inline_render() -> None:

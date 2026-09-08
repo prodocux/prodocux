@@ -120,6 +120,12 @@ workflow URLs and Integrity API evidence are recorded in
 [`pdx_prodocux_release_rc4_a4.json`](../compatibility/pdx_prodocux_release_rc4_a4.json).
 Historical published records below remain unchanged.
 
+## Kernel rc5 release candidate
+
+See [Kernel rc5](RELEASE_RC5.md) for the PDF rendering fix, compatibility
+boundary, and publication gates. This is a Kernel-only release; it does not
+change Engine, Media, frozen compatibility manifests, or downstream pins.
+
 ## Published rc3 overlay
 
 `0.3.0rc3` is published from tag `v0.3.0rc3` at release commit

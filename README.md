@@ -5,15 +5,15 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Current prerelease on PyPI: **`0.3.0rc4`**, published from tag
-**`v0.3.0rc4`** at commit `44e29bd64089279910f4d78a0a36cf3fdb953cc7`.
+Release candidate being prepared: **`0.3.0rc5`**. The current published
+prerelease remains **`0.3.0rc4`** until the rc5 publication workflow succeeds.
 
-This release updates PDF/web-stack
-security dependencies and the runtime image recipe without changing frozen
-contracts. See [rc4/a4 publication and security boundary](docs/RELEASE_RC4_A4.md).
+This Kernel-only release fixes deterministic PDF wrapping, explicit line
+breaks, pagination, and mixed Latin/CJK font selection without changing frozen
+contracts. See [rc5 release candidate](docs/RELEASE_RC5.md).
 
 ```powershell
-python -m pip install "prodocux==0.3.0rc4"
+python -m pip install "prodocux==0.3.0rc5"
 ```
 
 ## Documents
@@ -23,6 +23,7 @@ python -m pip install "prodocux==0.3.0rc4"
 - [`docs/PHASE0_DECISIONS.md`](docs/PHASE0_DECISIONS.md) — Phase 0 sidecar, sink, and private-auth paper freeze
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
+- [`docs/RELEASE_RC5.md`](docs/RELEASE_RC5.md) — Kernel rc5 scope, gates, and publication boundary
 - [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A render-conformance fixture digests
 - [`compatibility/pdx_prodocux_release_v1.json`](compatibility/pdx_prodocux_release_v1.json) — published rc2/a2 tags, package versions, release assets, and publication status
 - [`compatibility/pdx_prodocux_release_rc3_a3.json`](compatibility/pdx_prodocux_release_rc3_a3.json) — published rc3/a3 tags, package hashes, and workflow evidence; does not rewrite v1
