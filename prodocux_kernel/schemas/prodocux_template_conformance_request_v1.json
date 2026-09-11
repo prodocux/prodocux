@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_template_conformance_request_v1.json",
+  "title": "ProDocuX template conformance request v1 (proposal)",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "request_id", "reference", "candidate", "policy"],
+  "properties": {
+    "schema_version": {"const": "prodocux_template_conformance_request_v1"},
+    "request_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"},
+    "reference": {"$ref": "prodocux_document_structure_profile_v1.json"},
+    "candidate": {"$ref": "prodocux_document_structure_profile_v1.json"},
+    "policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["table_matching", "protected", "allowed"],
+      "properties": {
+        "table_matching": {"enum": ["table_id", "anchor_then_ordinal", "ordinal"]},
+        "protected": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["table_count", "table_order", "topology", "headers", "merge_ranges", "column_widths", "alignment", "text_direction", "style", "fixed_row_labels"]}},
+        "allowed": {"type": "array", "uniqueItems": true, "items": {"enum": ["body_text", "append_rows", "placeholder_replacement"]}},
+        "column_width_tolerance_points": {"type": "number", "minimum": 0, "maximum": 144},
+        "maximum_appended_rows": {"type": "integer", "minimum": 0, "maximum": 1000000}
+      }
+    }
+  }
+}

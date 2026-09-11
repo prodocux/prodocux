@@ -1,0 +1,11 @@
+{
+  "schema_version": "prodocux_template_conformance_proposal_manifest_v1",
+  "status": "frozen_bilateral_contract",
+  "base_release": "0.3.0rc5",
+  "implementation_authorized": false,
+  "schemas": {
+    "prodocux_document_structure_profile_v1.json": "a051cf1e2d42264c0d1cacf9482a9d5fdd88e15b0026b385ec4f01823935bf66",
+    "prodocux_template_conformance_request_v1.json": "c6eff0b089d691222d3ee0b0f3e9a5f1afce746b4e81c550a4d339a70c0e8f62",
+    "prodocux_template_conformance_result_v1.json": "fc35e2ab50d96291ccfc5197ac1d2e1559e0ac72f7249cd00051015338e2a406"
+  }
+}

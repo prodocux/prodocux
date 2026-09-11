@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_document_structure_profile_v1.json",
+  "title": "ProDocuX deterministic document structure profile v1 (proposal)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_sha256", "document_kind", "tables", "interpretation"],
+  "properties": {
+    "schema_version": {"const": "prodocux_document_structure_profile_v1"},
+    "source_sha256": {"$ref": "#/$defs/digest"},
+    "document_kind": {"enum": ["docx", "xlsx", "pptx"]},
+    "tables": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/table"}},
+    "normalization_report": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/normalization"}},
+    "interpretation": {"const": "none"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "boundedText": {"type": "string", "maxLength": 4096},
+    "table": {
+      "type": "object", "additionalProperties": false,
+      "required": ["table_id", "ordinal", "row_count", "column_count", "header_rows", "merge_ranges", "columns", "style"],
+      "properties": {
+        "table_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"},
+        "ordinal": {"type": "integer", "minimum": 0},
+        "anchor": {"$ref": "#/$defs/boundedText"},
+        "row_count": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "column_count": {"type": "integer", "minimum": 1, "maximum": 16384},
+        "header_rows": {"type": "array", "maxItems": 128, "items": {"type": "integer", "minimum": 0}, "uniqueItems": true},
+        "merge_ranges": {"type": "array", "maxItems": 65536, "items": {"type": "string", "pattern": "^[A-Z]+[1-9][0-9]*:[A-Z]+[1-9][0-9]*$"}, "uniqueItems": true},
+        "columns": {"type": "array", "maxItems": 16384, "items": {"$ref": "#/$defs/column"}},
+        "fixed_row_labels": {"type": "array", "maxItems": 100000, "items": {"$ref": "#/$defs/boundedText"}},
+        "style": {"$ref": "#/$defs/style"}
+      }
+    },
+    "column": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ordinal"],
+      "properties": {
+        "ordinal": {"type": "integer", "minimum": 0},
+        "header": {"$ref": "#/$defs/boundedText"},
+        "width_points": {"type": "number", "minimum": 0},
+        "alignment": {"enum": ["left", "center", "right", "justify", "mixed", "unspecified"]},
+        "text_direction": {"enum": ["horizontal", "vertical", "mixed", "unspecified"]}
+      }
+    },
+    "style": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "style_name": {"$ref": "#/$defs/boundedText"},
+        "border_digest": {"$ref": "#/$defs/digest"},
+        "shading_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "normalization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "location"],
+      "properties": {
+        "code": {"enum": ["CONTROL_CHARACTER_REMOVED", "SMART_QUOTE_NORMALIZED", "VALUE_TRUNCATED"]},
+        "location": {"type": "string", "maxLength": 1024}
+      }
+    }
+  }
+}

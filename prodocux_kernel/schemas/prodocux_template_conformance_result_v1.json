@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_template_conformance_result_v1.json",
+  "title": "ProDocuX template conformance result v1 (proposal)",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "request_id", "reference_sha256", "candidate_sha256", "policy_digest", "conforms", "issues", "interpretation"],
+  "properties": {
+    "schema_version": {"const": "prodocux_template_conformance_result_v1"},
+    "request_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"},
+    "reference_sha256": {"$ref": "#/$defs/digest"},
+    "candidate_sha256": {"$ref": "#/$defs/digest"},
+    "policy_digest": {"$ref": "#/$defs/digest"},
+    "conforms": {"type": "boolean"},
+    "issues": {"type": "array", "maxItems": 10000, "items": {"$ref": "#/$defs/issue"}},
+    "interpretation": {"const": "none"}
+  },
+  "allOf": [
+    {"if": {"properties": {"conforms": {"const": true}}, "required": ["conforms"]}, "then": {"properties": {"issues": {"type": "array", "maxItems": 0}}}},
+    {"if": {"properties": {"conforms": {"const": false}}, "required": ["conforms"]}, "then": {"properties": {"issues": {"type": "array", "minItems": 1}}}}
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "issue": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "location", "message"],
+      "properties": {
+        "code": {"enum": ["TABLE_MISSING", "UNEXPECTED_TABLE_ADDED", "TABLE_ORDER_CHANGED", "ROW_COUNT_MISMATCH", "COLUMN_COUNT_MISMATCH", "HEADER_CHANGED", "MERGE_TOPOLOGY_CHANGED", "COLUMN_WIDTH_OUT_OF_TOLERANCE", "ALIGNMENT_CHANGED", "TEXT_DIRECTION_CHANGED", "STYLE_CHANGED", "REQUIRED_ROW_LABEL_MISSING", "OVERFLOW_OR_CLIP"]},
+        "location": {"type": "string", "maxLength": 1024},
+        "message": {"type": "string", "maxLength": 1024},
+        "expected": {"oneOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"}, {"type": "null"}]},
+        "actual": {"oneOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"}, {"type": "null"}]}
+      }
+    }
+  }
+}
