@@ -3,9 +3,10 @@
 Status: bilaterally frozen with FSF. This freeze does not authorize or claim a
 production comparer or implementation release.
 
-FSF consumer provenance (pending PDX verification, not a pin):
+FSF consumer provenance (ready for PDX contract seal, not a pin, GitHub not required):
 `docs/template-conformance/fsf-consumer-provenance.v1.json`.
-Home is `D:\FreeStudioFlow\free-studio-flow`, not B-roll.
+Home is `D:\FreeStudioFlow\free-studio-flow` tag `pdx-contract-seal-v1`
+(`cf21332fb0764e1b5b19efb1d68b0e1771b5c8d9`), not B-roll.
 
 Scope is PDX-P0b only: normalized template-to-artifact table conformance for
 review packs and filled forms. It does not provide prompt-sheet intake,
