@@ -3,6 +3,10 @@
 Status: bilaterally frozen with FSF. This freeze does not authorize or claim a
 production comparer or implementation release.
 
+FSF consumer provenance (pending PDX verification, not a pin):
+`docs/template-conformance/fsf-consumer-provenance.v1.json`.
+Home is `D:\FreeStudioFlow\free-studio-flow`, not B-roll.
+
 Scope is PDX-P0b only: normalized template-to-artifact table conformance for
 review packs and filled forms. It does not provide prompt-sheet intake,
 paragraphs, `-----` separators, embedded-image inventory, or stable paragraph
