@@ -1,7 +1,11 @@
 # Template conformance contract proposal
 
-Status: bilaterally frozen with FSF. This freeze does not authorize or claim a
-production comparer or implementation release.
+Status: bilaterally frozen with FSF. The production comparer is now an
+unpublished ``0.3.0rc6`` candidate; the frozen schema bytes remain unchanged.
+
+The candidate profiles DOCX tables, XLSX worksheet table regions, and PPTX
+table shapes into the frozen normalized structure profile. It does not parse
+the FSF prompt sheet and does not replace FSF's current intake parser.
 
 FSF consumer provenance (ready for PDX contract seal, not a pin, GitHub not required):
 `docs/template-conformance/fsf-consumer-provenance.v1.json`.
