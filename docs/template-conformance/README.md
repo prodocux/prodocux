@@ -1,7 +1,7 @@
 # Template conformance contract proposal
 
 Status: bilaterally frozen with FSF. The production comparer is now an
-unpublished ``0.3.0rc6`` candidate; the frozen schema bytes remain unchanged.
+unpublished ``0.3.0rc7`` candidate; the frozen schema bytes remain unchanged.
 
 The candidate profiles DOCX tables, XLSX worksheet table regions, and PPTX
 table shapes into the frozen normalized structure profile. It does not parse

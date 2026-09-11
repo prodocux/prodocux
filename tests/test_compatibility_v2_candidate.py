@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import tomllib
 from pathlib import Path
 
-import tomllib
 from api.main import app
 from prodocux_kernel import __version__
 
@@ -68,6 +68,6 @@ def test_release_candidate_version_is_coherent() -> None:
     metadata = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     frozen_surface_version = _manifest()["prodocux"]["version"]
     assert frozen_surface_version == "0.3.0rc1"
-    assert metadata["project"]["version"] == "0.3.0rc5"
+    assert metadata["project"]["version"] == "0.3.0rc7"
     assert __version__ == metadata["project"]["version"]
     assert __version__ != frozen_surface_version

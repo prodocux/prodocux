@@ -8,6 +8,10 @@ License: Apache-2.0. See [LICENSE](LICENSE).
 Current prerelease on PyPI: **`0.3.0rc5`**, published from tag
 **`v0.3.0rc5`** at commit `e09684059519c16c8ec517e8f988e440ad3c9d09`.
 
+The next unpublished candidate is **`0.3.0rc7`**. Public tag
+**`v0.3.0rc6`** did not pass the release workflow and is retained only as an
+audit record; it is not a PyPI release or consumer pin.
+
 This Kernel-only release fixes deterministic PDF wrapping, explicit line
 breaks, pagination, and mixed Latin/CJK font selection without changing frozen
 contracts. See [rc5 publication record](docs/RELEASE_RC5.md).
@@ -24,6 +28,7 @@ python -m pip install "prodocux==0.3.0rc5"
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
 - [`docs/RELEASE_RC5.md`](docs/RELEASE_RC5.md) — Kernel rc5 scope, gates, and publication boundary
+- [`docs/RELEASE_RC7.md`](docs/RELEASE_RC7.md) — unpublished P0b template-conformance release candidate
 - [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A render-conformance fixture digests
 - [`compatibility/pdx_prodocux_release_v1.json`](compatibility/pdx_prodocux_release_v1.json) — published rc2/a2 tags, package versions, release assets, and publication status
 - [`compatibility/pdx_prodocux_release_rc3_a3.json`](compatibility/pdx_prodocux_release_rc3_a3.json) — published rc3/a3 tags, package hashes, and workflow evidence; does not rewrite v1
