@@ -5,20 +5,25 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 
 License: Apache-2.0. See [LICENSE](LICENSE).
 
-Current prerelease on PyPI: **`0.3.0rc8`**, published from tag
-**`v0.3.0rc8`** at commit `89ac652400608e5d4fee4af976e64a295cfe5119`.
+<!-- pypi-release-status:start -->
+Source version in this branch: **`0.3.0rc8`**.
 
-This release replaces the mandatory
+Latest verified PyPI release: **[`0.3.0rc8`](https://pypi.org/project/prodocux/0.3.0rc8/)**,
+published from tag **[`v0.3.0rc8`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc8)**
+at commit `89ac652400608e5d4fee4af976e64a295cfe5119`.
+
+```powershell
+python -m pip install "prodocux==0.3.0rc8"
+```
+<!-- pypi-release-status:end -->
+
+The current release replaces the mandatory
 AGPL PDF dependency with a permissive default writer and keeps PyMuPDF behind
 an explicit optional extra.
 
 This Kernel-only release fixes deterministic PDF wrapping, explicit line
 breaks, pagination, and mixed Latin/CJK font selection without changing frozen
 contracts. See [rc5 publication record](docs/RELEASE_RC5.md).
-
-```powershell
-python -m pip install "prodocux==0.3.0rc8"
-```
 
 ## Documents
 
@@ -54,16 +59,8 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Install the deterministic extract/render prerelease from PyPI:
-
-```powershell
-python -m pip install "prodocux==0.3.0rc8"
-```
-
-See the
-[`prodocux` PyPI `0.3.0rc8` release](https://pypi.org/project/prodocux/0.3.0rc8/)
-and
-[GitHub prerelease](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc8).
+Install the current deterministic extract/render prerelease using the verified
+PyPI command at the top of this README.
 
 The older published wheel
 [`prodocux` PyPI `0.3.0rc1`](https://pypi.org/project/prodocux/0.3.0rc1/)
