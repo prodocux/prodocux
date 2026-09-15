@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prodocux"
-version = "0.3.0rc7"
+version = "0.3.0rc8"
 description = "ProDocuX Kernel — deterministic document processing"
 readme = "README.md"
 license = "Apache-2.0"
@@ -26,7 +26,7 @@ dependencies = [
     "pypdf==6.15.0",
     "cryptography>=42.0.0",
     "Pillow>=11.0.0",
-    "pymupdf==1.25.1",
+    "reportlab>=4.2,<5",
     "httpx==0.28.1",
     "openpyxl>=3.1,<4",
     "python-pptx>=1.0,<2",
@@ -34,9 +34,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+pdf-mupdf = [
+    "pymupdf>=1.26.7,<2",
+]
 dev = [
     "pytest==8.3.4",
     "jsonschema>=4.22.0",
+    "pymupdf>=1.26.7,<2",
 ]
 
 [project.urls]

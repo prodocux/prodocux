@@ -54,6 +54,10 @@ def main() -> int:
             for name in PACKAGED_SCHEMAS
         )
         smoke += "; import api.main as _main; assert _main._INTAKE_STORE is None"
+        smoke += "; import importlib.util; assert importlib.util.find_spec('fitz') is None"
+        smoke += "; from prodocux_kernel.rendering import write_content_blocks"
+        smoke += "; _pdf = write_content_blocks({'schema_version': 'prodocux_content_blocks_v1', 'document': {'title': 'clean install'}, 'blocks': [{'id': 'h', 'type': 'heading', 'level': 1, 'text': 'clean install'}]}, 'pdf')"
+        smoke += "; assert _pdf.startswith(b'%PDF')"
         _run(str(python), "-c", smoke, cwd=work)
         print(f"clean-install PASS: {wheel.name}")
         print(f"isolated cwd: {work}")

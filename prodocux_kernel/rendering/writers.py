@@ -232,26 +232,32 @@ def _write_pptx(content: Mapping[str, Any]) -> bytes:
 
 
 def _write_pdf(content: Mapping[str, Any]) -> bytes:
-    import fitz
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+    from reportlab.pdfgen import canvas
 
-    document = fitz.open()
-    page = document.new_page(width=595, height=842)
+    buffer = io.BytesIO()
+    document = canvas.Canvas(buffer, pagesize=(595, 842), pageCompression=1)
     cursor = 48.0
-
     page_bottom = 800.0
     text_width = 499.0
+    cjk_font = "STSong-Light"
+    try:
+        pdfmetrics.getFont(cjk_font)
+    except KeyError:
+        pdfmetrics.registerFont(UnicodeCIDFont(cjk_font))
 
     def ensure_space(height: float) -> None:
-        nonlocal page, cursor
+        nonlocal cursor
         if cursor + height > page_bottom:
-            page = document.new_page(width=595, height=842)
+            document.showPage()
             cursor = 48.0
 
     def font_runs(text: str) -> list[tuple[str, str]]:
         """Keep Latin kerning while selecting a CJK-capable font only as needed."""
         runs: list[tuple[str, str]] = []
         for char in text:
-            font = "china-s" if ord(char) > 127 else "helv"
+            font = cjk_font if ord(char) > 127 else "Helvetica"
             if runs and runs[-1][1] == font:
                 runs[-1] = (runs[-1][0] + char, font)
             else:
@@ -260,7 +266,7 @@ def _write_pdf(content: Mapping[str, Any]) -> bytes:
 
     def measured_width(text: str, size: float) -> float:
         return sum(
-            float(fitz.get_text_length(run, fontname=font, fontsize=size))
+            float(pdfmetrics.stringWidth(run, font, size))
             for run, font in font_runs(text)
         )
 
@@ -304,7 +310,8 @@ def _write_pdf(content: Mapping[str, Any]) -> bytes:
             x_pos = 48.0
             baseline = cursor + size * 1.25
             for run, run_font in font_runs(line):
-                page.insert_text((x_pos, baseline), run, fontsize=size, fontname=run_font)
+                document.setFont(run_font, size)
+                document.drawString(x_pos, 842.0 - baseline, run)
                 x_pos += measured_width(run, size)
             if x_pos > 547.01:
                 raise RenderContractError(FORMAT_NOT_SUPPORTED, "PDF text exceeded page boundary")
@@ -332,6 +339,5 @@ def _write_pdf(content: Mapping[str, Any]) -> bytes:
                 draw(paragraph, height=36)
     if cursor == 48.0:
         draw(_clip((content.get("document") or {}).get("title") or "Document"), size=16, height=28)
-    payload = document.tobytes()
-    document.close()
-    return payload
+    document.save()
+    return buffer.getvalue()
