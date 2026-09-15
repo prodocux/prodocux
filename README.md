@@ -24,11 +24,11 @@ python -m pip install "prodocux==0.3.0rc7"
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — public architecture overview
 - [`CONTRACT.md`](CONTRACT.md) — boundaries, API, scoring contract
-- [`docs/PHASE0_DECISIONS.md`](docs/PHASE0_DECISIONS.md) — Phase 0 sidecar, sink, and private-auth paper freeze
 - [`CAPABILITY_REQUESTS.md`](CAPABILITY_REQUESTS.md) — capability request template
 - [`docs/RELEASE.md`](docs/RELEASE.md) — release-candidate boundary and checks
+- [`docs/PUBLIC_DOCUMENTATION_POLICY.md`](docs/PUBLIC_DOCUMENTATION_POLICY.md) — public/private documentation boundary
 - [`docs/RELEASE_RC5.md`](docs/RELEASE_RC5.md) — Kernel rc5 scope, gates, and publication boundary
-- [`docs/RELEASE_RC7.md`](docs/RELEASE_RC7.md) — unpublished P0b template-conformance release candidate
+- [`docs/RELEASE_RC7.md`](docs/RELEASE_RC7.md) — rc7 template-conformance release record
 - [`compatibility/pdx_prodocux_compatibility_v3.json`](compatibility/pdx_prodocux_compatibility_v3.json) — frozen additive render/extract pins and G1A render-conformance fixture digests
 - [`compatibility/pdx_prodocux_release_v1.json`](compatibility/pdx_prodocux_release_v1.json) — published rc2/a2 tags, package versions, release assets, and publication status
 - [`compatibility/pdx_prodocux_release_rc3_a3.json`](compatibility/pdx_prodocux_release_rc3_a3.json) — published rc3/a3 tags, package hashes, and workflow evidence; does not rewrite v1
@@ -154,9 +154,3 @@ See `examples/pif_tw/` for curated **synthetic** fixtures (no customer documents
 | PDF extract | `skills.pdf_extract` |
 
 All first-party skills are deterministic. CLI messages support `en` and `zh-TW`.
-
-## Acknowledgments
-
-Codex and Cursor contributed implementation support, contract hardening, and
-cross-review for the multi-format intake upgrade. Final design and release
-decisions remain with the project maintainers.

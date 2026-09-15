@@ -2,7 +2,6 @@
 
 > Public summary for kernel v0.3 prerelease.
 >
-> Commercial plans and private lab runbooks are not in this repository.  
 > Technical boundaries and APIs: see [`CONTRACT.md`](CONTRACT.md).
 
 ## What this repo is

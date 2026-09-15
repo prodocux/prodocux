@@ -44,4 +44,5 @@ runtime, `/health`, `/ready`, or a filesystem sink implementation.
   and restart-safe filesystem sink against these documents.
 - Direct Kernel calls stay limited to deterministic component and contract
   tests. Product asynchronous work enters through PDX Artifact Engine.
-- No WordPress, WooCommerce, OAuth, or Farpals types enter Kernel schemas.
+- No application-host, commerce-platform, OAuth-provider, or tenant-specific
+  types enter Kernel schemas.

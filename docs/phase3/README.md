@@ -1,7 +1,7 @@
 # Phase 3 — verified artifact bytes
 
 Phase 3 freezes **identity-bound verified retrieval** for opaque
-`artifact://…` handles. Hosts (Farpals Core) can download bytes only
+`artifact://…` handles. Hosts can download bytes only
 after supplying the exact identity previously returned in job results
 or Kernel store responses, then recheck digest, size, and MIME before
 any T2 publication step.
@@ -32,7 +32,7 @@ Opaque artifact identity schemas allow `size_bytes` up to **100 MiB**
 (`104857600`). That is the metadata/store representation ceiling only.
 Artifacts larger than the retrieval policy may exist in intake/derived/sink
 stores but **must not** be downloaded through `POST /v1/artifacts/retrieve`.
-Hosts such as Farpals may apply a stricter local policy (for example 10 MiB)
+Hosts may apply a stricter local policy (for example 10 MiB)
 before publication.
 
 Response `content_b64` schema `maxLength` (~45M) corresponds to the ~32 MiB
@@ -48,13 +48,7 @@ Kernel `POST /v1/artifacts/retrieve`.
 
 See `pdx-artifact-engine/docs/phase3/README.md`.
 
-## Farpals handoff
+## Host boundary
 
-After this freeze, Farpals may implement:
-
-1. `prodocux_publish_artifact` T2 confirmation
-2. WordPress Media Library write
-3. Compare / evidence / receipt UI
-
-Farpals Phase 3 slice 1 (`prodocux_render_from_blocks`) already
-returns metadata only; slice 2 depends on this contract.
+Retrieval establishes verified bytes only. Publication confirmation, external
+media-library writes, and product UI remain host-owned operations.

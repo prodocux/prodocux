@@ -12,5 +12,5 @@ by this directory.
 | `limits.json` | cited `0.3.0rc2` ceilings; live values come from `/v1` |
 | `fixture-digest-manifest.json` | SHA-256 of contract files (raw UTF-8 bytes, LF) |
 
-See `docs/adr/ADR-0003-phase0-sidecar-sink-auth.md` and
-`docs/PHASE0_DECISIONS.md`.
+See `docs/adr/ADR-0003-phase0-sidecar-sink-auth.md` for the durable design
+decision retained in the public repository.
