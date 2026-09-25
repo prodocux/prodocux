@@ -8,18 +8,13 @@ License: Apache-2.0. See [LICENSE](LICENSE).
 <!-- pypi-release-status:start -->
 Source version in this branch: **`0.3.0rc9`**.
 
-This source version is an unpublished release candidate.
-
-Latest verified PyPI release: **[`0.3.0rc8`](https://pypi.org/project/prodocux/0.3.0rc8/)**,
-published from tag **[`v0.3.0rc8`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc8)**
-at commit `89ac652400608e5d4fee4af976e64a295cfe5119`.
+Latest verified PyPI release: **[`0.3.0rc9`](https://pypi.org/project/prodocux/0.3.0rc9/)**,
+published from tag **[`v0.3.0rc9`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc9)**
+at commit `947da542a13d5c34d0f541c661f3720005582d94`.
 
 ```powershell
-python -m pip install "prodocux==0.3.0rc8"
+python -m pip install "prodocux==0.3.0rc9"
 ```
-
-`0.3.0rc9` is not yet available from PyPI. Until publication succeeds, the
-verified public install command intentionally remains pinned to rc8.
 <!-- pypi-release-status:end -->
 
 The current release replaces the mandatory
