@@ -96,3 +96,166 @@ def validate_render_result(result: Mapping[str, Any]) -> Mapping[str, Any]:
 def validate_render_capabilities(document: Mapping[str, Any]) -> Mapping[str, Any]:
     _validate(_schema("prodocux_render_capabilities_v1.json"), document, REQUEST_INVALID)
     return document
+
+
+def validate_continuable_projection_result(
+    document: Mapping[str, Any],
+    *,
+    request_cursor: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    _validate(
+        _schema("prodocux_continuable_projection_v1.json"),
+        document,
+        REQUEST_INVALID,
+    )
+    validate_content_blocks(document["content"])
+    range_info = document["range"]
+    coverage = document["coverage"]
+    blocks = document["content"]["blocks"]
+    returned = range_info["returned_blocks"]
+    start = range_info["start"]
+    end = range_info["end_exclusive"]
+    parser_name = document["parser_contract"]["name"]
+    source_digest = document["source"]["sha256"]
+    if request_cursor is None:
+        if start != 0:
+            raise RenderContractError(
+                REQUEST_INVALID,
+                "initial projection range must start at block zero",
+            )
+    elif (
+        request_cursor.get("next_block") != start
+        or request_cursor.get("source_sha256") != source_digest
+        or request_cursor.get("parser_contract_name") != parser_name
+        or request_cursor.get("parser_contract_version")
+        != document["parser_contract"]["version"]
+        or request_cursor.get("format") != document["source"]["format"]
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "request range descriptor is inconsistent with the projection response",
+        )
+    if returned != len(blocks) or end != start + returned:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "projection range does not match returned content blocks",
+        )
+    if returned > range_info["requested_max_blocks"]:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "returned projection blocks exceed the requested maximum",
+        )
+    continuation_available = coverage["continuation_available"]
+    next_cursor = document["next_cursor"]
+    if next_cursor is not None:
+        _validate(
+            _schema("prodocux_projection_cursor_v1.json"),
+            next_cursor,
+            REQUEST_INVALID,
+        )
+    if continuation_available != (next_cursor is not None):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "projection continuation flag and cursor are inconsistent",
+        )
+    if next_cursor is not None and next_cursor["next_block"] != end:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "projection cursor does not begin at the next block",
+        )
+    if next_cursor is not None and (
+        next_cursor["source_sha256"] != source_digest
+        or next_cursor["parser_contract_name"] != parser_name
+        or next_cursor["parser_contract_version"]
+        != document["parser_contract"]["version"]
+        or next_cursor["format"] != document["source"]["format"]
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "next range descriptor is not bound to the response source and parser",
+        )
+    from .extract import flatten_text_items
+
+    if document["text_items"] != flatten_text_items(document["content"]):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "text_items must be the deterministic projection of content blocks",
+        )
+    known_total = coverage["known_total_blocks"]
+    processed_counts = document["counts"]["processed_through_range_end"]
+    total_counts = document["counts"]["known_total"]
+    if processed_counts["blocks"] != end:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "processed block count must end at the disclosed range boundary",
+        )
+    if processed_counts["pages"] is not None or total_counts["pages"] is not None:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "DOCX projection must not invent page counts",
+        )
+    if continuation_available and known_total is not None and known_total < end + 1:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "known total does not include the undisclosed continuation",
+        )
+    if continuation_available and (
+        known_total is not None or coverage["disposition"] != "partial_unknown"
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "unknown non-final remainder must be reported as partial_unknown",
+        )
+    if not continuation_available and known_total != end:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "final projection range must disclose its exact total block count",
+        )
+    if total_counts["blocks"] != known_total:
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "coverage and count total blocks are inconsistent",
+        )
+    if continuation_available and any(
+        total_counts[key] is not None for key in ("table_rows", "text_utf8_bytes")
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "non-final projection cannot claim unknown aggregate totals",
+        )
+    if not continuation_available and any(
+        total_counts[key] != processed_counts[key]
+        for key in ("table_rows", "text_utf8_bytes")
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "final projection totals must match cumulative processed counts",
+        )
+    if coverage["disposition"] == "complete" and (
+        continuation_available or coverage["omitted_content_classes"]
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "complete projection cannot have continuation or omitted content",
+        )
+    if not continuation_available and not coverage["omitted_content_classes"]:
+        if coverage["disposition"] != "complete":
+            raise RenderContractError(
+                REQUEST_INVALID,
+                "fully projected final range must be reported as complete",
+            )
+    if coverage["disposition"] == "partial_known" and (
+        continuation_available or not coverage["omitted_content_classes"]
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "partial_known requires a final range with disclosed omissions",
+        )
+    if coverage["disposition"] == "partial_unknown" and (
+        not continuation_available and not coverage["omitted_content_classes"]
+    ):
+        raise RenderContractError(
+            REQUEST_INVALID,
+            "partial_unknown requires an unknown remainder or disclosed omissions",
+        )
+    return dict(document)

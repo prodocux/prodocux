@@ -25,7 +25,7 @@
     "verification": "Kernel 236 passed / 10 skipped before release; exact-source build, twine checks, protected workflow verification/publication, fresh PyPI installation, pip check, version and rendering imports passed."
   },
   "downstream_boundary": {
-    "studiotower": "StudioTower must separately pin prodocux==0.3.0rc5 and pass its clean Docker and 36-format matrix gates.",
-    "other_consumers": "No downstream pin or deployment approval is changed by this publication."
+    "consumer_promotion": "Consumers must separately update their dependency pin and pass their own clean integration gates.",
+    "publication_effect": "No downstream pin or deployment approval is changed by this publication."
   }
 }

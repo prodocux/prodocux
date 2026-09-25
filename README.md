@@ -6,7 +6,9 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 License: Apache-2.0. See [LICENSE](LICENSE).
 
 <!-- pypi-release-status:start -->
-Source version in this branch: **`0.3.0rc8`**.
+Source version in this branch: **`0.3.0rc9`**.
+
+This source version is an unpublished release candidate.
 
 Latest verified PyPI release: **[`0.3.0rc8`](https://pypi.org/project/prodocux/0.3.0rc8/)**,
 published from tag **[`v0.3.0rc8`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc8)**
@@ -15,6 +17,9 @@ at commit `89ac652400608e5d4fee4af976e64a295cfe5119`.
 ```powershell
 python -m pip install "prodocux==0.3.0rc8"
 ```
+
+`0.3.0rc9` is not yet available from PyPI. Until publication succeeds, the
+verified public install command intentionally remains pinned to rc8.
 <!-- pypi-release-status:end -->
 
 The current release replaces the mandatory
@@ -103,6 +108,7 @@ GitHub approval-boundary workflow.
 | Version | `GET /v1/version` | shipped |
 | Legacy semantic extract/learn and path-shaped render | `POST /v1/extract`, `/learn`, `/render` | stub or 501 |
 | Deterministic block extraction | `POST /v1/intake/extract-blocks` | shipped |
+| Bounded DOCX continuation | `POST /v1/intake/extract-blocks/continue` | rc9 source candidate |
 | Deterministic artifact render | `POST /v1/render/artifact` | shipped |
 | Render capabilities/artifact retrieval | `GET /v1/render/capabilities`, `/artifacts/{artifact_id}` | shipped |
 | Deterministic PDF page intake | `POST /v1/intake/extract-pages` | shipped |
@@ -114,6 +120,22 @@ The PDF intake endpoint accepts only a bounded base64 payload and a plain
 `.pdf` basename. It returns source SHA-256, bounded page text, truncation
 disclosure, and an explicit `ocr_required` status without persisting the
 source document or calling an LLM.
+
+The additive DOCX continuation endpoint returns at most 200 addressable blocks
+per response. Its range descriptor binds the exact source SHA-256 and
+`prodocux_docx_block_projection_v1`; a changed source is rejected rather than
+silently resumed. Range, cumulative block/row/UTF-8-byte counts, coverage,
+known-total, omission, warning and OCR-disposition fields let callers
+distinguish complete, partial-known and partial-unknown projections. DOCX page
+counts are `null` because this parser does not perform layout pagination. The
+legacy five-format extraction endpoint remains unchanged. This capability is
+included in the rc9 source candidate but is not part of the published rc8 package.
+The descriptor is not authenticated: consumers must require each response
+`range.start` to equal the preceding `range.end_exclusive`. The bound applies
+to returned content, not parse work; later ranges currently reparse from the
+start, so complete traversal can approach O(n²). Header, footer, footnote,
+endnote and comment stories are outside the parser scope and are disclosed as
+omissions when present. Large-PDF continuation is not implemented by CR-001.
 
 `GET /v1/intake/capabilities` is the authoritative machine-readable source
 for available intake operations and their raw-byte/page ceilings. Clients

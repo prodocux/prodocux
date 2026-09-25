@@ -1,7 +1,7 @@
 """Request/response models for the Kernel's external API (CONTRACT.md §4)."""
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -157,6 +157,13 @@ class ExtractBlocksRequest(BaseModel):
                 "exactly one of document_b64 or document_artifact is required"
             )
         return self
+
+
+class ContinuableProjectionRequest(ExtractBlocksRequest):
+    """Bounded DOCX projection request; cursor is an opaque Kernel value."""
+
+    cursor: dict[str, Any] | None = None
+    max_blocks: int = Field(default=200, ge=1, le=200)
 
 
 class IntakeMaterializeRequest(BaseModel):

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_continuable_projection_v1.json",
+  "title": "ProDocuX continuable projection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kernel_version", "parser_contract", "source", "range", "coverage", "counts", "ocr_disposition", "content", "text_items", "next_cursor"],
+  "properties": {
+    "schema_version": {"const": "prodocux_continuable_projection_v1"},
+    "kernel_version": {"type": "string", "minLength": 1},
+    "parser_contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "version", "distribution", "distribution_version"],
+      "properties": {
+        "name": {"const": "prodocux_docx_block_projection_v1"},
+        "version": {"const": "1"},
+        "distribution": {"const": "prodocux"},
+        "distribution_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sha256", "size_bytes", "format"],
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "format": {"const": "docx"}
+      }
+    },
+    "range": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit", "start", "end_exclusive", "returned_blocks", "requested_max_blocks"],
+      "properties": {
+        "unit": {"const": "block"},
+        "start": {"type": "integer", "minimum": 0},
+        "end_exclusive": {"type": "integer", "minimum": 0},
+        "returned_blocks": {"type": "integer", "minimum": 1, "maximum": 200},
+        "requested_max_blocks": {"type": "integer", "minimum": 1, "maximum": 200}
+      }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["disposition", "continuation_available", "known_total_blocks", "omitted_content_classes", "warnings"],
+      "properties": {
+        "disposition": {"enum": ["complete", "partial_known", "partial_unknown"]},
+        "continuation_available": {"type": "boolean"},
+        "known_total_blocks": {"type": ["integer", "null"], "minimum": 1},
+        "omitted_content_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "warnings": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}, "uniqueItems": true}
+      }
+    },
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["processed_through_range_end", "known_total"],
+      "properties": {
+        "processed_through_range_end": {"$ref": "#/$defs/counts"},
+        "known_total": {"$ref": "#/$defs/counts"}
+      }
+    },
+    "ocr_disposition": {"const": "not_applicable"},
+    "content": {"type": "object"},
+    "text_items": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "type", "text", "source_locator"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "type": {"type": "string", "minLength": 1},
+          "text": {"type": "string"},
+          "source_locator": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "next_cursor": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/cursor"}
+      ]
+    }
+  },
+  "$defs": {
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pages", "blocks", "table_rows", "text_utf8_bytes"],
+      "properties": {
+        "pages": {"type": ["integer", "null"], "minimum": 0},
+        "blocks": {"type": ["integer", "null"], "minimum": 0},
+        "table_rows": {"type": ["integer", "null"], "minimum": 0},
+        "text_utf8_bytes": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "cursor": {
+      "type": "object", "additionalProperties": false,
+      "description": "Untrusted source-bound range descriptor. Consumers must require next_block to equal the prior response end_exclusive; this value is not authenticated.",
+      "required": ["schema_version", "source_sha256", "format", "parser_contract_name", "parser_contract_version", "next_block"],
+      "properties": {
+        "schema_version": {"const": "prodocux_projection_cursor_v1"},
+        "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "format": {"const": "docx"},
+        "parser_contract_name": {"const": "prodocux_docx_block_projection_v1"},
+        "parser_contract_version": {"const": "1"},
+        "next_block": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

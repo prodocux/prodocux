@@ -7,9 +7,11 @@ from .extract import extract_content_blocks, flatten_text_items
 from .filesystem import FilesystemArtifactSink
 from .memory import InMemoryArtifactResolver, InMemoryArtifactSink, ManualCancellation
 from .ports import ArtifactResolverPort, ArtifactSinkPort, CancellationProbe
+from .projection import extract_continuable_projection
 from .service import (
     capabilities_document,
     content_blocks_validation_result,
+    execute_continuable_projection,
     execute_extract_blocks,
     execute_render_artifact,
 )
@@ -29,8 +31,10 @@ __all__ = [
     "content_blocks_validation_result",
     "deliver_output",
     "execute_extract_blocks",
+    "execute_continuable_projection",
     "execute_render_artifact",
     "extract_content_blocks",
+    "extract_continuable_projection",
     "flatten_text_items",
     "render_capabilities",
     "validate_content_blocks",

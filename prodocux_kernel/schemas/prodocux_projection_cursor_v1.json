@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_projection_cursor_v1.json",
+  "title": "ProDocuX projection range descriptor v1",
+  "description": "Untrusted source-bound range descriptor. Consumers must require next_block to equal the prior response end_exclusive; this value is not authenticated.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_sha256", "format", "parser_contract_name", "parser_contract_version", "next_block"],
+  "properties": {
+    "schema_version": {"const": "prodocux_projection_cursor_v1"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "format": {"const": "docx"},
+    "parser_contract_name": {"const": "prodocux_docx_block_projection_v1"},
+    "parser_contract_version": {"const": "1"},
+    "next_block": {"type": "integer", "minimum": 1}
+  }
+}

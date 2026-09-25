@@ -9,6 +9,7 @@ dist/
 build/
 skills.zip
 .tmp/
+.tmp_release*/
 tmp_*
 .env
 .env.*

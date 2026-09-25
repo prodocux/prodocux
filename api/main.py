@@ -8,9 +8,8 @@ from __future__ import annotations
 import base64
 import hashlib
 import os
-from pathlib import Path
-
 import re
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, Response
@@ -18,6 +17,7 @@ from fastapi.responses import JSONResponse, Response
 from api.auth import BearerAuthMiddleware, auth_profile_ok
 from api.path_policy import resolve_allowed_input_path
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
+from prodocux_kernel.artifacts import ArtifactResolutionError, resolve_opaque_artifact
 from prodocux_kernel.config import golden_path
 from prodocux_kernel.docops import invariants as inv
 from prodocux_kernel.intake import (
@@ -39,6 +39,9 @@ from prodocux_kernel.intake import (
     profile_xlsx_bytes,
 )
 from prodocux_kernel.models import (
+    ArtifactRetrieveRequest,
+    ContinuableProjectionRequest,
+    DerivedArtifactStoreRequest,
     DocumentProfileRequest,
     DocumentProfileResponse,
     ExtractBlocksRequest,
@@ -46,8 +49,6 @@ from prodocux_kernel.models import (
     ImageProfileResponse,
     IntakeCapabilitiesResponse,
     IntakeMaterializeRequest,
-    DerivedArtifactStoreRequest,
-    ArtifactRetrieveRequest,
     PdfExtractPagesRequest,
     PdfExtractPagesResponse,
     PresentationProfileRequest,
@@ -71,19 +72,19 @@ from prodocux_kernel.rendering import (
     InMemoryArtifactSink,
     capabilities_document,
     content_blocks_validation_result,
+    execute_continuable_projection,
     execute_extract_blocks,
     execute_render_artifact,
 )
-from prodocux_kernel.rendering.filesystem import default_output_mount
-from prodocux_kernel.rendering.intake_store import IntakeMaterialStore
-from prodocux_kernel.rendering.derived_store import DerivedArtifactStore
 from prodocux_kernel.rendering.artifact_retrieval import (
     ArtifactRetrievalError,
     ArtifactTooLargeError,
     retrieve_verified_opaque_artifact,
 )
-from prodocux_kernel.artifacts import ArtifactResolutionError, resolve_opaque_artifact
+from prodocux_kernel.rendering.derived_store import DerivedArtifactStore
 from prodocux_kernel.rendering.errors import HTTP_STATUS, RenderContractError
+from prodocux_kernel.rendering.filesystem import default_output_mount
+from prodocux_kernel.rendering.intake_store import IntakeMaterialStore
 from prodocux_kernel.review import capture
 from prodocux_kernel.scoring import scorer
 from prodocux_kernel.verification import (
@@ -124,6 +125,8 @@ KNOWN_SCHEMAS = [
     "prodocux_render_request_v1",
     "prodocux_render_result_v1",
     "prodocux_render_capabilities_v1",
+    "prodocux_continuable_projection_v1",
+    "prodocux_projection_cursor_v1",
 ]
 
 _ARTIFACT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,126}$")
@@ -346,6 +349,41 @@ def extract_blocks(req: ExtractBlocksRequest) -> JSONResponse:
     return JSONResponse(status_code=200, content=body)
 
 
+@app.post("/v1/intake/extract-blocks/continue")
+def extract_blocks_continue(req: ContinuableProjectionRequest) -> JSONResponse:
+    """Return a deterministic source-bound DOCX block range."""
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."}:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_artifact is not None:
+            raw = resolve_opaque_artifact(
+                req.document_artifact,
+                _intake_store(),
+                max_bytes=_MAX_EXTRACT_BLOCKS_BYTES,
+            )
+        else:
+            assert req.document_b64 is not None
+            raw = base64.b64decode(req.document_b64, validate=True)
+        body = execute_continuable_projection(
+            req.document_filename,
+            raw,
+            cursor=req.cursor,
+            max_blocks=req.max_blocks,
+        )
+    except RenderContractError as exc:
+        raise HTTPException(
+            status_code=HTTP_STATUS.get(exc.code, 400),
+            detail={"code": exc.code, "message": exc.public_message},
+        ) from exc
+    except ArtifactResolutionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except (ValueError, OSError, KeyError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=body)
+
+
 @app.get("/v1/version", response_model=VersionResponse)
 def version() -> VersionResponse:
     return VersionResponse(
@@ -369,7 +407,7 @@ def intake_capabilities() -> IntakeCapabilitiesResponse:
         "formats": [
             {"extensions": [".pdf"], "status": "available", "operation": "extract_pages", "max_bytes": MAX_PDF_BYTES, "max_pages": 50, "additional_operations": ["extract_blocks"]},
             {"extensions": [".csv"], "status": "available", "operation": "profile_table", "max_bytes": MAX_TABLE_BYTES, "additional_operations": ["extract_blocks"]},
-            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure", "extract_blocks"]},
+            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure", "extract_blocks", "extract_blocks_continue"]},
             {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation", "max_bytes": MAX_PRESENTATION_BYTES, "additional_operations": ["extract_blocks"]},
             {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook", "max_bytes": MAX_WORKBOOK_BYTES, "additional_operations": ["extract_blocks"]},
             {"extensions": [".jpg", ".jpeg", ".png"], "status": "available", "operation": "profile_image", "max_bytes": MAX_IMAGE_BYTES},

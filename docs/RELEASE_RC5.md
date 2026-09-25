@@ -10,8 +10,8 @@ Published: 2026-09-08. GitHub and PyPI publication completed successfully.
 
 ## Scope
 
-This Kernel-only prerelease fixes deterministic PDF rendering for StudioTower
-and other consumers of `prodocux_content_blocks_v1`:
+This Kernel-only prerelease fixes deterministic PDF rendering for consumers of
+`prodocux_content_blocks_v1`:
 
 - wrap long Latin, CJK, and unbroken text within the page boundary;
 - preserve explicit line breaks and blank lines;
@@ -34,8 +34,8 @@ The exact release source passed:
 4. clean installation without a repository `PYTHONPATH`; and
 5. the GitHub release asset digest gate in `.github/workflows/release.yml`.
 
-StudioTower pin promotion is downstream work and must occur only after
-`prodocux==0.3.0rc5` is publicly available and independently installable.
+Downstream pin promotion must occur only after `prodocux==0.3.0rc5` is publicly
+available and independently installable.
 
 ## Publication boundary
 
@@ -56,5 +56,6 @@ asset SHA-256 values, and clean-install result. That record is
 
 A fresh environment installed the exact PyPI pin without repository path
 injection. `pip check`, package version/imports, and the rendering import passed.
-StudioTower must still update its own dependency pin and run its clean Docker
-matrix; that downstream promotion is not implied by this upstream publication.
+Consumers must still update their own dependency pins and run their clean
+integration matrices; downstream promotion is not implied by this upstream
+publication.

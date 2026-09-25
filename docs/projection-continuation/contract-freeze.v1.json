@@ -1,0 +1,15 @@
+{
+  "schema_version": "prodocux_projection_contract_freeze_v1",
+  "status": "frozen",
+  "frozen_at": "2026-09-25",
+  "scope": {
+    "format": "docx",
+    "api_version": "v1",
+    "operation": "POST /v1/intake/extract-blocks/continue",
+    "large_pdf_continuation_included": false
+  },
+  "contracts": {
+    "prodocux_continuable_projection_v1.json": "a6e20eda61c7019b76a2f35c97ca88e9c8f324068f0757c95f4c9d15c06a70a3",
+    "prodocux_projection_cursor_v1.json": "35508a545c04d458dc374fa2c4e66c7215789b8f711f7a1edbda5167c99bb33c"
+  }
+}

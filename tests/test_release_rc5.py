@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RECORD = ROOT / "compatibility" / "pdx_prodocux_release_rc5.json"
 
@@ -34,5 +33,7 @@ def test_published_rc5_source_pin_and_assets() -> None:
 
 def test_rc5_keeps_downstream_promotion_separate() -> None:
     record = json.loads(RECORD.read_text(encoding="utf-8"))
-    assert "separately pin" in record["downstream_boundary"]["studiotower"]
-    assert "No downstream pin" in record["downstream_boundary"]["other_consumers"]
+    boundary = record["downstream_boundary"]
+    assert set(boundary) == {"consumer_promotion", "publication_effect"}
+    assert "separately update" in boundary["consumer_promotion"]
+    assert "No downstream pin" in boundary["publication_effect"]

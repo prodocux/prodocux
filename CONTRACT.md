@@ -135,7 +135,7 @@ the route aliases `POST /v1/render/artifact`.
 Operations, additive under API `/v1`:
 
 - `GET /v1/render/capabilities` — five formats are `available`; `requires_template`
-  is `false` (Fleet/host templates are not Kernel templates).
+  is `false` (host-owned templates are not Kernel templates).
 - `POST /v1/content-blocks/validate` — product-neutral IR validation only.
 - `POST /v1/render/artifact` — write `docx` / `xlsx` / `csv` / `pptx` / `pdf`
   from `prodocux_content_blocks_v1`. Artifact delivery uses a process-lifetime
@@ -150,7 +150,24 @@ Operations, additive under API `/v1`:
 - `POST /v1/intake/extract-blocks` — parse a 5-format binary (`document_filename`
   + `document_b64`) into `prodocux_content_blocks_v1` plus a product-neutral
   `text_items` projection (`id`, `type`, `text`, `source_locator`) for host
-  adapters. Kernel does not emit Fleet cosmetics fields.
+  adapters. Kernel does not emit consumer-specific presentation fields.
+- `POST /v1/intake/extract-blocks/continue` — additive, bounded DOCX-only
+  continuation. Each result binds the exact source SHA-256 and
+  `prodocux_docx_block_projection_v1`, returns a non-overlapping half-open block
+  range, and discloses cumulative processed counts, known totals, coverage,
+  omissions, parser warnings and an explicit `not_applicable` OCR disposition.
+  Block, row and UTF-8-byte counts describe the normalized projection, not raw
+  OOXML contents. DOCX page counts remain `null` rather than being inferred.
+  The descriptor is not authenticated or tamper-resistant; consumers MUST
+  require `range.start` to equal the prior `range.end_exclusive`. Source
+  mutation still invalidates it through the source digest. Header/footer,
+  footnote/endnote, comment and unsupported body content are outside this
+  parser's scope and produce explicit omissions rather than `complete`. The
+  output is bounded, but later ranges reparse from the start and full traversal
+  can approach O(n²). Formats without a continuable parser fail with
+  `CONTINUATION_NOT_SUPPORTED`. This is a
+  frozen rc9 release candidate and is not included in the published rc8 package.
+  It does not provide large-PDF continuation.
 
 This release **rejects** `template` (artifact or inline). Hosts map Template
 Packs onto `prodocux_content_blocks_v1` before calling render. The Kernel never
@@ -177,7 +194,8 @@ to change. The published `0.3.0rc3` / Engine `0.3.0a3` overlay is
 without rewriting v1.
 
 Schemas: `prodocux_content_blocks_v1`, `prodocux_render_request_v1`,
-`prodocux_render_result_v1`, `prodocux_render_capabilities_v1`.
+`prodocux_render_result_v1`, `prodocux_render_capabilities_v1`,
+`prodocux_continuable_projection_v1`, `prodocux_projection_cursor_v1`.
 
 ### 4.3 `POST /v1/validate-structure`
 

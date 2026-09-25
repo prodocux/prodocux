@@ -12,6 +12,7 @@ from .errors import HTTP_STATUS, INTERNAL_SANITIZED, RenderContractError
 from .extract import extract_content_blocks
 from .limits import FORMAT_MEDIA_TYPES
 from .ports import ArtifactSinkPort, CancellationProbe
+from .projection import extract_continuable_projection
 from .validate import (
     validate_content_blocks,
     validate_render_capabilities,
@@ -111,6 +112,24 @@ def execute_extract_blocks(filename: str, payload: bytes) -> dict[str, Any]:
     """Extract product-neutral content blocks from a 5-format binary."""
     try:
         return extract_content_blocks(filename, payload)
+    except RenderContractError:
+        raise
+    except ValueError as exc:
+        raise RenderContractError("REQUEST_INVALID", str(exc)[:1024]) from exc
+
+
+def execute_continuable_projection(
+    filename: str,
+    payload: bytes,
+    *,
+    cursor: Mapping[str, Any] | None = None,
+    max_blocks: int = 200,
+) -> dict[str, Any]:
+    """Extract one source-bound deterministic range without changing legacy extraction."""
+    try:
+        return extract_continuable_projection(
+            filename, payload, cursor=cursor, max_blocks=max_blocks
+        )
     except RenderContractError:
         raise
     except ValueError as exc:
