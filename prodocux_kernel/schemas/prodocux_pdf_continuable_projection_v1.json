@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_pdf_continuable_projection_v1.json",
+  "title": "ProDocuX PDF continuable projection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_sha256", "parser_contract", "range", "pages", "next_cursor", "ocr", "coverage", "counts"],
+  "properties": {
+    "schema_version": {"const": "prodocux_pdf_continuable_projection_v1"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "parser_contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {"name": {"const": "prodocux_pdf_page_projection_v1"}, "version": {"const": "1"}}
+    },
+    "range": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit", "start", "end", "requested_max_pages"],
+      "properties": {
+        "unit": {"const": "page"}, "start": {"type": "integer", "minimum": 1},
+        "end": {"type": "integer", "minimum": 2},
+        "requested_max_pages": {"type": "integer", "minimum": 1, "maximum": 50}
+      }
+    },
+    "pages": {
+      "type": "array", "maxItems": 50,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["page_number", "text", "ocr_required"],
+        "properties": {
+          "page_number": {"type": "integer", "minimum": 1},
+          "text": {"type": "string", "maxLength": 50000},
+          "ocr_required": {"type": "boolean"}
+        }
+      }
+    },
+    "next_cursor": {"type": ["object", "null"]},
+    "ocr": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requested", "disposition", "pages_requiring_ocr"],
+      "properties": {
+        "requested": {"type": "boolean"},
+        "disposition": {"enum": ["not_performed", "unavailable"]},
+        "pages_requiring_ocr": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 1}}
+      }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["disposition", "known_total_pages", "continuation_available", "omitted_content_classes"],
+      "properties": {
+        "disposition": {"enum": ["complete", "partial_known", "partial_unknown"]},
+        "known_total_pages": {"type": "integer", "minimum": 1},
+        "continuation_available": {"type": "boolean"},
+        "omitted_content_classes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["returned_pages", "returned_characters"],
+      "properties": {
+        "returned_pages": {"type": "integer", "minimum": 1, "maximum": 50},
+        "returned_characters": {"type": "integer", "minimum": 0, "maximum": 500000}
+      }
+    }
+  }
+}

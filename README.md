@@ -6,7 +6,7 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 License: Apache-2.0. See [LICENSE](LICENSE).
 
 <!-- pypi-release-status:start -->
-Source version in this branch: **`0.3.0rc9`**.
+Source version in this branch: **`0.3.0rc10`**.
 
 Latest verified PyPI release: **[`0.3.0rc9`](https://pypi.org/project/prodocux/0.3.0rc9/)**,
 published from tag **[`v0.3.0rc9`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc9)**

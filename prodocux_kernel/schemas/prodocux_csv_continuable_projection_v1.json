@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_csv_continuable_projection_v1.json",
+  "title": "ProDocuX CSV continuable projection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_sha256", "parser_contract", "range", "columns", "rows", "next_cursor", "coverage", "counts"],
+  "properties": {
+    "schema_version": {"const": "prodocux_csv_continuable_projection_v1"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "parser_contract": {"type": "object", "additionalProperties": false, "required": ["name", "version"], "properties": {"name": {"const": "prodocux_csv_row_projection_v1"}, "version": {"const": "1"}}},
+    "range": {"type": "object", "additionalProperties": false, "required": ["unit", "start", "end", "requested_max_rows"], "properties": {"unit": {"const": "row"}, "start": {"type": "integer", "minimum": 0}, "end": {"type": "integer", "minimum": 0}, "requested_max_rows": {"type": "integer", "minimum": 1, "maximum": 500}}},
+    "columns": {"type": "array", "maxItems": 32, "items": {"type": "string"}},
+    "rows": {"type": "array", "maxItems": 500, "items": {"type": "array", "maxItems": 32, "items": {"type": "string"}}},
+    "next_cursor": {"type": ["object", "null"]},
+    "coverage": {"type": "object", "additionalProperties": false, "required": ["disposition", "known_total_rows", "continuation_available", "omitted_content_classes"], "properties": {"disposition": {"enum": ["complete", "partial_known", "partial_unknown"]}, "known_total_rows": {"type": "integer", "minimum": 0}, "continuation_available": {"type": "boolean"}, "omitted_content_classes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}},
+    "counts": {"type": "object", "additionalProperties": false, "required": ["returned_rows", "returned_columns"], "properties": {"returned_rows": {"type": "integer", "minimum": 0, "maximum": 500}, "returned_columns": {"type": "integer", "minimum": 0, "maximum": 32}}}
+  }
+}

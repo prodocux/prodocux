@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_projection_capabilities_v1.json",
+  "title": "ProDocuX projection capabilities v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kernel_version", "api_version", "profiles"],
+  "properties": {
+    "schema_version": {"const": "prodocux_projection_capabilities_v1"},
+    "kernel_version": {"type": "string", "minLength": 1},
+    "api_version": {"type": "string", "minLength": 1},
+    "profiles": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["format", "extensions", "status", "range_units", "source_admission", "limits", "known_uncontinuable_limits"],
+        "properties": {
+          "format": {"enum": ["docx", "pdf", "csv", "xlsx", "pptx", "image"]},
+          "extensions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^\\.[a-z0-9]+$"}},
+          "status": {"enum": ["bounded_with_continuation", "bounded_without_continuation"]},
+          "range_units": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "endpoint": {"type": "string", "pattern": "^/v1/"},
+          "source_admission": {
+            "type": "object", "additionalProperties": false,
+            "required": ["max_inline_bytes", "inline_source", "spooled_source", "artifact_backed_source", "oversized_source_disposition"],
+            "properties": {
+              "max_inline_bytes": {"type": "integer", "minimum": 1},
+              "artifact_backed_source": {"type": "boolean"},
+              "inline_source": {"type": "boolean"},
+              "spooled_source": {"type": "boolean"},
+              "oversized_source_disposition": {"const": "SOURCE_TOO_LARGE"}
+            }
+          },
+          "limits": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "integer", "minimum": 1}},
+          "known_uncontinuable_limits": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    }
+  }
+}

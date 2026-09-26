@@ -3,6 +3,7 @@
 Start: python run_kernel.py  → http://localhost:8900/v1
 The runtime does not call any LLM API.
 """
+
 from __future__ import annotations
 
 import base64
@@ -27,7 +28,12 @@ from prodocux_kernel.intake import (
     MAX_PRESENTATION_BYTES,
     MAX_TABLE_BYTES,
     MAX_WORKBOOK_BYTES,
+    extract_csv_continuable_projection,
+    extract_image_tile_projection,
     extract_pdf_bytes,
+    extract_pdf_continuable_projection,
+    extract_pptx_continuable_projection,
+    extract_xlsx_continuable_projection,
     profile_csv,
     profile_csv_bytes,
     profile_docx,
@@ -38,21 +44,27 @@ from prodocux_kernel.intake import (
     profile_xlsx,
     profile_xlsx_bytes,
 )
+from prodocux_kernel.intake.errors import SourceTooLargeError
 from prodocux_kernel.models import (
     ArtifactRetrieveRequest,
     ContinuableProjectionRequest,
+    CsvContinuableProjectionRequest,
     DerivedArtifactStoreRequest,
     DocumentProfileRequest,
     DocumentProfileResponse,
     ExtractBlocksRequest,
     ImageProfileRequest,
     ImageProfileResponse,
+    ImageTileProjectionRequest,
     IntakeCapabilitiesResponse,
     IntakeMaterializeRequest,
+    PdfContinuableProjectionRequest,
     PdfExtractPagesRequest,
     PdfExtractPagesResponse,
+    PptxContinuableProjectionRequest,
     PresentationProfileRequest,
     PresentationProfileResponse,
+    ProjectionCapabilitiesResponse,
     ReviewCommitRequest,
     ReviewCommitResponse,
     ReviewStartRequest,
@@ -66,6 +78,7 @@ from prodocux_kernel.models import (
     VersionResponse,
     WorkbookProfileRequest,
     WorkbookProfileResponse,
+    XlsxContinuableProjectionRequest,
 )
 from prodocux_kernel.rendering import (
     FilesystemArtifactSink,
@@ -127,6 +140,12 @@ KNOWN_SCHEMAS = [
     "prodocux_render_capabilities_v1",
     "prodocux_continuable_projection_v1",
     "prodocux_projection_cursor_v1",
+    "prodocux_projection_capabilities_v1",
+    "prodocux_pdf_continuable_projection_v1",
+    "prodocux_csv_continuable_projection_v1",
+    "prodocux_xlsx_continuable_projection_v1",
+    "prodocux_pptx_continuable_projection_v1",
+    "prodocux_image_tile_projection_v1",
 ]
 
 _ARTIFACT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,126}$")
@@ -299,7 +318,10 @@ def extract_pages(req: PdfExtractPagesRequest) -> PdfExtractPagesResponse:
     try:
         if Path(req.document_filename).name != req.document_filename:
             raise ValueError("document_filename must be a plain basename")
-        if req.document_filename in {".", ".."} or not req.document_filename.casefold().endswith(".pdf"):
+        if req.document_filename in {
+            ".",
+            "..",
+        } or not req.document_filename.casefold().endswith(".pdf"):
             raise ValueError("document_filename must end with .pdf")
         if len(req.document_b64) > ((MAX_PDF_BYTES + 2) // 3) * 4:
             raise ValueError("document_b64 exceeds PDF intake limit")
@@ -313,7 +335,9 @@ def extract_pages(req: PdfExtractPagesRequest) -> PdfExtractPagesResponse:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     total_characters = sum(len(page["text"]) for page in pages)
-    status = "ocr_required" if any(page["ocr_required"] for page in pages) else "success"
+    status = (
+        "ocr_required" if any(page["ocr_required"] for page in pages) else "success"
+    )
     return PdfExtractPagesResponse(
         status=status,
         source_sha256=hashlib.sha256(raw).hexdigest(),
@@ -321,6 +345,100 @@ def extract_pages(req: PdfExtractPagesRequest) -> PdfExtractPagesResponse:
         pages=pages,
         truncation={"truncated": truncated, "total_characters": total_characters},
     )
+
+
+@app.post("/v1/intake/extract-pages/continue")
+def extract_pages_continue(req: PdfContinuableProjectionRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."} or not req.document_filename.casefold().endswith(".pdf"):
+            raise ValueError("document_filename must end with .pdf")
+        if len(req.document_b64) > ((MAX_PDF_BYTES + 2) // 3) * 4:
+            raise SourceTooLargeError("document exceeds PDF inline intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        result = extract_pdf_continuable_projection(
+            raw, cursor=req.cursor, max_pages=req.max_pages, ocr_requested=req.ocr_requested
+        )
+    except SourceTooLargeError as exc:
+        raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=result)
+
+
+@app.post("/v1/intake/profile-table/continue")
+def profile_table_continue(req: CsvContinuableProjectionRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."} or not req.document_filename.casefold().endswith(".csv"):
+            raise ValueError("document_filename must end with .csv")
+        if len(req.document_b64) > ((MAX_TABLE_BYTES + 2) // 3) * 4:
+            raise SourceTooLargeError("document exceeds CSV inline intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        result = extract_csv_continuable_projection(
+            raw, cursor=req.cursor, max_rows=req.max_rows
+        )
+    except SourceTooLargeError as exc:
+        raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=result)
+
+
+@app.post("/v1/intake/profile-workbook/continue")
+def profile_workbook_continue(req: XlsxContinuableProjectionRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."} or not req.document_filename.casefold().endswith(".xlsx"):
+            raise ValueError("document_filename must end with .xlsx")
+        if len(req.document_b64) > ((MAX_WORKBOOK_BYTES + 2) // 3) * 4:
+            raise SourceTooLargeError("document exceeds XLSX inline intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        result = extract_xlsx_continuable_projection(
+            raw, cursor=req.cursor, max_rows=req.max_rows
+        )
+    except SourceTooLargeError as exc:
+        raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=result)
+
+
+@app.post("/v1/intake/profile-presentation/continue")
+def profile_presentation_continue(req: PptxContinuableProjectionRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if req.document_filename in {".", ".."} or not req.document_filename.casefold().endswith(".pptx"):
+            raise ValueError("document_filename must end with .pptx")
+        if len(req.document_b64) > ((MAX_PRESENTATION_BYTES + 2) // 3) * 4:
+            raise SourceTooLargeError("document exceeds PPTX inline intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        result = extract_pptx_continuable_projection(raw, cursor=req.cursor, max_slides=req.max_slides)
+    except SourceTooLargeError as exc:
+        raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=result)
+
+
+@app.post("/v1/intake/profile-image/tiles")
+def profile_image_tiles(req: ImageTileProjectionRequest) -> JSONResponse:
+    try:
+        if Path(req.document_filename).name != req.document_filename:
+            raise ValueError("document_filename must be a plain basename")
+        if len(req.document_b64) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
+            raise SourceTooLargeError("document exceeds image inline intake limit")
+        raw = base64.b64decode(req.document_b64, validate=True)
+        result = extract_image_tile_projection(raw, filename=req.document_filename, cursor=req.cursor, max_tiles=req.max_tiles, tile_edge=req.tile_edge, ocr_requested=req.ocr_requested)
+    except SourceTooLargeError as exc:
+        raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc
+    except (ValueError, OSError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return JSONResponse(status_code=200, content=result)
 
 
 @app.post("/v1/intake/extract-blocks")
@@ -341,7 +459,9 @@ def extract_blocks(req: ExtractBlocksRequest) -> JSONResponse:
             raw = base64.b64decode(req.document_b64, validate=True)
         body = execute_extract_blocks(req.document_filename, raw)
     except RenderContractError as exc:
-        raise HTTPException(status_code=HTTP_STATUS.get(exc.code, 400), detail=exc.public_message) from exc
+        raise HTTPException(
+            status_code=HTTP_STATUS.get(exc.code, 400), detail=exc.public_message
+        ) from exc
     except ArtifactResolutionError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except (ValueError, OSError, KeyError) as exc:
@@ -400,22 +520,211 @@ def version() -> VersionResponse:
     response_model_exclude_none=True,
 )
 def intake_capabilities() -> IntakeCapabilitiesResponse:
-    return IntakeCapabilitiesResponse.model_validate({
-        "schema_version": "prodocux_intake_capabilities_v1",
-        "kernel_version": __version__,
-        "api_version": API_VERSION,
-        "formats": [
-            {"extensions": [".pdf"], "status": "available", "operation": "extract_pages", "max_bytes": MAX_PDF_BYTES, "max_pages": 50, "additional_operations": ["extract_blocks"]},
-            {"extensions": [".csv"], "status": "available", "operation": "profile_table", "max_bytes": MAX_TABLE_BYTES, "additional_operations": ["extract_blocks"]},
-            {"extensions": [".docx"], "status": "available", "operation": "profile_document", "max_bytes": MAX_DOCX_BYTES, "additional_operations": ["validate_structure", "extract_blocks", "extract_blocks_continue"]},
-            {"extensions": [".pptx"], "status": "available", "operation": "profile_presentation", "max_bytes": MAX_PRESENTATION_BYTES, "additional_operations": ["extract_blocks"]},
-            {"extensions": [".xlsx"], "status": "available", "operation": "profile_workbook", "max_bytes": MAX_WORKBOOK_BYTES, "additional_operations": ["extract_blocks"]},
-            {"extensions": [".jpg", ".jpeg", ".png"], "status": "available", "operation": "profile_image", "max_bytes": MAX_IMAGE_BYTES},
-            {"extensions": [".xls"], "status": "planned", "operation": "profile_legacy_workbook"},
-            {"extensions": [".mp4", ".mov", ".mxf"], "status": "external_pipeline_required", "operation": "probe_and_proxy"},
-            {"extensions": [".r3d"], "status": "external_pipeline_required", "operation": "register_raw_and_proxy"},
-        ],
-    })
+    return IntakeCapabilitiesResponse.model_validate(
+        {
+            "schema_version": "prodocux_intake_capabilities_v1",
+            "kernel_version": __version__,
+            "api_version": API_VERSION,
+            "formats": [
+                {
+                    "extensions": [".pdf"],
+                    "status": "available",
+                    "operation": "extract_pages",
+                    "max_bytes": MAX_PDF_BYTES,
+                    "max_pages": 50,
+                    "additional_operations": ["extract_blocks"],
+                },
+                {
+                    "extensions": [".csv"],
+                    "status": "available",
+                    "operation": "profile_table",
+                    "max_bytes": MAX_TABLE_BYTES,
+                    "additional_operations": ["extract_blocks"],
+                },
+                {
+                    "extensions": [".docx"],
+                    "status": "available",
+                    "operation": "profile_document",
+                    "max_bytes": MAX_DOCX_BYTES,
+                    "additional_operations": [
+                        "validate_structure",
+                        "extract_blocks",
+                        "extract_blocks_continue",
+                    ],
+                },
+                {
+                    "extensions": [".pptx"],
+                    "status": "available",
+                    "operation": "profile_presentation",
+                    "max_bytes": MAX_PRESENTATION_BYTES,
+                    "additional_operations": ["extract_blocks"],
+                },
+                {
+                    "extensions": [".xlsx"],
+                    "status": "available",
+                    "operation": "profile_workbook",
+                    "max_bytes": MAX_WORKBOOK_BYTES,
+                    "additional_operations": ["extract_blocks"],
+                },
+                {
+                    "extensions": [".jpg", ".jpeg", ".png"],
+                    "status": "available",
+                    "operation": "profile_image",
+                    "max_bytes": MAX_IMAGE_BYTES,
+                },
+                {
+                    "extensions": [".xls"],
+                    "status": "planned",
+                    "operation": "profile_legacy_workbook",
+                },
+                {
+                    "extensions": [".mp4", ".mov", ".mxf"],
+                    "status": "external_pipeline_required",
+                    "operation": "probe_and_proxy",
+                },
+                {
+                    "extensions": [".r3d"],
+                    "status": "external_pipeline_required",
+                    "operation": "register_raw_and_proxy",
+                },
+            ],
+        }
+    )
+
+
+@app.get(
+    "/v1/intake/projection-capabilities",
+    response_model=ProjectionCapabilitiesResponse,
+    response_model_exclude_none=True,
+)
+def projection_capabilities() -> ProjectionCapabilitiesResponse:
+    """Disclose source admission and projection ceilings without implying support."""
+    common = {
+        "artifact_backed_source": False,
+        "inline_source": True,
+        "spooled_source": False,
+        "oversized_source_disposition": "SOURCE_TOO_LARGE",
+    }
+    return ProjectionCapabilitiesResponse.model_validate(
+        {
+            "schema_version": "prodocux_projection_capabilities_v1",
+            "kernel_version": __version__,
+            "api_version": API_VERSION,
+            "profiles": [
+                {
+                    "format": "docx",
+                    "extensions": [".docx"],
+                    "status": "bounded_with_continuation",
+                    "range_units": ["block"],
+                    "endpoint": "/v1/intake/extract-blocks/continue",
+                    "source_admission": {"max_inline_bytes": MAX_DOCX_BYTES, **common},
+                    "limits": {
+                        "max_blocks_per_range": 200,
+                        "max_table_rows_per_block": 500,
+                        "max_table_columns_per_block": 32,
+                        "max_text_codepoints": 8192,
+                    },
+                    "known_uncontinuable_limits": [
+                        "source_bytes",
+                        "table_rows",
+                        "table_columns",
+                        "text_codepoints",
+                    ],
+                },
+                {
+                    "format": "pdf",
+                    "extensions": [".pdf"],
+                    "status": "bounded_with_continuation",
+                    "range_units": ["page"],
+                    "endpoint": "/v1/intake/extract-pages/continue",
+                    "source_admission": {"max_inline_bytes": MAX_PDF_BYTES, **common},
+                    "limits": {
+                        "max_pages": 50,
+                        "max_page_characters": 50000,
+                        "max_total_characters": 500000,
+                    },
+                    "known_uncontinuable_limits": [
+                        "source_bytes",
+                        "page_characters",
+                        "total_characters",
+                    ],
+                },
+                {
+                    "format": "csv",
+                    "extensions": [".csv"],
+                    "status": "bounded_with_continuation",
+                    "range_units": ["row"],
+                    "endpoint": "/v1/intake/profile-table/continue",
+                    "source_admission": {"max_inline_bytes": MAX_TABLE_BYTES, **common},
+                    "limits": {"max_rows": 500, "max_columns": 32},
+                    "known_uncontinuable_limits": ["source_bytes", "columns"],
+                },
+                {
+                    "format": "xlsx",
+                    "extensions": [".xlsx"],
+                    "status": "bounded_with_continuation",
+                    "range_units": ["worksheet_row"],
+                    "endpoint": "/v1/intake/profile-workbook/continue",
+                    "source_admission": {
+                        "max_inline_bytes": MAX_WORKBOOK_BYTES,
+                        **common,
+                    },
+                    "limits": {
+                        "max_rows_per_sheet": 500,
+                        "max_columns_per_sheet": 32,
+                        "max_blocks": 200,
+                    },
+                    "known_uncontinuable_limits": [
+                        "source_bytes",
+                        "columns",
+                    ],
+                },
+                {
+                    "format": "pptx",
+                    "extensions": [".pptx"],
+                    "status": "bounded_with_continuation",
+                    "range_units": ["slide"],
+                    "endpoint": "/v1/intake/profile-presentation/continue",
+                    "source_admission": {
+                        "max_inline_bytes": MAX_PRESENTATION_BYTES,
+                        **common,
+                    },
+                    "limits": {
+                        "max_blocks": 200,
+                        "max_paragraphs_per_slide": 50,
+                        "max_table_rows": 500,
+                        "max_table_columns": 32,
+                    },
+                    "known_uncontinuable_limits": [
+                        "source_bytes",
+                        "shapes",
+                        "paragraphs",
+                        "table_rows",
+                        "table_columns",
+                    ],
+                },
+                {
+                    "format": "image",
+                    "extensions": [".jpg", ".jpeg", ".png"],
+                    "status": "bounded_with_continuation",
+                    "range_units": ["tile"],
+                    "endpoint": "/v1/intake/profile-image/tiles",
+                    "source_admission": {"max_inline_bytes": MAX_IMAGE_BYTES, **common},
+                    "limits": {
+                        "max_pixels": 40000000,
+                        "max_ocr_regions": 100,
+                        "max_region_text_codepoints": 2000,
+                    },
+                    "known_uncontinuable_limits": [
+                        "source_bytes",
+                        "pixels",
+                        "ocr_regions",
+                        "region_text_codepoints",
+                    ],
+                },
+            ],
+        }
+    )
 
 
 @app.post("/v1/intake/profile-image", response_model=ImageProfileResponse)
@@ -449,7 +758,9 @@ def profile_table(req: TableProfileRequest) -> TableProfileResponse:
             raw = base64.b64decode(req.document_b64, validate=True)
             profile = profile_csv_bytes(raw, filename=req.document_filename)
         elif req.document_path:
-            profile = profile_csv(resolve_allowed_input_path(req.document_path, suffix=".csv"))
+            profile = profile_csv(
+                resolve_allowed_input_path(req.document_path, suffix=".csv")
+            )
         else:
             raise ValueError("document_path or document_b64 is required")
     except (ValueError, UnicodeDecodeError, OSError) as exc:
@@ -470,7 +781,9 @@ def profile_workbook(req: WorkbookProfileRequest) -> WorkbookProfileResponse:
             raw = base64.b64decode(req.document_b64, validate=True)
             profile = profile_xlsx_bytes(raw, filename=req.document_filename)
         elif req.document_path:
-            profile = profile_xlsx(resolve_allowed_input_path(req.document_path, suffix=".xlsx"))
+            profile = profile_xlsx(
+                resolve_allowed_input_path(req.document_path, suffix=".xlsx")
+            )
         else:
             raise ValueError("document_path or document_b64 is required")
     except (ValueError, OSError) as exc:
@@ -491,7 +804,9 @@ def profile_document(req: DocumentProfileRequest) -> DocumentProfileResponse:
             raw = base64.b64decode(req.document_b64, validate=True)
             profile = profile_docx_bytes(raw, filename=req.document_filename)
         elif req.document_path:
-            profile = profile_docx(resolve_allowed_input_path(req.document_path, suffix=".docx"))
+            profile = profile_docx(
+                resolve_allowed_input_path(req.document_path, suffix=".docx")
+            )
         else:
             raise ValueError("document_path or document_b64 is required")
     except (ValueError, OSError) as exc:
@@ -500,7 +815,9 @@ def profile_document(req: DocumentProfileRequest) -> DocumentProfileResponse:
 
 
 @app.post("/v1/intake/profile-presentation", response_model=PresentationProfileResponse)
-def profile_presentation(req: PresentationProfileRequest) -> PresentationProfileResponse:
+def profile_presentation(
+    req: PresentationProfileRequest,
+) -> PresentationProfileResponse:
     try:
         if req.document_b64:
             if Path(req.document_filename).name != req.document_filename:
@@ -512,7 +829,9 @@ def profile_presentation(req: PresentationProfileRequest) -> PresentationProfile
             raw = base64.b64decode(req.document_b64, validate=True)
             profile = profile_pptx_bytes(raw, filename=req.document_filename)
         elif req.document_path:
-            profile = profile_pptx(resolve_allowed_input_path(req.document_path, suffix=".pptx"))
+            profile = profile_pptx(
+                resolve_allowed_input_path(req.document_path, suffix=".pptx")
+            )
         else:
             raise ValueError("document_path or document_b64 is required")
     except (ValueError, OSError) as exc:
@@ -538,8 +857,13 @@ def validate_structure(req: ValidateStructureRequest) -> ValidateStructureRespon
         kernel_version=__version__,
         passed=inv.overall_passed(results),
         invariants=[
-            {"id": r.id, "passed": r.passed, "status": r.status,
-             "code": r.code, "params": r.params}
+            {
+                "id": r.id,
+                "passed": r.passed,
+                "status": r.status,
+                "code": r.code,
+                "params": r.params,
+            }
             for r in results
         ],
     )
@@ -550,7 +874,9 @@ def review_start(req: ReviewStartRequest) -> ReviewStartResponse:
     rows = capture.build_review_rows(
         req.canonical_data, req.provenance, req.template_rendered, req.confidence
     )
-    return ReviewStartResponse(kernel_version=__version__, doc_id=req.doc_id, fields=rows)
+    return ReviewStartResponse(
+        kernel_version=__version__, doc_id=req.doc_id, fields=rows
+    )
 
 
 @app.post("/v1/review/commit", response_model=ReviewCommitResponse)
@@ -595,7 +921,10 @@ def score(req: ScoreRequest) -> ScoreResponse:
 # ---- Semantic endpoints not yet implemented for P2+: explicitly return 501 ----
 @app.post("/v1/extract")
 def extract(_: dict) -> None:
-    raise HTTPException(status_code=501, detail="P2 in progress; runtime LLM is executed by the solver side")
+    raise HTTPException(
+        status_code=501,
+        detail="P2 in progress; runtime LLM is executed by the solver side",
+    )
 
 
 @app.get("/v1/render/capabilities")
@@ -618,7 +947,9 @@ def render_artifact(payload: dict) -> JSONResponse:
 @app.get("/v1/render/artifacts/{artifact_id}")
 def get_render_artifact(artifact_id: str) -> Response:
     if not _ARTIFACT_ID.fullmatch(artifact_id):
-        raise HTTPException(status_code=400, detail="artifact_id is not a safe identifier")
+        raise HTTPException(
+            status_code=400, detail="artifact_id is not a safe identifier"
+        )
     found = _render_sink().get(artifact_id)
     if found is None:
         raise HTTPException(status_code=404, detail="artifact not found")
@@ -635,7 +966,10 @@ def get_render_artifact(artifact_id: str) -> Response:
 
 @app.post("/v1/render")
 def render(payload: dict) -> JSONResponse:
-    if isinstance(payload, dict) and payload.get("schema_version") == "prodocux_render_request_v1":
+    if (
+        isinstance(payload, dict)
+        and payload.get("schema_version") == "prodocux_render_request_v1"
+    ):
         return render_artifact(payload)
     raise HTTPException(status_code=501, detail="P2 in progress")
 
