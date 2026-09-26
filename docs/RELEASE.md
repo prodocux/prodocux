@@ -98,6 +98,21 @@ PyPI token belongs in repository secrets. Future GitHub Releases start the
 workflow automatically. To promote an existing release, run **Publish release
 assets to PyPI** manually with its exact tag.
 
+The release workflow intentionally does not edit `README.md` or open a pull
+request. After the workflow has confirmed that the exact version is available
+from the PyPI JSON API, update the verified-release block manually in a
+README-only commit:
+
+```powershell
+python scripts/update_readme_after_publish.py --version <version> --tag <tag> --commit <release-commit>
+git add README.md
+git commit -m "docs(readme): mark <tag> as published"
+git push origin main
+```
+
+Do not run this step before PyPI exposes the release. Review the staged diff and
+confirm that only `README.md` changed before committing.
+
 `0.3.0rc2` is published at
 <https://pypi.org/project/prodocux/0.3.0rc2/> from GitHub Release
 <https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc2>. Workflow run
