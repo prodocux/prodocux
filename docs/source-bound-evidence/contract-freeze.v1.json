@@ -1,0 +1,80 @@
+{
+  "schema_version": "pdx_kernel_public_contract_freeze_v1",
+  "status": "frozen",
+  "frozen_on": "2026-11-03",
+  "request": "CR-003",
+  "runtime_available": false,
+  "release_version": null,
+  "scope": "Native-text PDF exact-span source-bound evidence",
+  "hash_encoding": "sha256_utf8_text_lf",
+  "schema_documents": [
+    "schemas/kernel-source-binding.draft.schema.json",
+    "schemas/kernel-support.draft.schema.json",
+    "schemas/route-mapping.schema.json"
+  ],
+  "files": [
+    {
+      "sha256_utf8_lf": "b2381800b1c6a74cd096fcf90f7508efd7cfc35fd81eed4451d1bbd0a4fce8be",
+      "path": "canonical-vectors.json"
+    },
+    {
+      "sha256_utf8_lf": "3c442741be660210a76d8667d97b1c2290ff08a28211c433378453721abbcd50",
+      "path": "CONTRACT.md"
+    },
+    {
+      "sha256_utf8_lf": "05d850672a9e49822cd42be047770d88c71065f451f1864dd41e8d15a0478276",
+      "path": "examples.json"
+    },
+    {
+      "sha256_utf8_lf": "b38e84b5656acec4dbf5581225ae148fbb041cd47066a28cae13d610f8ecc775",
+      "path": "package.json"
+    },
+    {
+      "sha256_utf8_lf": "ff2a827ed647de752dd9dd06ac130d26ef30c9641910e145982667c63a3260e5",
+      "path": "requirements-contracts.txt"
+    },
+    {
+      "sha256_utf8_lf": "7cda2d837340e129c5f8cd97cf08707d9cff08a2d407185d78c6793a6a01fd17",
+      "path": "route-mapping.json"
+    },
+    {
+      "sha256_utf8_lf": "0abca6f8f3e7c8e5586e31b418b67ac87fe18e1a84b64ceae075a46c379247f6",
+      "path": "schemas/kernel-source-binding.draft.schema.json"
+    },
+    {
+      "sha256_utf8_lf": "79f1a8e29875819d4d27577dbf800a35678c13f3de6437d41b5bfe29fb7b46eb",
+      "path": "schemas/kernel-support.draft.schema.json"
+    },
+    {
+      "sha256_utf8_lf": "c13fdfe7a7b030bfaf48c36bb77f072530422c5770adeb7725511b7061599297",
+      "path": "schemas/route-mapping.schema.json"
+    },
+    {
+      "sha256_utf8_lf": "59d0aeaec948242db43bf545daa05893e64db111a59f97529522a6f926faaa6a",
+      "path": "semantic_cases.py"
+    },
+    {
+      "sha256_utf8_lf": "ac7f221abedc9d391a04cd804cb4e23307777a30d6b16fe92293016473db664c",
+      "path": "semantic_validator.py"
+    },
+    {
+      "sha256_utf8_lf": "d784fdc56b0750e8a76348b659e8838d5f7b9de72dbb7b914abc6427533c8451",
+      "path": "shape-fixtures.json"
+    },
+    {
+      "sha256_utf8_lf": "253084742d92401369f96dd6c5e1f8c64506e74eec956027a4102c98e40664a7",
+      "path": "verify_contracts.py"
+    },
+    {
+      "sha256_utf8_lf": "e6e308ab474f0a2b5609e57088251c4ed06d008eac1cdfe094fd8f117d821d74",
+      "path": "verify_node.mjs"
+    }
+  ],
+  "verification_dependencies": [],
+  "export_rules": [
+    "Separate owner-specific route map from the integration surface.",
+    "Retain schema identifiers and constraints; normalize file newlines to LF.",
+    "Resolve all schema and verification resources within this repository.",
+    "Synthetic examples verify contracts and are not runtime evidence."
+  ]
+}

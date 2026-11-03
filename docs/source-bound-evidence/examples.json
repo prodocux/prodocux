@@ -1,0 +1,39 @@
+{
+  "scope": "synthetic_contract_examples_not_runtime_evidence",
+  "bases": {
+    "kernel_request": {
+      "schema_version": "prodocux_source_binding_request_draft_v1",
+      "request_id": "req-shape-001",
+      "source": {
+        "document_b64": "JVBERi0=",
+        "sha256": "38523c087796e5d5dd1cf9bad1fb026781a838dd9dd2cf8af58b9f6502a46778",
+        "size_bytes": 5,
+        "media_type": "application/pdf"
+      },
+      "parser_contract": {
+        "name": "prodocux_pdf_page_projection_v1",
+        "version": "1"
+      },
+      "normalization": "unicode_nfc_preserve_whitespace_codepoint_v1",
+      "page_number": 1,
+      "expected_page_text_sha256": "11fc79f04199559dde502b54c3aafb2f5cbe8d35e81903709f017909854cc565",
+      "checks": [
+        {
+          "check_id": "check-001",
+          "quote_range": {
+            "start": 17,
+            "end": 36
+          },
+          "quote": "Amount due: 1100.00",
+          "value_range": {
+            "start": 29,
+            "end": 36
+          },
+          "conversion_rule": "ascii_decimal_exact_scale_v1",
+          "declared_value": "1100.00",
+          "scale": 2
+        }
+      ]
+    }
+  }
+}

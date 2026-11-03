@@ -1,0 +1,59 @@
+{
+  "schema_version": "pdx_kernel_contract_routes_v1",
+  "version_authority": "stored_workflow_contract_version",
+  "caller_header_selectable": false,
+  "routes": [
+    {
+      "operation": "kernel_verify",
+      "method": "POST",
+      "path": "/v1/verify/source-bound-evidence",
+      "request_schema": "urn:pdx:draft:cr003:core:1#/$defs/request",
+      "success_schema": "urn:pdx:draft:cr003:core:1#/$defs/report",
+      "success_statuses": [
+        200
+      ],
+      "role": "kernel_client",
+      "error_owner": "kernel"
+    },
+    {
+      "operation": "kernel_capabilities",
+      "method": "GET",
+      "path": "/v1/verify/source-bound-evidence/capabilities",
+      "request_schema": null,
+      "success_schema": "urn:pdx:draft:cr003:support:2#/$defs/capabilities",
+      "success_statuses": [
+        200
+      ],
+      "role": "kernel_client",
+      "error_owner": "kernel"
+    }
+  ],
+  "errors": {
+    "kernel": {
+      "400": [
+        "REQUEST_INVALID"
+      ],
+      "409": [
+        "SOURCE_IDENTITY_MISMATCH",
+        "PARSER_CONTRACT_MISMATCH",
+        "PAGE_PROJECTION_MISMATCH"
+      ],
+      "413": [
+        "SOURCE_TOO_LARGE",
+        "REQUEST_TOO_LARGE"
+      ],
+      "415": [
+        "SOURCE_TYPE_UNSUPPORTED"
+      ],
+      "422": [
+        "SOURCE_UNREADABLE",
+        "PAGE_UNAVAILABLE",
+        "SOURCE_ENCRYPTED",
+        "PARSER_RESOURCE_LIMIT"
+      ],
+      "503": [
+        "VERIFIER_UNAVAILABLE"
+      ]
+    }
+  }
+}

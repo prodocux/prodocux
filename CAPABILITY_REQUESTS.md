@@ -103,3 +103,60 @@ in a private collaboration log.
 - Referee decision: approved for implementation on 2026-09-26; contract freeze
   and release remain separately gated.
 - Shipped in: not shipped
+
+## CR-003 [status: approved]
+
+- Reporter: source-bound verification consumer
+- Date: 2026-10-31
+- Public baseline: `prodocux==0.3.0rc10`
+- Blocker: `verify_evidence_bundle()` checks caller-supplied values, document
+  digest, and media type against declarative rules. That behavior matches its
+  current contract. Locators and snippets are accepted on the request and are
+  not resolved against source bytes or a Kernel-verified projection. A text
+  PDF whose extracted page text contains `Subtotal: 900.00` and
+  `Amount due: 1100.00` can therefore receive `pass` / `VALUES_EQUAL` for two
+  supplied values of `900`, including a snippet `Amount due: 900.00` that is
+  absent from the extracted text. The consumer needs an additional check that
+  binds a declared value to a verified source span. This request does not
+  treat the current result as a contract violation.
+- Requested Kernel capability: an additive, deterministic source-bound
+  evidence check. Kernel must obtain and verify the source bytes, or must
+  itself verify the source identity and integrity of an immutable projection.
+  A projection and digest supplied by the caller are not trusted evidence.
+  The check then resolves one locator to one exact text range on that
+  verified text, applies a named normalization and value conversion, and
+  compares the declared value with the converted span. A pass proves only
+  that the value was parsed from that span by that rule. It does not certify
+  that the span is an amount due, a total, or any other business role.
+  A locator plus an exact text range that identifies one span may pass even
+  when the same digits appear elsewhere on the page. A search-style selector
+  that does not resolve to exactly one span returns `review` or rejection,
+  never `pass`. Missing text, an OCR-required page, or an unverifiable
+  projection likewise cannot pass. Existing
+  `prodocux_evidence_bundle_request_v1` equality, presence, range, and
+  date/version checks stay semantically unchanged.
+- Text and number contract: the additive contract must define the offset
+  unit on the verified projection (Unicode code points), the text
+  normalization applied before the span is compared (Unicode NFC and a
+  declared whitespace policy), and decimal parsing that uses a canonical
+  decimal string and an explicit scale. Binary floating-point values are not
+  a source-bound amount representation.
+- Scoring layers affected: L0, hallucination
+- Required acceptance: the forged quote `Amount due: 900.00` is rejected
+  against the fixture above. The real span `Subtotal: 900.00` can pass
+  source binding for the value `900.00` and is not certified as the amount
+  due. A correct quote with a mismatched declared value is rejected. A
+  mismatch of source digest, projection identity, parser contract, or range
+  is rejected. The same canonical request replays to the same result. No
+  LLM call is introduced.
+- Evidence: consumer probe against installed `prodocux==0.3.0rc10` on
+  2026-10-31. Kernel status was `pass`, reason `VALUES_EQUAL`, claimed value
+  `900`, labeled amount-due text `1100.00`, and the forged quote was absent
+  from `extract_pdf_pages` output. The fixture and probe remain with the
+  consumer. This request assigns no payment, model, ACL, or workflow
+  behavior to Kernel.
+- Referee decision: contract frozen on 2026-11-03. Product-neutral specification
+  and standalone checks are in `docs/source-bound-evidence/CONTRACT.md` and
+  `docs/source-bound-evidence/contract-freeze.v1.json`. This is contract approval;
+  runtime implementation and release require separate authorization.
+- Shipped in: not shipped
