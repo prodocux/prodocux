@@ -161,6 +161,6 @@ in a private collaboration log.
   runtime implementation and release require separate authorization.
 - Implementation: authorized on 2026-11-03; source-bound PDF runtime candidate
   and tests are available for review. The frozen contract record is unchanged.
-  No implementation release has been assigned or published.
+  The source release candidate is 0.3.0rc11; it is not yet published.
 - Runtime acceptance: source sealing approved on 2026-11-04; release remains gated.
 - Shipped in: not shipped

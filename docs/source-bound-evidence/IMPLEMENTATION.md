@@ -2,7 +2,7 @@
 
 This is an unpublished runtime candidate for review, not a new package release.
 Runtime behavior was accepted for source sealing on 2026-11-04. Deployment and
-publication remain separate gates; no implementation release version is assigned.
+publication remain separate gates. The source release candidate is 0.3.0rc11.
 The contract freeze record remains a historical record of the document freeze.
 Its schemas, reference validator and examples have not been edited.
 
@@ -24,6 +24,5 @@ blank/OCR-required pages, encrypted input and the HTTP wire. Packaged contracts
 are loaded from the installed package; runtime has no dependency on this docs
 directory or a neighboring checkout. RFC 8785 is a runtime dependency.
 
-No version bump, release tag or publication is part of this candidate. The old
-public package version remains the install baseline until a separately approved
-release exists. Adapter integration is a separate capability.
+The published package remains the install baseline until the new candidate is
+verified on the public package index. Adapter integration is a separate capability.

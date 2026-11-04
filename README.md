@@ -6,7 +6,7 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 License: Apache-2.0. See [LICENSE](LICENSE).
 
 <!-- pypi-release-status:start -->
-Source version in this branch: **`0.3.0rc10`**.
+Source version in this branch: **`0.3.0rc11`**.
 
 Latest verified PyPI release: **[`0.3.0rc10`](https://pypi.org/project/prodocux/0.3.0rc10/)**,
 published from tag **[`v0.3.0rc10`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc10)**
@@ -17,11 +17,11 @@ python -m pip install "prodocux==0.3.0rc10"
 ```
 <!-- pypi-release-status:end -->
 
-The current release replaces the mandatory
+The rc8 release replaced the mandatory
 AGPL PDF dependency with a permissive default writer and keeps PyMuPDF behind
 an explicit optional extra.
 
-This Kernel-only release fixes deterministic PDF wrapping, explicit line
+The rc5 Kernel-only release fixed deterministic PDF wrapping, explicit line
 breaks, pagination, and mixed Latin/CJK font selection without changing frozen
 contracts. See [rc5 publication record](docs/RELEASE_RC5.md).
 
