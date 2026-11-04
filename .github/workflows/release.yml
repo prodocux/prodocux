@@ -84,3 +84,10 @@ jobs:
           done
           echo "PyPI did not expose prodocux ${version} after 300 seconds" >&2
           exit 1
+
+  readme-closeout:
+    needs: publish
+    uses: ./.github/workflows/readme-after-publish.yml
+    with:
+      tag: ${{ github.event.release.tag_name || inputs.tag }}
+    secrets: inherit
