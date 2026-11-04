@@ -12,11 +12,8 @@ import os
 import re
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
-
-from api.auth import BearerAuthMiddleware, auth_profile_ok
-from api.path_policy import resolve_allowed_input_path
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
 from prodocux_kernel.artifacts import ArtifactResolutionError, resolve_opaque_artifact
 from prodocux_kernel.config import golden_path
@@ -104,6 +101,7 @@ from prodocux_kernel.verification import (
     EvidenceValidationError,
     NormalizedDiffError,
     compare_normalized_profiles,
+    source_binding,
     verify_evidence_bundle,
 )
 from prodocux_kernel.verification.diff_models import (
@@ -114,6 +112,9 @@ from prodocux_kernel.verification.evidence_models import (
     EvidenceBundleRequestV1,
     EvidenceBundleResultV1,
 )
+
+from api.auth import BearerAuthMiddleware, auth_profile_ok
+from api.path_policy import resolve_allowed_input_path
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
 app.add_middleware(BearerAuthMiddleware)
@@ -467,6 +468,36 @@ def extract_blocks(req: ExtractBlocksRequest) -> JSONResponse:
     except (ValueError, OSError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return JSONResponse(status_code=200, content=body)
+
+
+@app.get("/v1/verify/source-bound-evidence/capabilities")
+def source_binding_capabilities():
+    return source_binding.capabilities()
+
+
+@app.post("/v1/verify/source-bound-evidence")
+async def source_binding_verify(request: Request):
+    request_id = "invalid-request"
+    try:
+        raw = bytearray()
+        async for chunk in request.stream():
+            if len(raw) + len(chunk) > 14_000_000:
+                raise source_binding.contract.Invalid("REQUEST_TOO_LARGE")
+            raw.extend(chunk)
+        body = source_binding.contract.parse(bytes(raw))
+        if isinstance(body, dict):
+            candidate = body.get("request_id", "invalid-request")
+            if isinstance(candidate, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", candidate):
+                request_id = candidate
+        # Parsing is CPU work; do not block the asynchronous HTTP event loop.
+        from starlette.concurrency import run_in_threadpool
+        return await run_in_threadpool(source_binding.verify_source_bound_evidence, body)
+    except source_binding.contract.Invalid as exc:
+        return JSONResponse(status_code=source_binding.ERROR_STATUS[exc.code], content={
+            "schema_version": "prodocux_source_binding_error_draft_v1",
+            "request_id": request_id, "code": exc.code,
+            "message": exc.code, "retryable": exc.code == "VERIFIER_UNAVAILABLE",
+        })
 
 
 @app.post("/v1/intake/extract-blocks/continue")

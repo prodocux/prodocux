@@ -31,6 +31,7 @@ dependencies = [
     "openpyxl>=3.1,<4",
     "python-pptx>=1.0,<2",
     "jsonschema>=4.22.0",
+    "rfc8785==0.1.4",
 ]
 
 [project.optional-dependencies]
@@ -55,6 +56,7 @@ include = ["api*", "prodocux_kernel*", "skills*"]
 
 [tool.setuptools.package-data]
 prodocux_kernel = ["schemas/*.json"]
+"prodocux_kernel.verification.source_binding_contracts" = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,0 +1,575 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pdx:draft:cr003:core:1",
+  "title": "CR-003 core wire draft; not frozen or implemented",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/report"
+    },
+    {
+      "$ref": "#/$defs/error"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decimal": {
+      "type": "string",
+      "maxLength": 28,
+      "pattern": "^-?(0|[1-9][0-9]{0,17})(\\.[0-9]{1,8})?$"
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 49999
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50000
+        }
+      }
+    },
+    "sourceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "size_bytes",
+        "media_type"
+      ],
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "media_type": {
+          "const": "application/pdf"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "size_bytes",
+        "media_type",
+        "document_b64"
+      ],
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "media_type": {
+          "const": "application/pdf"
+        },
+        "document_b64": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 13981016,
+          "contentEncoding": "base64"
+        }
+      }
+    },
+    "parser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "prodocux_pdf_page_projection_v1"
+        },
+        "version": {
+          "const": "1"
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "quote_range",
+        "quote",
+        "value_range",
+        "conversion_rule",
+        "declared_value",
+        "scale"
+      ],
+      "properties": {
+        "check_id": {
+          "$ref": "#/$defs/id"
+        },
+        "quote_range": {
+          "$ref": "#/$defs/range"
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "value_range": {
+          "$ref": "#/$defs/range"
+        },
+        "conversion_rule": {
+          "const": "ascii_decimal_exact_scale_v1"
+        },
+        "declared_value": {
+          "$ref": "#/$defs/decimal"
+        },
+        "scale": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request_id",
+        "source",
+        "parser_contract",
+        "normalization",
+        "page_number",
+        "expected_page_text_sha256",
+        "checks"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "prodocux_source_binding_request_draft_v1"
+        },
+        "request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "parser_contract": {
+          "$ref": "#/$defs/parser"
+        },
+        "normalization": {
+          "const": "unicode_nfc_preserve_whitespace_codepoint_v1"
+        },
+        "page_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "expected_page_text_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/check"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quote_sha256",
+        "value_sha256",
+        "conversion_rule",
+        "declared_value",
+        "scale",
+        "derived_value"
+      ],
+      "properties": {
+        "quote_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "value_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "conversion_rule": {
+          "const": "ascii_decimal_exact_scale_v1"
+        },
+        "declared_value": {
+          "$ref": "#/$defs/decimal"
+        },
+        "scale": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "derived_value": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "checkResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "quote_range",
+        "value_range",
+        "status",
+        "reason_code",
+        "evidence"
+      ],
+      "properties": {
+        "check_id": {
+          "$ref": "#/$defs/id"
+        },
+        "quote_range": {
+          "$ref": "#/$defs/range"
+        },
+        "value_range": {
+          "$ref": "#/$defs/range"
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "review"
+          ]
+        },
+        "reason_code": {
+          "enum": [
+            "SOURCE_SPAN_VERIFIED",
+            "QUOTE_MISMATCH",
+            "RANGE_OUT_OF_BOUNDS",
+            "VALUE_CONVERSION_FAILED",
+            "VALUE_MISMATCH",
+            "SELECTED_UNIT_OCR_REQUIRED",
+            "SELECTED_UNIT_INCOMPLETE"
+          ]
+        },
+        "evidence": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/evidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "pass"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason_code": {
+                "const": "SOURCE_SPAN_VERIFIED"
+              },
+              "evidence": {
+                "$ref": "#/$defs/evidence"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "review"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason_code": {
+                "enum": [
+                  "SELECTED_UNIT_OCR_REQUIRED",
+                  "SELECTED_UNIT_INCOMPLETE"
+                ]
+              },
+              "evidence": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "fail"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason_code": {
+                "enum": [
+                  "QUOTE_MISMATCH",
+                  "RANGE_OUT_OF_BOUNDS",
+                  "VALUE_CONVERSION_FAILED",
+                  "VALUE_MISMATCH"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "RANGE_OUT_OF_BOUNDS"
+              }
+            },
+            "required": [
+              "reason_code"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "selected_unit_status",
+        "document_disposition",
+        "omissions"
+      ],
+      "properties": {
+        "scope": {
+          "const": "native_text_only"
+        },
+        "selected_unit_status": {
+          "enum": [
+            "complete_native_text",
+            "ocr_required",
+            "incomplete"
+          ]
+        },
+        "document_disposition": {
+          "const": "partial_unknown"
+        },
+        "omissions": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "semanticResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "parser_contract",
+        "normalization",
+        "page_number",
+        "page_identity_digest",
+        "normalized_page_text_sha256",
+        "coverage",
+        "overall_status",
+        "checks"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/sourceIdentity"
+        },
+        "parser_contract": {
+          "$ref": "#/$defs/parser"
+        },
+        "normalization": {
+          "const": "unicode_nfc_preserve_whitespace_codepoint_v1"
+        },
+        "page_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "page_identity_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "normalized_page_text_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "overall_status": {
+          "enum": [
+            "pass",
+            "fail",
+            "review"
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/checkResult"
+          }
+        }
+      }
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request_id",
+        "semantic_request_digest",
+        "semantic_result",
+        "semantic_result_digest",
+        "producer"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "prodocux_source_binding_report_draft_v1"
+        },
+        "request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "semantic_request_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "semantic_result": {
+          "$ref": "#/$defs/semanticResult"
+        },
+        "semantic_result_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "producer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kernel_version",
+            "parser_backend",
+            "parser_backend_version"
+          ],
+          "properties": {
+            "kernel_version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "parser_backend": {
+              "const": "pypdf"
+            },
+            "parser_backend_version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request_id",
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "prodocux_source_binding_error_draft_v1"
+        },
+        "request_id": {
+          "$ref": "#/$defs/id"
+        },
+        "code": {
+          "enum": [
+            "REQUEST_INVALID",
+            "SOURCE_IDENTITY_MISMATCH",
+            "PARSER_CONTRACT_MISMATCH",
+            "PAGE_PROJECTION_MISMATCH",
+            "SOURCE_TOO_LARGE",
+            "REQUEST_TOO_LARGE",
+            "SOURCE_TYPE_UNSUPPORTED",
+            "SOURCE_UNREADABLE",
+            "PAGE_UNAVAILABLE",
+            "SOURCE_ENCRYPTED",
+            "PARSER_RESOURCE_LIMIT",
+            "VERIFIER_UNAVAILABLE"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

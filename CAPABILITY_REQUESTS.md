@@ -104,7 +104,7 @@ in a private collaboration log.
   and release remain separately gated.
 - Shipped in: not shipped
 
-## CR-003 [status: approved]
+## CR-003 [status: in-progress]
 
 - Reporter: source-bound verification consumer
 - Date: 2026-10-31
@@ -159,4 +159,8 @@ in a private collaboration log.
   and standalone checks are in `docs/source-bound-evidence/CONTRACT.md` and
   `docs/source-bound-evidence/contract-freeze.v1.json`. This is contract approval;
   runtime implementation and release require separate authorization.
+- Implementation: authorized on 2026-11-03; source-bound PDF runtime candidate
+  and tests are available for review. The frozen contract record is unchanged.
+  No implementation release has been assigned or published.
+- Runtime acceptance: source sealing approved on 2026-11-04; release remains gated.
 - Shipped in: not shipped
