@@ -168,3 +168,5 @@ See `examples/pif_tw/` for curated **synthetic** fixtures (no customer documents
 | PDF extract | `skills.pdf_extract` |
 
 All first-party skills are deterministic. CLI messages support `en` and `zh-TW`.
+
+<!-- Publication App PR validation; no version change. -->
