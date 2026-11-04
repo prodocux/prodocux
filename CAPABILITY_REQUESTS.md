@@ -104,7 +104,7 @@ in a private collaboration log.
   and release remain separately gated.
 - Shipped in: not shipped
 
-## CR-003 [status: in-progress]
+## CR-003 [status: done]
 
 - Reporter: source-bound verification consumer
 - Date: 2026-10-31
@@ -161,6 +161,7 @@ in a private collaboration log.
   runtime implementation and release require separate authorization.
 - Implementation: authorized on 2026-11-03; source-bound PDF runtime candidate
   and tests are available for review. The frozen contract record is unchanged.
-  The source release candidate is 0.3.0rc11; it is not yet published.
+  Published as `prodocux==0.3.0rc11`; public distribution bytes and
+  clean installation were verified.
 - Runtime acceptance: source sealing approved on 2026-11-04; release remains gated.
-- Shipped in: not shipped
+- Shipped in: `prodocux==0.3.0rc11`
