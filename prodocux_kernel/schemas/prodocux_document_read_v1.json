@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_document_read_v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "parser_contract",
+    "text_items",
+    "next_cursor",
+    "coverage",
+    "metadata"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_document_read_v1"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "source_sha256",
+        "size_bytes",
+        "payload_validated"
+      ],
+      "properties": {
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        },
+        "payload_validated": {
+          "const": true
+        }
+      }
+    },
+    "parser_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "text_items": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_locator",
+          "text",
+          "type"
+        ],
+        "properties": {
+          "source_locator": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "next_cursor": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "disposition",
+        "omitted_content_classes"
+      ],
+      "properties": {
+        "disposition": {
+          "enum": [
+            "complete",
+            "partial_known",
+            "partial_unknown"
+          ]
+        },
+        "omitted_content_classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

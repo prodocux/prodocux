@@ -9,9 +9,8 @@ import tempfile
 import venv
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
-IMPORTS = ("prodocux_kernel", "api.main")
+IMPORTS = ("prodocux_kernel", "api.main", "prodocux_kernel.intake.documents")
 PACKAGED_SCHEMAS = (
     "prodocux_intake_capabilities_v1.json",
     "prodocux_source_reference_v1.json",
@@ -25,6 +24,12 @@ PACKAGED_SCHEMAS = (
     "prodocux_render_request_v1.json",
     "prodocux_render_result_v1.json",
     "prodocux_render_capabilities_v1.json",
+    "prodocux_csv_continuable_projection_v2.json",
+    "prodocux_xlsx_continuable_projection_v2.json",
+    "prodocux_document_inspect_request_v1.json",
+    "prodocux_document_read_request_v1.json",
+    "prodocux_document_resolve_request_v1.json",
+    "prodocux_document_read_v1.json",
 )
 
 

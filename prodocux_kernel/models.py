@@ -191,6 +191,7 @@ class CsvContinuableProjectionRequest(BaseModel):
 
     document_filename: str = Field(min_length=4, max_length=255)
     document_b64: str = Field(min_length=1, max_length=12_000_000)
+    contract_version: Literal["1", "2"] = "1"
     cursor: dict[str, Any] | None = None
     max_rows: int = Field(default=500, ge=1, le=500)
 
@@ -200,6 +201,7 @@ class XlsxContinuableProjectionRequest(BaseModel):
 
     document_filename: str = Field(min_length=5, max_length=255)
     document_b64: str = Field(min_length=1, max_length=23_000_000)
+    contract_version: Literal["1", "2"] = "1"
     cursor: dict[str, Any] | None = None
     max_rows: int = Field(default=500, ge=1, le=500)
 

@@ -1,0 +1,62 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "document_filename": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Document Filename",
+      "type": "string"
+    },
+    "document_b64": {
+      "maxLength": 5592408,
+      "title": "Document B64",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "parser_contract": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Parser Contract",
+      "type": "object"
+    },
+    "locator": {
+      "maxLength": 8192,
+      "title": "Locator",
+      "type": "string"
+    },
+    "quote_start": {
+      "minimum": 0,
+      "title": "Quote Start",
+      "type": "integer"
+    },
+    "quote_end": {
+      "exclusiveMinimum": 0,
+      "title": "Quote End",
+      "type": "integer"
+    },
+    "quote_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Quote Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "document_filename",
+    "document_b64",
+    "source_sha256",
+    "parser_contract",
+    "locator",
+    "quote_start",
+    "quote_end",
+    "quote_sha256"
+  ],
+  "title": "ResolveRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_document_resolve_request_v1.json"
+}

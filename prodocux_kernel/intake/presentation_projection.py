@@ -12,6 +12,7 @@ from typing import Any
 
 from pptx import Presentation
 from pptx.exc import PackageNotFoundError
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 from prodocux_kernel.intake.archive import validate_office_archive
 from prodocux_kernel.intake.errors import SourceTooLargeError
@@ -132,6 +133,8 @@ def _project_slide(
     if len(window) > MAX_SHAPES_PER_SLIDE:
         omissions.add("shapes_beyond_limit")
     for shape in window[:MAX_SHAPES_PER_SLIDE]:
+        if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+            omissions.add("grouped_shapes_not_projected")
         item: dict[str, Any] = {
             "shape_id": shape.shape_id,
             "shape_name": shape.name,

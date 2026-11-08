@@ -16,6 +16,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 from prodocux_kernel.intake.archive import validate_office_archive
 from prodocux_kernel.intake.errors import SourceTooLargeError
 from prodocux_kernel.intake.projection_validate import validate_continuable_projection
+from prodocux_kernel.intake.projection_validate_v2 import validate_office_projection_v2
 from prodocux_kernel.intake.workbook import MAX_WORKBOOK_BYTES, _cell_value
 
 MAX_XLSX_ROWS_PER_RANGE = 500
@@ -29,7 +30,11 @@ def extract_xlsx_continuable_projection(
     *,
     cursor: Mapping[str, Any] | None = None,
     max_rows: int = MAX_XLSX_ROWS_PER_RANGE,
+    contract_version: str = "1",
 ) -> dict[str, Any]:
+    if contract_version not in {"1", "2"}:
+        raise ValueError("unsupported XLSX parser contract version")
+    parser_name = f"prodocux_xlsx_worksheet_row_projection_v{contract_version}"
     if not payload:
         raise ValueError("document payload is empty")
     if len(payload) > MAX_WORKBOOK_BYTES:
@@ -52,8 +57,8 @@ def extract_xlsx_continuable_projection(
             expected = {
                 "schema_version": "prodocux_projection_cursor_v1",
                 "source_sha256": source_sha256,
-                "parser_contract_name": PARSER_CONTRACT_NAME,
-                "parser_contract_version": PARSER_CONTRACT_VERSION,
+                "parser_contract_name": f"prodocux_xlsx_worksheet_row_projection_v{contract_version}",
+                "parser_contract_version": contract_version,
             }
             for name, value in expected.items():
                 if cursor.get(name) != value:
@@ -110,14 +115,17 @@ def extract_xlsx_continuable_projection(
                         }
                     )
             rows.append(projected)
+        if contract_version == "2":
+            while len(rows) < end_row - start_row:
+                rows.append([None] * column_count)
         next_cursor = None
         if end_row <= max_row:
             next_cursor = _cursor(
-                source_sha256, sheet_index, formula_sheet.title, end_row
+                source_sha256, sheet_index, formula_sheet.title, end_row, contract_version
             )
         elif sheet_index + 1 < len(formulas.worksheets):
             next_sheet = formulas.worksheets[sheet_index + 1]
-            next_cursor = _cursor(source_sha256, sheet_index + 1, next_sheet.title, 1)
+            next_cursor = _cursor(source_sha256, sheet_index + 1, next_sheet.title, 1, contract_version)
         disposition = (
             "partial_unknown"
             if omissions
@@ -126,16 +134,17 @@ def extract_xlsx_continuable_projection(
             else "complete"
         )
         result = {
-            "schema_version": "prodocux_xlsx_continuable_projection_v1",
+            "schema_version": f"prodocux_xlsx_continuable_projection_v{contract_version}",
             "source_sha256": source_sha256,
             "parser_contract": {
-                "name": PARSER_CONTRACT_NAME,
-                "version": PARSER_CONTRACT_VERSION,
+                "name": parser_name,
+                "version": contract_version,
             },
             "range": {
                 "unit": "worksheet_row",
                 "sheet_index": sheet_index,
                 "sheet_name": formula_sheet.title,
+                **({"sheet_visibility": formula_sheet.sheet_state} if contract_version == "2" else {}),
                 "start": start_row,
                 "end": end_row,
                 "requested_max_rows": max_rows,
@@ -155,7 +164,7 @@ def extract_xlsx_continuable_projection(
                 "returned_columns": column_count,
             },
         }
-        validate_continuable_projection(result)
+        (validate_office_projection_v2 if contract_version == "2" else validate_continuable_projection)(result)
         return result
     finally:
         formulas.close()
@@ -163,13 +172,13 @@ def extract_xlsx_continuable_projection(
 
 
 def _cursor(
-    source_sha256: str, sheet_index: int, sheet_name: str, next_row: int
+    source_sha256: str, sheet_index: int, sheet_name: str, next_row: int, contract_version: str
 ) -> dict[str, Any]:
     return {
         "schema_version": "prodocux_projection_cursor_v1",
         "source_sha256": source_sha256,
-        "parser_contract_name": PARSER_CONTRACT_NAME,
-        "parser_contract_version": PARSER_CONTRACT_VERSION,
+        "parser_contract_name": f"prodocux_xlsx_worksheet_row_projection_v{contract_version}",
+        "parser_contract_version": contract_version,
         "next_sheet_index": sheet_index,
         "next_sheet_name": sheet_name,
         "next_row": next_row,

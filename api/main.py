@@ -12,6 +12,7 @@ import os
 import re
 from pathlib import Path
 
+from api.documents import router as document_router
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from prodocux_kernel import API_VERSION, FROZEN_MODEL, __version__
@@ -117,9 +118,17 @@ from api.auth import BearerAuthMiddleware, auth_profile_ok
 from api.path_policy import resolve_allowed_input_path
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
+app.include_router(document_router)
 app.add_middleware(BearerAuthMiddleware)
 
 KNOWN_SCHEMAS = [
+    "prodocux_document_read_v1",
+    "prodocux_document_inspect_request_v1",
+    "prodocux_document_read_request_v1",
+    "prodocux_document_resolve_request_v1",
+    "prodocux_csv_continuable_projection_v2",
+    "prodocux_xlsx_continuable_projection_v2",
+
     "intake_request_v1",
     "intake_response_v1",
     "prodocux_intake_capabilities_v1",
@@ -379,7 +388,7 @@ def profile_table_continue(req: CsvContinuableProjectionRequest) -> JSONResponse
             raise SourceTooLargeError("document exceeds CSV inline intake limit")
         raw = base64.b64decode(req.document_b64, validate=True)
         result = extract_csv_continuable_projection(
-            raw, cursor=req.cursor, max_rows=req.max_rows
+            raw, cursor=req.cursor, max_rows=req.max_rows, contract_version=req.contract_version
         )
     except SourceTooLargeError as exc:
         raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc
@@ -399,7 +408,7 @@ def profile_workbook_continue(req: XlsxContinuableProjectionRequest) -> JSONResp
             raise SourceTooLargeError("document exceeds XLSX inline intake limit")
         raw = base64.b64decode(req.document_b64, validate=True)
         result = extract_xlsx_continuable_projection(
-            raw, cursor=req.cursor, max_rows=req.max_rows
+            raw, cursor=req.cursor, max_rows=req.max_rows, contract_version=req.contract_version
         )
     except SourceTooLargeError as exc:
         raise HTTPException(status_code=413, detail={"code": "SOURCE_TOO_LARGE", "message": str(exc), "retryable": False}) from exc

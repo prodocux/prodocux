@@ -10,7 +10,8 @@ from typing import Any
 
 from prodocux_kernel.intake.errors import SourceTooLargeError
 from prodocux_kernel.intake.projection_validate import validate_continuable_projection
-from prodocux_kernel.intake.table import MAX_TABLE_BYTES
+from prodocux_kernel.intake.projection_validate_v2 import validate_office_projection_v2
+from prodocux_kernel.intake.table import MAX_TABLE_BYTES, parse_csv_records
 
 MAX_CSV_ROWS_PER_RANGE = 500
 MAX_CSV_COLUMNS = 32
@@ -23,6 +24,7 @@ def extract_csv_continuable_projection(
     *,
     cursor: Mapping[str, Any] | None = None,
     max_rows: int = MAX_CSV_ROWS_PER_RANGE,
+    contract_version: str = "1",
 ) -> dict[str, Any]:
     if not payload:
         raise ValueError("document payload is empty")
@@ -35,7 +37,7 @@ def extract_csv_continuable_projection(
     except UnicodeDecodeError as exc:
         raise ValueError("CSV must be UTF-8 encoded") from exc
     try:
-        parsed = list(csv.reader(text.splitlines()))
+        parsed = parse_csv_records(text, contract_version=contract_version)
     except csv.Error as exc:
         raise ValueError("invalid CSV document") from exc
     source_sha256 = hashlib.sha256(payload).hexdigest()
@@ -46,8 +48,8 @@ def extract_csv_continuable_projection(
         expected = {
             "schema_version": "prodocux_projection_cursor_v1",
             "source_sha256": source_sha256,
-            "parser_contract_name": PARSER_CONTRACT_NAME,
-            "parser_contract_version": PARSER_CONTRACT_VERSION,
+            "parser_contract_name": f"prodocux_csv_row_projection_v{contract_version}",
+            "parser_contract_version": contract_version,
         }
         for name, value in expected.items():
             if cursor.get(name) != value:
@@ -74,8 +76,8 @@ def extract_csv_continuable_projection(
         next_cursor = {
             "schema_version": "prodocux_projection_cursor_v1",
             "source_sha256": source_sha256,
-            "parser_contract_name": PARSER_CONTRACT_NAME,
-            "parser_contract_version": PARSER_CONTRACT_VERSION,
+            "parser_contract_name": f"prodocux_csv_row_projection_v{contract_version}",
+            "parser_contract_version": contract_version,
             "next_row": end_row,
         }
     disposition = (
@@ -86,11 +88,11 @@ def extract_csv_continuable_projection(
         else "complete"
     )
     result = {
-        "schema_version": "prodocux_csv_continuable_projection_v1",
+        "schema_version": f"prodocux_csv_continuable_projection_v{contract_version}",
         "source_sha256": source_sha256,
         "parser_contract": {
-            "name": PARSER_CONTRACT_NAME,
-            "version": PARSER_CONTRACT_VERSION,
+            "name": f"prodocux_csv_row_projection_v{contract_version}",
+            "version": contract_version,
         },
         "range": {
             "unit": "row",
@@ -112,5 +114,5 @@ def extract_csv_continuable_projection(
             "returned_columns": len(columns),
         },
     }
-    validate_continuable_projection(result)
+    (validate_office_projection_v2 if contract_version == "2" else validate_continuable_projection)(result)
     return result

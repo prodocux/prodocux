@@ -1,0 +1,50 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "document_filename": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Document Filename",
+      "type": "string"
+    },
+    "document_b64": {
+      "maxLength": 5592408,
+      "title": "Document B64",
+      "type": "string"
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cursor"
+    },
+    "max_bytes": {
+      "default": 65536,
+      "maximum": 2097152,
+      "minimum": 1,
+      "title": "Max Bytes",
+      "type": "integer"
+    },
+    "max_records": {
+      "default": 512,
+      "maximum": 20000,
+      "minimum": 1,
+      "title": "Max Records",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "document_filename",
+    "document_b64"
+  ],
+  "title": "ReadRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_document_read_request_v1.json"
+}

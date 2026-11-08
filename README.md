@@ -6,7 +6,7 @@ Deterministic document kernel for ProDocuX. Runtime **does not call any LLM API*
 License: Apache-2.0. See [LICENSE](LICENSE).
 
 <!-- pypi-release-status:start -->
-Source version in this branch: **`0.3.0rc11`**.
+Source version in this branch: **`0.3.0rc12`**.
 
 Latest verified PyPI release: **[`0.3.0rc11`](https://pypi.org/project/prodocux/0.3.0rc11/)**,
 published from tag **[`v0.3.0rc11`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc11)**
@@ -16,6 +16,9 @@ at commit `ea17941f49af992798a552c12ce93cc78bcc1781`.
 python -m pip install "prodocux==0.3.0rc11"
 ```
 <!-- pypi-release-status:end -->
+
+Portable document Inspect/Read/Resolve APIs and explicit CSV/XLSX v2 selection
+are available in this source version. See [portable intake](docs/PORTABLE_DOCUMENT_INTAKE.md).
 
 The rc8 release replaced the mandatory
 AGPL PDF dependency with a permissive default writer and keeps PyMuPDF behind

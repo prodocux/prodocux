@@ -1,0 +1,6 @@
+recursive-include docs/document-intake *.md *.json
+include docs/PORTABLE_DOCUMENT_INTAKE.md
+include .github/workflows/release.yml
+prune adapters
+exclude .github/workflows/document-backend-release.yml
+exclude scripts/verify_document_backend_release.py
