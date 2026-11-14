@@ -8,12 +8,12 @@ License: Apache-2.0. See [LICENSE](LICENSE).
 <!-- pypi-release-status:start -->
 Source version in this branch: **`0.3.0rc13`**.
 
-Latest verified PyPI release: **[`0.3.0rc12`](https://pypi.org/project/prodocux/0.3.0rc12/)**,
-published from tag **[`v0.3.0rc12`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc12)**
-at commit `0e0d8079040052f50d573a5bfbbfd4c374bdad40`.
+Latest verified PyPI release: **[`0.3.0rc13`](https://pypi.org/project/prodocux/0.3.0rc13/)**,
+published from tag **[`v0.3.0rc13`](https://github.com/prodocux/prodocux/releases/tag/v0.3.0rc13)**
+at commit `04cac26bed34107d09ddbbab5fc96c9d42ea649b`.
 
 ```powershell
-python -m pip install "prodocux==0.3.0rc12"
+python -m pip install "prodocux==0.3.0rc13"
 ```
 <!-- pypi-release-status:end -->
 
