@@ -2,13 +2,18 @@
 
 import json
 import sys
+from importlib import import_module
 from pathlib import Path
+from types import ModuleType
 
-# Isolated Python ignores PYTHONPATH. Import only the adjacent package.
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+# Load the adjacent parser modules without running the public intake package
+# initializer, which imports unrelated Office and PDF dependencies.
+package = ModuleType("_prodocux_eml")
+package.__path__ = [str(Path(__file__).resolve().parent)]
+sys.modules[package.__name__] = package
 
-from prodocux_kernel.intake.documents.structured import MAX_TEXT_SOURCE
-from prodocux_kernel.intake.documents.structured_view import project
+MAX_TEXT_SOURCE = import_module("_prodocux_eml.structured").MAX_TEXT_SOURCE
+project = import_module("_prodocux_eml.structured_view").project
 
 
 def main():
@@ -17,7 +22,11 @@ def main():
         result = project("message.eml", payload)
     except ValueError as exc:
         message = str(exc)
-        code = message if message.startswith(("EML_", "HTML_", "INTAKE_")) else "EML_PARSE_REJECTED"
+        code = (
+            message
+            if message.startswith(("EML_", "HTML_", "INTAKE_"))
+            else "EML_PARSE_REJECTED"
+        )
         print(json.dumps({"error": code}))
         return
     print(json.dumps({"projection": result}, ensure_ascii=True))

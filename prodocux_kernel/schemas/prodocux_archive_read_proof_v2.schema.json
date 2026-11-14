@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_read_proof_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_read_proof_v2"
+    },
+    "range": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "available_range": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "range_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "eof_verified": {
+      "type": "boolean"
+    },
+    "full_integrity_verified": {
+      "type": "boolean"
+    },
+    "member_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "member_size_bytes": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "short_read_reason": {
+      "enum": [
+        "none",
+        "verified_eof",
+        "budget_exhausted",
+        "integrity_failed",
+        "decoder_interrupted"
+      ]
+    },
+    "origin": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "enum": [
+                "root_volume",
+                "verified_member",
+                "metadata_projection",
+                "supplied_source"
+              ]
+            },
+            "source_bundle_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "chain_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "volume_key": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "content_size_bytes": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$"
+            },
+            "representation_contract": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Parser"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "producer_attestation_digest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "source_bundle_digest",
+            "chain_digest",
+            "volume_key",
+            "content_sha256",
+            "content_size_bytes",
+            "representation_contract",
+            "producer_attestation_digest"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "range",
+    "available_range",
+    "range_sha256",
+    "eof_verified",
+    "full_integrity_verified",
+    "member_sha256",
+    "member_size_bytes",
+    "short_read_reason",
+    "origin"
+  ],
+  "additionalProperties": false
+}

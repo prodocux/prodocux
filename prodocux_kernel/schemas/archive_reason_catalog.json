@@ -1,0 +1,342 @@
+{
+  "status": "contract_draft_for_review",
+  "reason_codes": [
+    {
+      "code": "MALFORMED_REQUEST",
+      "http_status": 400,
+      "retry_hint": "fix_request",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "UNAUTHENTICATED",
+      "http_status": 401,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "FORBIDDEN",
+      "http_status": 403,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "SOURCE_NOT_FOUND",
+      "http_status": 404,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "SOURCE_LEASE_EXPIRED",
+      "http_status": 410,
+      "retry_hint": "supply_input",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "SOURCE_CHANGED",
+      "http_status": 409,
+      "retry_hint": "re_negotiate",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "SOURCE_TOO_LARGE",
+      "http_status": 413,
+      "retry_hint": "fix_request",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission"
+      ]
+    },
+    {
+      "code": "INVALID_RANGE",
+      "http_status": 422,
+      "retry_hint": "fix_request",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "CAPABILITY_CATALOG_CHANGED",
+      "http_status": 409,
+      "retry_hint": "re_negotiate",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_UNKNOWN",
+      "http_status": 422,
+      "retry_hint": "fix_request",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_CONTRACT_UNSUPPORTED",
+      "http_status": 422,
+      "retry_hint": "fix_request",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_BINDING_CHANGED",
+      "http_status": 409,
+      "retry_hint": "re_negotiate",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_NOT_IMPLEMENTED",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_UNQUALIFIED",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_NOT_EVALUATED",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_NOT_APPLICABLE",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_MISMATCH",
+      "http_status": 409,
+      "retry_hint": "re_negotiate",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "PROFILE_DETECTION_INCOMPLETE",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "DECODER_UNAVAILABLE",
+      "http_status": 200,
+      "retry_hint": "supply_input",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "TOOL_FINGERPRINT_MISMATCH",
+      "http_status": 409,
+      "retry_hint": "re_negotiate",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "CREDENTIAL_REQUIRED",
+      "http_status": 200,
+      "retry_hint": "supply_input",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "VOLUME_MISSING",
+      "http_status": 200,
+      "retry_hint": "supply_input",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "POLICY_DENIED",
+      "http_status": 403,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "RESOURCE_CAPACITY_BUSY",
+      "http_status": 429,
+      "retry_hint": "wait_for_capacity",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "NEGOTIATION_EXPIRED",
+      "http_status": 410,
+      "retry_hint": "re_negotiate",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "OPERATION_NOT_ACTIVE",
+      "http_status": 409,
+      "retry_hint": "none",
+      "execution_disposition": "not_started",
+      "allowed_phases": [
+        "admission",
+        "negotiation",
+        "pre_execution"
+      ]
+    },
+    {
+      "code": "OPERATION_RECONCILIATION_REQUIRED",
+      "http_status": 409,
+      "retry_hint": "reconcile",
+      "execution_disposition": "unknown",
+      "allowed_phases": [
+        "pre_execution",
+        "reconciliation"
+      ]
+    },
+    {
+      "code": "BUDGET_EXHAUSTED",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "started",
+      "allowed_phases": [
+        "execution",
+        "reconciliation"
+      ]
+    },
+    {
+      "code": "INTEGRITY_FAILED",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "started",
+      "allowed_phases": [
+        "execution",
+        "reconciliation"
+      ]
+    },
+    {
+      "code": "CREDENTIAL_OR_INTEGRITY_UNCERTAIN",
+      "http_status": 200,
+      "retry_hint": "none",
+      "execution_disposition": "started",
+      "allowed_phases": [
+        "execution",
+        "reconciliation"
+      ]
+    },
+    {
+      "code": "EXECUTION_UNKNOWN",
+      "http_status": 500,
+      "retry_hint": "reconcile",
+      "execution_disposition": "unknown",
+      "allowed_phases": [
+        "execution",
+        "reconciliation"
+      ]
+    }
+  ],
+  "no_automatic_fallback": true,
+  "no_automatic_new_operation_after_unknown": true,
+  "200_is_not_equivalent_to_success": true
+}

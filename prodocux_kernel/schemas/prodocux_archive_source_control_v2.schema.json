@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_source_control_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_source_control_v2"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "expected_lease_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "enum": [
+        "renew",
+        "revoke",
+        "close"
+      ]
+    },
+    "requested_expiry_ms": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "session_id",
+    "operation_id",
+    "expected_lease_digest",
+    "action",
+    "requested_expiry_ms"
+  ],
+  "additionalProperties": false
+}

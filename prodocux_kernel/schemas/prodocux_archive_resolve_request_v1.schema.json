@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_resolve_request_v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_resolve_request_v1"
+    },
+    "operation": {
+      "const": "resolve"
+    },
+    "request_id": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+    },
+    "source_ref": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+    },
+    "budget": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Budget"
+    },
+    "view": {
+      "enum": [
+        "container",
+        "stream",
+        "document",
+        "structural",
+        "manifest"
+      ]
+    },
+    "credential_ref": {
+      "anyOf": [
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "chain": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Chain"
+    },
+    "document": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Document"
+    },
+    "quote": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Quote"
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation",
+    "request_id",
+    "source_ref",
+    "budget",
+    "view",
+    "chain",
+    "document",
+    "quote"
+  ],
+  "additionalProperties": false
+}

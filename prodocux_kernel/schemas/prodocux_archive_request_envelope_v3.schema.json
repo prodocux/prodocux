@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_request_envelope_v3.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_request_envelope_v3"
+    },
+    "mode": {
+      "enum": [
+        "discovery",
+        "negotiated"
+      ]
+    },
+    "base": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_request_envelope_v2.schema.json"
+    },
+    "profile_binding": {
+      "anyOf": [
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/Binding"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "mode",
+    "base",
+    "profile_binding"
+  ],
+  "additionalProperties": false
+}

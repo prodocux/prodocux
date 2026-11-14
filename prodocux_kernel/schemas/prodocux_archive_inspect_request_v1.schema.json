@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_inspect_request_v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_inspect_request_v1"
+    },
+    "operation": {
+      "const": "inspect"
+    },
+    "request_id": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+    },
+    "source_ref": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+    },
+    "budget": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Budget"
+    },
+    "view": {
+      "enum": [
+        "container",
+        "stream",
+        "document",
+        "structural",
+        "manifest"
+      ]
+    },
+    "credential_ref": {
+      "anyOf": [
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "parent_chain": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Chain"
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation",
+    "request_id",
+    "source_ref",
+    "budget",
+    "view",
+    "parent_chain"
+  ],
+  "additionalProperties": false
+}

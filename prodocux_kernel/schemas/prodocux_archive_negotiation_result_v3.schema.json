@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_negotiation_result_v3.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_negotiation_result_v3"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "profile_contract": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "catalog_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision": {
+      "enum": [
+        "accepted",
+        "requires_input",
+        "unavailable",
+        "not_applicable"
+      ]
+    },
+    "http_status": {
+      "type": "integer",
+      "enum": [
+        200,
+        403,
+        409,
+        410,
+        422,
+        429
+      ]
+    },
+    "availability": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/Availability"
+    },
+    "binding": {
+      "anyOf": [
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/Binding"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "profile_id",
+    "profile_contract",
+    "catalog_digest",
+    "decision",
+    "http_status",
+    "availability",
+    "binding"
+  ],
+  "additionalProperties": false
+}

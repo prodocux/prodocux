@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_negotiation_request_v3.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_negotiation_request_v3"
+    },
+    "catalog_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "profile_contract": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "expected_profile_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "base_request": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_request_envelope_v2.schema.json"
+    }
+  },
+  "required": [
+    "schema_version",
+    "catalog_digest",
+    "profile_id",
+    "profile_contract",
+    "expected_profile_digest",
+    "base_request"
+  ],
+  "additionalProperties": false
+}

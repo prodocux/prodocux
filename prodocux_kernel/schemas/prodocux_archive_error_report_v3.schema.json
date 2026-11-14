@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_error_report_v3.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_error_report_v3"
+    },
+    "request_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "operation_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason_code": {
+      "enum": [
+        "MALFORMED_REQUEST",
+        "UNAUTHENTICATED",
+        "FORBIDDEN",
+        "SOURCE_NOT_FOUND",
+        "SOURCE_LEASE_EXPIRED",
+        "SOURCE_CHANGED",
+        "SOURCE_TOO_LARGE",
+        "INVALID_RANGE",
+        "CAPABILITY_CATALOG_CHANGED",
+        "PROFILE_UNKNOWN",
+        "PROFILE_CONTRACT_UNSUPPORTED",
+        "PROFILE_BINDING_CHANGED",
+        "PROFILE_NOT_IMPLEMENTED",
+        "PROFILE_UNQUALIFIED",
+        "PROFILE_NOT_EVALUATED",
+        "PROFILE_NOT_APPLICABLE",
+        "PROFILE_MISMATCH",
+        "PROFILE_DETECTION_INCOMPLETE",
+        "DECODER_UNAVAILABLE",
+        "TOOL_FINGERPRINT_MISMATCH",
+        "CREDENTIAL_REQUIRED",
+        "VOLUME_MISSING",
+        "POLICY_DENIED",
+        "RESOURCE_CAPACITY_BUSY",
+        "NEGOTIATION_EXPIRED",
+        "OPERATION_NOT_ACTIVE",
+        "OPERATION_RECONCILIATION_REQUIRED",
+        "BUDGET_EXHAUSTED",
+        "INTEGRITY_FAILED",
+        "CREDENTIAL_OR_INTEGRITY_UNCERTAIN",
+        "EXECUTION_UNKNOWN"
+      ]
+    },
+    "http_status": {
+      "type": "integer",
+      "enum": [
+        200,
+        400,
+        401,
+        403,
+        404,
+        409,
+        410,
+        413,
+        422,
+        429,
+        500
+      ]
+    },
+    "phase": {
+      "enum": [
+        "admission",
+        "negotiation",
+        "pre_execution",
+        "execution",
+        "reconciliation"
+      ]
+    },
+    "execution_disposition": {
+      "enum": [
+        "not_started",
+        "started",
+        "unknown"
+      ]
+    },
+    "retry_hint": {
+      "enum": [
+        "none",
+        "fix_request",
+        "re_negotiate",
+        "supply_input",
+        "wait_for_capacity",
+        "reconcile"
+      ]
+    },
+    "receipt_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "operation_ref",
+    "reason_code",
+    "http_status",
+    "phase",
+    "execution_disposition",
+    "retry_hint",
+    "receipt_ref"
+  ],
+  "additionalProperties": false
+}

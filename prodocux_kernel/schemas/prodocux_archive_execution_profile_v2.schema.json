@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_execution_profile_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_execution_profile_v2"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "view": {
+      "enum": [
+        "container",
+        "stream",
+        "document",
+        "structural",
+        "manifest"
+      ]
+    },
+    "decoder": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Tool"
+    },
+    "limits": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Budget"
+    },
+    "range_units": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "enum": [
+            "entries"
+          ]
+        },
+        "member": {
+          "enum": [
+            "bytes"
+          ]
+        },
+        "document": {
+          "enum": [
+            "parser_units"
+          ]
+        }
+      },
+      "required": [
+        "inventory",
+        "member",
+        "document"
+      ],
+      "additionalProperties": false
+    },
+    "selector_mode": {
+      "enum": [
+        "ordinal_api",
+        "verified_parse_only_adapter"
+      ]
+    },
+    "sandbox": {
+      "type": "object",
+      "properties": {
+        "network_denied": {
+          "type": "boolean"
+        },
+        "child_process_denied": {
+          "type": "boolean"
+        },
+        "hard_memory_limit": {
+          "type": "boolean"
+        },
+        "hard_cpu_limit": {
+          "type": "boolean"
+        },
+        "hard_wall_timeout": {
+          "type": "boolean"
+        },
+        "process_tree_termination": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "network_denied",
+        "child_process_denied",
+        "hard_memory_limit",
+        "hard_cpu_limit",
+        "hard_wall_timeout",
+        "process_tree_termination"
+      ],
+      "additionalProperties": false
+    },
+    "secret_delivery": {
+      "enum": [
+        "none",
+        "protected_pipe",
+        "trusted_library_callback"
+      ]
+    },
+    "unsafe_execution": {
+      "const": false
+    },
+    "metadata_contract": {
+      "anyOf": [
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Parser"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "version",
+    "view",
+    "decoder",
+    "limits",
+    "range_units",
+    "selector_mode",
+    "sandbox",
+    "secret_delivery",
+    "unsafe_execution",
+    "metadata_contract"
+  ],
+  "additionalProperties": false
+}

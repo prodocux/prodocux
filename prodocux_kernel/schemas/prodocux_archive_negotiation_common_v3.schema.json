@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json",
+  "$defs": {
+    "OperationSupport": {
+      "type": "object",
+      "properties": {
+        "support_status": {
+          "enum": [
+            "qualified",
+            "not_implemented",
+            "unqualified",
+            "not_applicable",
+            "not_evaluated"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "MALFORMED_REQUEST",
+              "UNAUTHENTICATED",
+              "FORBIDDEN",
+              "SOURCE_NOT_FOUND",
+              "SOURCE_LEASE_EXPIRED",
+              "SOURCE_CHANGED",
+              "SOURCE_TOO_LARGE",
+              "INVALID_RANGE",
+              "CAPABILITY_CATALOG_CHANGED",
+              "PROFILE_UNKNOWN",
+              "PROFILE_CONTRACT_UNSUPPORTED",
+              "PROFILE_BINDING_CHANGED",
+              "PROFILE_NOT_IMPLEMENTED",
+              "PROFILE_UNQUALIFIED",
+              "PROFILE_NOT_EVALUATED",
+              "PROFILE_NOT_APPLICABLE",
+              "PROFILE_MISMATCH",
+              "PROFILE_DETECTION_INCOMPLETE",
+              "DECODER_UNAVAILABLE",
+              "TOOL_FINGERPRINT_MISMATCH",
+              "CREDENTIAL_REQUIRED",
+              "VOLUME_MISSING",
+              "POLICY_DENIED",
+              "RESOURCE_CAPACITY_BUSY",
+              "NEGOTIATION_EXPIRED",
+              "OPERATION_NOT_ACTIVE",
+              "OPERATION_RECONCILIATION_REQUIRED",
+              "BUDGET_EXHAUSTED",
+              "INTEGRITY_FAILED",
+              "CREDENTIAL_OR_INTEGRITY_UNCERTAIN",
+              "EXECUTION_UNKNOWN"
+            ]
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "support_status",
+        "reason_codes"
+      ],
+      "additionalProperties": false
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "profile_contract": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "required": [
+            "name",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "inventory_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "minItems": 1
+        },
+        "release_target": {
+          "enum": [
+            "rc13_required_target",
+            "rc13_conditional_native_target",
+            "future_roadmap"
+          ]
+        },
+        "declared_scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "prerequisite_types": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "decoder",
+              "credential",
+              "volumes"
+            ]
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "profile_id",
+        "profile_contract",
+        "inventory_ids",
+        "release_target",
+        "declared_scope",
+        "prerequisite_types"
+      ],
+      "additionalProperties": false
+    },
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "negotiation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "catalog_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profile_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "profile_contract": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "required": [
+            "name",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "profile_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "execution_profile_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_bundle_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_chain_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "operation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "operation": {
+          "enum": [
+            "inspect",
+            "list",
+            "read",
+            "resolve"
+          ]
+        },
+        "view": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "request_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "authority_scope": {
+          "type": "object",
+          "properties": {
+            "authority_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "tenant_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "principal_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "required": [
+            "authority_id",
+            "tenant_id",
+            "principal_id"
+          ],
+          "additionalProperties": false
+        },
+        "issued_at_ms": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "expires_at_ms": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        }
+      },
+      "required": [
+        "negotiation_id",
+        "catalog_digest",
+        "profile_id",
+        "profile_contract",
+        "profile_digest",
+        "execution_profile_digest",
+        "source_bundle_digest",
+        "source_chain_digest",
+        "operation_id",
+        "operation",
+        "view",
+        "request_digest",
+        "authority_scope",
+        "issued_at_ms",
+        "expires_at_ms"
+      ],
+      "additionalProperties": false
+    },
+    "Availability": {
+      "type": "object",
+      "properties": {
+        "support_status": {
+          "enum": [
+            "qualified",
+            "not_implemented",
+            "unqualified",
+            "not_applicable",
+            "not_evaluated"
+          ]
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "requires_input",
+            "unavailable",
+            "not_applicable"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "MALFORMED_REQUEST",
+              "UNAUTHENTICATED",
+              "FORBIDDEN",
+              "SOURCE_NOT_FOUND",
+              "SOURCE_LEASE_EXPIRED",
+              "SOURCE_CHANGED",
+              "SOURCE_TOO_LARGE",
+              "INVALID_RANGE",
+              "CAPABILITY_CATALOG_CHANGED",
+              "PROFILE_UNKNOWN",
+              "PROFILE_CONTRACT_UNSUPPORTED",
+              "PROFILE_BINDING_CHANGED",
+              "PROFILE_NOT_IMPLEMENTED",
+              "PROFILE_UNQUALIFIED",
+              "PROFILE_NOT_EVALUATED",
+              "PROFILE_NOT_APPLICABLE",
+              "PROFILE_MISMATCH",
+              "PROFILE_DETECTION_INCOMPLETE",
+              "DECODER_UNAVAILABLE",
+              "TOOL_FINGERPRINT_MISMATCH",
+              "CREDENTIAL_REQUIRED",
+              "VOLUME_MISSING",
+              "POLICY_DENIED",
+              "RESOURCE_CAPACITY_BUSY",
+              "NEGOTIATION_EXPIRED",
+              "OPERATION_NOT_ACTIVE",
+              "OPERATION_RECONCILIATION_REQUIRED",
+              "BUDGET_EXHAUSTED",
+              "INTEGRITY_FAILED",
+              "CREDENTIAL_OR_INTEGRITY_UNCERTAIN",
+              "EXECUTION_UNKNOWN"
+            ]
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "support_status",
+        "availability",
+        "reason_codes"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

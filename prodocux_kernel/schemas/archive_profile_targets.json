@@ -1,0 +1,116 @@
+[
+  {
+    "profile_id": "zip-store-deflate",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "7zip:zip"
+    ],
+    "declared_scope": "Single-volume, nonencrypted ZIP STORE/DEFLATE; directories; exact raw-name/ordinal selectors including duplicate names; no host extraction."
+  },
+  {
+    "profile_id": "zip64-store-deflate",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "7zip:zip",
+      "inventory:zip64-zipx"
+    ],
+    "declared_scope": "ZIP64 form of STORE/DEFLATE only; entry/offset/size arithmetic; ZIPX codecs remain later variants."
+  },
+  {
+    "profile_id": "tar-ustar-pax-gnu",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "7zip:tar",
+      "inventory:tar-ustar-pax-gnu-v7"
+    ],
+    "declared_scope": "USTAR/PAX/GNU regular files and directories; link/device entries metadata-only; no link following; V7/sparse/extensions not implicitly claimed."
+  },
+  {
+    "profile_id": "gzip-single-member",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "7zip:gzip"
+    ],
+    "declared_scope": "One gzip member; preserve stream identity/CRC; detect concatenation/trailing bytes and reject undeclared profile rather than truncate."
+  },
+  {
+    "profile_id": "bzip2-single-stream",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "7zip:bzip2"
+    ],
+    "declared_scope": "One bzip2 stream; verify integrity/EOF; additional streams/trailing content explicitly not completed."
+  },
+  {
+    "profile_id": "xz-single-stream",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "7zip:xz"
+    ],
+    "declared_scope": "One XZ stream with qualified integrity checks; additional streams/trailing content explicitly disclosed or rejected."
+  },
+  {
+    "profile_id": "tar-gzip",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "inventory:tar-gzip"
+    ],
+    "declared_scope": "Qualified single-member gzip then qualified TAR profile, both layer identities and physical costs preserved."
+  },
+  {
+    "profile_id": "tar-bzip2",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "inventory:tar-bzip2"
+    ],
+    "declared_scope": "Qualified single-stream bzip2 then qualified TAR profile, both layer identities and physical costs preserved."
+  },
+  {
+    "profile_id": "tar-xz",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "inventory:tar-xz"
+    ],
+    "declared_scope": "Qualified single-stream XZ then qualified TAR profile, both layer identities and physical costs preserved."
+  },
+  {
+    "profile_id": "nested-qualified-profiles",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "inventory:nested"
+    ],
+    "declared_scope": "Chains built only from qualified profiles under one aggregate host policy; no hidden depth=1/2 restriction; unqualified inner formats cannot be declared complete."
+  },
+  {
+    "profile_id": "document-leaf-handoff",
+    "release_target": "rc13_required_target",
+    "inventory_ids": [
+      "inventory:document-packages"
+    ],
+    "declared_scope": "Archive-member bytes to existing Kernel document parser and Resolve chain. Document view unchanged; generic package-view expansion is not implied."
+  },
+  {
+    "profile_id": "native-7z-copy-lzma-lzma2",
+    "release_target": "rc13_conditional_native_target",
+    "inventory_ids": [
+      "7zip:7z"
+    ],
+    "declared_scope": "User-installed qualified tool/library; single-volume nonencrypted nonsolid COPY/LZMA/LZMA2; exact selector evidence mandatory."
+  },
+  {
+    "profile_id": "native-rar3-rar4",
+    "release_target": "rc13_conditional_native_target",
+    "inventory_ids": [
+      "7zip:rar"
+    ],
+    "declared_scope": "User-installed qualified decoder; RAR3/4 single-volume nonencrypted nonsolid STORE/compressed profiles only as individually tested."
+  },
+  {
+    "profile_id": "native-rar5",
+    "release_target": "rc13_conditional_native_target",
+    "inventory_ids": [
+      "7zip:rar5"
+    ],
+    "declared_scope": "User-installed qualified decoder; RAR5 single-volume nonencrypted nonsolid STORE/compressed profiles only as individually tested."
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_list_result_v1.schema.json",
+  "allOf": [
+    {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Response"
+    }
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_list_result_v1"
+    },
+    "operation": {
+      "const": "list"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Member"
+              },
+              "minItems": 0
+            },
+            "returned_range": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Range"
+            },
+            "known_total": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "next_cursor": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Cursor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "members",
+            "returned_range",
+            "known_total",
+            "next_cursor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

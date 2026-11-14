@@ -12,6 +12,7 @@ import os
 import re
 from pathlib import Path
 
+from api.archives import router as archive_router
 from api.documents import router as document_router
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
@@ -119,6 +120,7 @@ from api.path_policy import resolve_allowed_input_path
 
 app = FastAPI(title="ProDocuX Kernel", version=__version__)
 app.include_router(document_router)
+app.include_router(archive_router)
 app.add_middleware(BearerAuthMiddleware)
 
 KNOWN_SCHEMAS = [

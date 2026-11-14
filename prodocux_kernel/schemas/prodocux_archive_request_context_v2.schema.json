@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_request_context_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_request_context_v2"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "source_lease_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "profile_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ledger_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "credential_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "external_binding_digests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "operation_id",
+    "source_lease_digest",
+    "profile_digest",
+    "ledger_digest",
+    "credential_ref",
+    "external_binding_digests"
+  ],
+  "additionalProperties": false
+}

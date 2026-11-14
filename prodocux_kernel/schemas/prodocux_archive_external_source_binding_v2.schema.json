@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_external_source_binding_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_external_source_binding_v2"
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "authority_binding": {
+      "type": "object",
+      "properties": {
+        "authority_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "principal_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "authority_id",
+        "tenant_id",
+        "principal_id"
+      ],
+      "additionalProperties": false
+    },
+    "parent_chain_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reference_selector_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "relation": {
+      "enum": [
+        "thin_member",
+        "link_target",
+        "backing_image",
+        "manifest_referent"
+      ]
+    },
+    "target_source_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "target_bundle_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expires_at_ms": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "read_authorized": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "authority_binding",
+    "parent_chain_digest",
+    "reference_selector_digest",
+    "relation",
+    "target_source_ref",
+    "target_bundle_digest",
+    "expires_at_ms",
+    "read_authorized"
+  ],
+  "additionalProperties": false
+}

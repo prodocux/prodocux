@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_operation_availability_v3.schema.json",
+  "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/Availability"
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_capability_catalog_v3.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_capability_catalog_v3"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "registry_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "issued_at_ms": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "expires_at_ms": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "definition": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/Profile"
+          },
+          "definition_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "operations": {
+            "type": "object",
+            "properties": {
+              "inspect": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/OperationSupport"
+              },
+              "list": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/OperationSupport"
+              },
+              "read": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/OperationSupport"
+              },
+              "resolve": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_negotiation_common_v3.schema.json#/$defs/OperationSupport"
+              }
+            },
+            "required": [
+              "inspect",
+              "list",
+              "read",
+              "resolve"
+            ],
+            "additionalProperties": false
+          },
+          "qualification_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "execution_profile_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "definition",
+          "definition_digest",
+          "operations",
+          "qualification_digest",
+          "execution_profile_digest"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "registry_revision",
+    "authority_id",
+    "tenant_id",
+    "issued_at_ms",
+    "expires_at_ms",
+    "profiles"
+  ],
+  "additionalProperties": false
+}

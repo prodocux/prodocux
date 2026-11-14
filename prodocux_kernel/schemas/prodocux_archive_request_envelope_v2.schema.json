@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_request_envelope_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_request_envelope_v2"
+    },
+    "context": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_request_context_v2.schema.json"
+    },
+    "request": {
+      "oneOf": [
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_inspect_request_v1.schema.json"
+        },
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_list_request_v1.schema.json"
+        },
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_read_request_v1.schema.json"
+        },
+        {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_resolve_request_v1.schema.json"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "context",
+    "request"
+  ],
+  "additionalProperties": false
+}

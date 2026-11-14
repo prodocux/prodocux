@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_resolve_result_v1.schema.json",
+  "allOf": [
+    {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Response"
+    }
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_resolve_result_v1"
+    },
+    "operation": {
+      "const": "resolve"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "chain": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Chain"
+            },
+            "document": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Document"
+            },
+            "quote": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Quote"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "chain",
+            "document",
+            "quote",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

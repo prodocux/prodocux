@@ -1,0 +1,895 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json",
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ID": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "U64": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "PositiveU64": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,19}$"
+    },
+    "Parser": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "version": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "Range": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "end": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "Volume": {
+      "type": "object",
+      "properties": {
+        "ordinal": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "volume_key": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "size_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "sha256": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        }
+      },
+      "required": [
+        "ordinal",
+        "volume_key",
+        "size_bytes",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "SourceBundle": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "prodocux_archive_source_bundle_v1"
+        },
+        "volumes": {
+          "type": "array",
+          "items": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Volume"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "volumes"
+      ],
+      "additionalProperties": false
+    },
+    "Tool": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "version": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "kind": {
+          "enum": [
+            "stdlib",
+            "python_library",
+            "external_tool"
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+              },
+              "sha256": {
+                "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+              }
+            },
+            "required": [
+              "role",
+              "sha256"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "component",
+        "version",
+        "kind",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
+    "Budget": {
+      "type": "object",
+      "properties": {
+        "max_source_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_expanded_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_returned_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_metadata_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_elapsed_ms": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_peak_memory_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_depth": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_volumes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        },
+        "max_entries": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/PositiveU64"
+        }
+      },
+      "required": [
+        "max_source_bytes",
+        "max_expanded_bytes",
+        "max_returned_bytes",
+        "max_metadata_bytes",
+        "max_elapsed_ms",
+        "max_peak_memory_bytes",
+        "max_depth",
+        "max_volumes",
+        "max_entries"
+      ],
+      "additionalProperties": false
+    },
+    "Consumed": {
+      "type": "object",
+      "properties": {
+        "source_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "expanded_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "returned_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "metadata_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "elapsed_ms": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "peak_memory_bytes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "depth": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "volumes": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "entries": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        }
+      },
+      "required": [
+        "source_bytes",
+        "expanded_bytes",
+        "returned_bytes",
+        "metadata_bytes",
+        "elapsed_ms",
+        "peak_memory_bytes",
+        "depth",
+        "volumes",
+        "entries"
+      ],
+      "additionalProperties": false
+    },
+    "Observed": {
+      "type": "object",
+      "properties": {
+        "source_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expanded_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "returned_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "elapsed_ms": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "peak_memory_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "depth": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "volumes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entries": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source_bytes",
+        "expanded_bytes",
+        "returned_bytes",
+        "metadata_bytes",
+        "elapsed_ms",
+        "peak_memory_bytes",
+        "depth",
+        "volumes",
+        "entries"
+      ],
+      "additionalProperties": false
+    },
+    "Selector": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "entry"
+            },
+            "ordinal": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            "raw_name_sha256": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+            },
+            "display_name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "ordinal",
+            "raw_name_sha256",
+            "display_name"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "stream"
+            },
+            "ordinal": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            "codec": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+            },
+            "dictionary_sha256": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "ordinal",
+            "codec",
+            "dictionary_sha256"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "partition"
+            },
+            "ordinal": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            "partition_id": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+            }
+          },
+          "required": [
+            "kind",
+            "ordinal",
+            "partition_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "filesystem_entry"
+            },
+            "object_id": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+            },
+            "display_path": {
+              "type": "string"
+            },
+            "stream_id": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "object_id",
+            "display_path",
+            "stream_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "supplied_source"
+            },
+            "source_bundle_digest": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+            }
+          },
+          "required": [
+            "kind",
+            "source_bundle_digest"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "manifest_record"
+            },
+            "ordinal": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            "record_digest": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+            }
+          },
+          "required": [
+            "kind",
+            "ordinal",
+            "record_digest"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Step": {
+      "type": "object",
+      "properties": {
+        "parent_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "selector": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Selector"
+        },
+        "decoder_attestation_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "output_semantics": {
+          "enum": [
+            "embedded_bytes",
+            "deterministic_metadata",
+            "supplied_content"
+          ]
+        },
+        "output_sha256": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "output_size_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "integrity": {
+          "enum": [
+            "verified",
+            "partial",
+            "not_evaluated"
+          ]
+        }
+      },
+      "required": [
+        "parent_digest",
+        "selector",
+        "decoder_attestation_digest",
+        "output_semantics",
+        "output_sha256",
+        "output_size_bytes",
+        "integrity"
+      ],
+      "additionalProperties": false
+    },
+    "Chain": {
+      "type": "array",
+      "items": {
+        "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Step"
+      },
+      "minItems": 0
+    },
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "source_bundle_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "chain_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "profile_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "decoder_attestation_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        }
+      },
+      "required": [
+        "source_bundle_digest",
+        "chain_digest",
+        "profile_digest",
+        "decoder_attestation_digest"
+      ],
+      "additionalProperties": false
+    },
+    "CoverageAxis": {
+      "type": "object",
+      "properties": {
+        "disposition": {
+          "enum": [
+            "complete",
+            "partial_known",
+            "partial_unknown",
+            "not_evaluated"
+          ]
+        },
+        "known_total": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluated": {
+          "type": "array",
+          "items": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Range"
+          },
+          "minItems": 0
+        },
+        "unknown_remainder": {
+          "type": "boolean"
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "disposition",
+        "known_total",
+        "evaluated",
+        "unknown_remainder",
+        "omissions"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/CoverageAxis"
+        },
+        "member": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/CoverageAxis"
+        },
+        "document": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/CoverageAxis"
+        }
+      },
+      "required": [
+        "inventory",
+        "member",
+        "document"
+      ],
+      "additionalProperties": false
+    },
+    "Classification": {
+      "type": "object",
+      "properties": {
+        "format_id": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "codecs": {
+          "type": "array",
+          "items": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+          },
+          "minItems": 0
+        },
+        "view": {
+          "enum": [
+            "container",
+            "stream",
+            "document",
+            "structural",
+            "manifest"
+          ]
+        }
+      },
+      "required": [
+        "format_id",
+        "codecs",
+        "view"
+      ],
+      "additionalProperties": false
+    },
+    "Availability": {
+      "enum": [
+        "available",
+        "requires_credential",
+        "requires_volumes",
+        "requires_supplied_source",
+        "decoder_unavailable",
+        "codec_unavailable",
+        "not_applicable",
+        "not_evaluated"
+      ]
+    },
+    "Cursor": {
+      "type": "object",
+      "properties": {
+        "source_bundle_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "parent_chain_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "profile_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "decoder_attestation_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "view": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "next_position": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        }
+      },
+      "required": [
+        "source_bundle_digest",
+        "parent_chain_digest",
+        "profile_digest",
+        "decoder_attestation_digest",
+        "view",
+        "next_position"
+      ],
+      "additionalProperties": false
+    },
+    "Member": {
+      "type": "object",
+      "properties": {
+        "member_id": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "selector": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Selector"
+        },
+        "kind": {
+          "enum": [
+            "file",
+            "directory",
+            "stream",
+            "symlink",
+            "hardlink",
+            "device",
+            "partition",
+            "filesystem",
+            "metadata_record",
+            "external_reference"
+          ]
+        },
+        "declared_size_bytes": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "content_presence": {
+          "enum": [
+            "embedded",
+            "metadata_only",
+            "external_reference"
+          ]
+        },
+        "integrity": {
+          "const": "metadata_only"
+        }
+      },
+      "required": [
+        "member_id",
+        "selector",
+        "kind",
+        "declared_size_bytes",
+        "content_presence",
+        "integrity"
+      ],
+      "additionalProperties": false
+    },
+    "Document": {
+      "type": "object",
+      "properties": {
+        "source_sha256": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "parser_contract": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Parser"
+        },
+        "projection_digest": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        },
+        "locator": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "parser_contract",
+        "projection_digest",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "Quote": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "end": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+        },
+        "normalization": {
+          "const": "unicode_nfc_codepoint_v1"
+        },
+        "sha256": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "normalization",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "Response": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "operation": {
+          "enum": [
+            "inspect",
+            "list",
+            "read",
+            "resolve"
+          ]
+        },
+        "request_id": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/ID"
+        },
+        "outcome": {
+          "enum": [
+            "succeeded",
+            "partial",
+            "requires_input",
+            "failed"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "minItems": 0
+        },
+        "binding": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Binding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Coverage"
+        },
+        "consumed": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Consumed"
+        },
+        "observed": {
+          "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Observed"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "operation",
+        "request_id",
+        "outcome",
+        "reason_codes",
+        "binding",
+        "coverage",
+        "consumed",
+        "observed",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

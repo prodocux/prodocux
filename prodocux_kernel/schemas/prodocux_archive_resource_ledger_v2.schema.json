@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_resource_ledger_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_resource_ledger_v2"
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "authority_binding": {
+      "type": "object",
+      "properties": {
+        "authority_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "principal_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "authority_id",
+        "tenant_id",
+        "principal_id"
+      ],
+      "additionalProperties": false
+    },
+    "source_bundle_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "profile_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "policy_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "previous_ledger_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limits": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Budget"
+    },
+    "observed": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Consumed"
+    },
+    "consumed": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Consumed"
+    },
+    "state": {
+      "enum": [
+        "active",
+        "blocked",
+        "closed"
+      ]
+    },
+    "attempts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "request_binding_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "state": {
+            "enum": [
+              "reserved",
+              "settled",
+              "unknown_cost"
+            ]
+          },
+          "observed": {
+            "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Consumed"
+          }
+        },
+        "required": [
+          "attempt_id",
+          "request_binding_digest",
+          "state",
+          "observed"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "authority_binding",
+    "source_bundle_digest",
+    "profile_digest",
+    "policy_digest",
+    "revision",
+    "previous_ledger_digest",
+    "limits",
+    "observed",
+    "consumed",
+    "state",
+    "attempts"
+  ],
+  "additionalProperties": false
+}

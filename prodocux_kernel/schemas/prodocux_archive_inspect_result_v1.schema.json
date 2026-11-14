@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_inspect_result_v1.schema.json",
+  "allOf": [
+    {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Response"
+    }
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_inspect_result_v1"
+    },
+    "operation": {
+      "const": "inspect"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "classification": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Classification"
+            },
+            "capabilities": {
+              "type": "object",
+              "properties": {
+                "inspect": {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Availability"
+                },
+                "list": {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Availability"
+                },
+                "read": {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Availability"
+                },
+                "resolve": {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Availability"
+                }
+              },
+              "required": [
+                "inspect",
+                "list",
+                "read",
+                "resolve"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "classification",
+            "capabilities"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

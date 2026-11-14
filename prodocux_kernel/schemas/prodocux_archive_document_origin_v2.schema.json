@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_document_origin_v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_document_origin_v2"
+    },
+    "origin": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "root_volume",
+            "verified_member",
+            "metadata_projection",
+            "supplied_source"
+          ]
+        },
+        "source_bundle_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "chain_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "volume_key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "content_size_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "representation_contract": {
+          "anyOf": [
+            {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Parser"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "producer_attestation_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "source_bundle_digest",
+        "chain_digest",
+        "volume_key",
+        "content_sha256",
+        "content_size_bytes",
+        "representation_contract",
+        "producer_attestation_digest"
+      ],
+      "additionalProperties": false
+    },
+    "parser_contract": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Parser"
+    },
+    "projection_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "quote": {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Quote"
+    }
+  },
+  "required": [
+    "schema_version",
+    "origin",
+    "parser_contract",
+    "projection_digest",
+    "locator",
+    "quote"
+  ],
+  "additionalProperties": false
+}

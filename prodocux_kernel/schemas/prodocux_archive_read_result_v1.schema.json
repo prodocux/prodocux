@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prodocux.dev/schemas/prodocux_archive_read_result_v1.schema.json",
+  "allOf": [
+    {
+      "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Response"
+    }
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prodocux_archive_read_result_v1"
+    },
+    "operation": {
+      "const": "read"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "chain": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Chain"
+            },
+            "returned_range": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Range"
+            },
+            "bytes_b64": {
+              "type": "string"
+            },
+            "returned_sha256": {
+              "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+            },
+            "member_sha256": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/Digest"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "member_size_bytes": {
+              "anyOf": [
+                {
+                  "$ref": "https://prodocux.dev/schemas/prodocux_archive_common_v1.schema.json#/$defs/U64"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "integrity_scope": {
+              "enum": [
+                "full_member",
+                "returned_range_only"
+              ]
+            }
+          },
+          "required": [
+            "chain",
+            "returned_range",
+            "bytes_b64",
+            "returned_sha256",
+            "member_sha256",
+            "member_size_bytes",
+            "integrity_scope"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}
